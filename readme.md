@@ -13,8 +13,8 @@
 
 <!-- * Description Section -->
 <div align="center">
-This repository is a beginner-friendly CodeIgniter 4 template.  
-It helps teams quickly bootstrap backend + frontend projects, with simple sample modules that show how to extend the system.
+    A simple online skin care store built with CodeIgniter 4.  
+    This project demonstrates a minimal e-commerce setup with product listings, cart, and checkout flow.
 </div>
 
 <br/>
@@ -55,12 +55,11 @@ It helps teams quickly bootstrap backend + frontend projects, with simple sample
 
 ## Overview
 
-This template provides a **minimal CodeIgniter 4 project layout** with conventions for file organization, commit practices, and simple modules.
+This repository provides a **minimal CodeIgniter 4 project layout** tailored to a small skin care e-commerce site.  
+It includes conventions for file organization, commit practices, and sample modules to help you iterate quickly.
 
-It is designed to be **easy to start with** and a **reference for adding new features**.
-
-* **Purpose**: a clean starting point for CI4 apps.
-* **Audience**: developers who want a predictable structure and quick onboarding.
+* **Purpose**: A clean starter template for a simple online store (catalog → cart → checkout).  
+* **Audience**: Students, hobbyists, and developers building small e-commerce projects with CI4.
 
 ### Key Components
 
@@ -68,9 +67,11 @@ These are **sample modules** included (or suggested) for learning how to add fea
 
 | Component                 | Purpose                                                             | Notes                                                   |
 | ------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------- |
-| **Auth (Sample)**         | Basic login/logout and role check (admin/user).                     | Uses CI4 sessions + MySQL `users` table.                |
-| **CRUD Module**           | Example entity (`Posts` or `Tasks`) with create/read/update/delete. | Demonstrates Controller → Service → Repository pattern. |
-| **Scheduler (Sample)**    | Simple to-do list with due dates.                                   | Shows how to extend with new tables and services.       |
+| **Auth (Sample)**         | Basic login/logout and role check (admin/customer).                  | Uses CI4 sessions + MySQL `users` table.                |
+| **Product Catalog**       | Product listing, categories, search and filters.                     | Product model, images, price, stock.                    |
+| **Cart & Checkout**       | Add/remove items, order summary, checkout form (no payment gateway). | Simple order flow for local/dev use.                    |
+| **Admin Panel**           | CRUD for products, categories, and orders.                           | Role-protected routes (admin only).                     |
+| **Scheduler (Sample)**    | Promotions or restock reminders (optional).          
 
  <!-- ! Start simple. Use these modules as **learning samples**; extend or replace them based on your project’s needs. -->
 
