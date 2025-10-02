@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - EASY&CO</title>
+    <title>Sign Up - EASY&CO</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
     <script>
@@ -43,15 +43,15 @@
             font-family: 'Playfair Display', serif !important;
         }
 
-        .login-container {
-            background-image: url('/assets/img/loginbg.jpg');
+        .signup-container {
+            background-image: url('/assets/img/signupbg.jpg');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             position: relative;
         }
 
-        .login-container::before {
+        .signup-container::before {
             content: '';
             position: absolute;
             top: 0;
@@ -61,7 +61,7 @@
             background: rgba(0, 0, 0, 0.5);
         }
 
-        .login-content {
+        .signup-content {
             position: relative;
             z-index: 10;
         }
@@ -103,39 +103,59 @@
         </div>
     </header>
 
-    <!-- Login Section with Background -->
-    <section class="flex justify-center items-center py-20 min-h-screen login-container">
-        <div class="mx-auto px-6 w-full max-w-md login-content">
-            <!-- Login Form -->
+    <!-- Sign Up Section with Background -->
+    <section class="flex justify-center items-center py-20 min-h-screen signup-container">
+        <div class="mx-auto px-6 w-full max-w-md signup-content">
+            <!-- Sign Up Form -->
             <div class="space-y-8 text-center">
-                <h2 class="font-bold text-secondary text-5xl md:text-6xl">Log In</h2>
+                <h2 class="font-bold text-secondary text-5xl md:text-6xl">Sign Up</h2>
 
-                <form class="space-y-6">
-                    <!-- Email/Username Input -->
+                <form action="process_signup.php" method="POST" class="space-y-6">
+                    <!-- Email Input -->
+                    <input
+                        type="email"
+                        name="email"
+                        placeholder="Email"
+                        required
+                        class="bg-transparent placeholder-opacity-70 focus:ring-opacity-50 px-6 py-4 border-2 border-secondary rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary w-full font-light text-secondary text-lg placeholder-secondary">
+
+                    <!-- Username Input -->
                     <input
                         type="text"
-                        placeholder="Email or Username"
+                        name="username"
+                        placeholder="Username"
+                        required
                         class="bg-transparent placeholder-opacity-70 focus:ring-opacity-50 px-6 py-4 border-2 border-secondary rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary w-full font-light text-secondary text-lg placeholder-secondary">
 
                     <!-- Password Input -->
                     <input
                         type="password"
+                        name="password"
                         placeholder="Password"
+                        required
                         class="bg-transparent placeholder-opacity-70 focus:ring-opacity-50 px-6 py-4 border-2 border-secondary rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary w-full font-light text-secondary text-lg placeholder-secondary">
 
-                    <!-- Sign Up Link -->
+                    <!-- Confirm Password Input -->
+                    <input
+                        type="password"
+                        name="confirm_password"
+                        placeholder="Confirm Password"
+                        required
+                        class="bg-transparent placeholder-opacity-70 focus:ring-opacity-50 px-6 py-4 border-2 border-secondary rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary w-full font-light text-secondary text-lg placeholder-secondary">
+
+                    <!-- Login Link -->
                     <p class="font-light text-secondary text-lg">
-                        Don't have an account?
-                        <a href="/signup" class="font-semibold text-secondary hover:text-accent underline transition-colors">
-                            Sign up
+                        Already have an account?
+                        <a href="login.php" class="font-semibold text-secondary hover:text-accent underline transition-colors">
+                            Log in
                         </a>
                     </p>
 
-                    <!-- Login Button -->
+                    <!-- Sign Up Button -->
                     <button
                         type="submit"
                         class="bg-secondary hover:bg-primary px-8 py-3 border-2 border-secondary rounded-lg w-auto font-bold text-white text-base tracking-wide transition-all">
-                        Log In
+                        Sign Up
                     </button>
                 </form>
             </div>
