@@ -59,13 +59,13 @@
 
             <!-- Navigation -->
             <nav class="hidden md:flex space-x-12">
-                <a href="#home" class="text-white hover:text-accent text-lg tracking-wide transition-colors">
+                <a href="/" class="text-white hover:text-accent text-lg tracking-wide transition-colors">
                     HOME
                 </a>
-                <a href="#about" class="text-white hover:text-accent text-lg tracking-wide transition-colors">
+                <a href="/about" class="text-white hover:text-accent text-lg tracking-wide transition-colors">
                     ABOUT US
                 </a>
-                <a href="#login" class="text-white hover:text-accent text-lg tracking-wide transition-colors">
+                <a href="/login" class="text-white hover:text-accent text-lg tracking-wide transition-colors">
                     LOGIN
                 </a>
             </nav>
@@ -90,11 +90,11 @@
             </h3>
 
             <p class="mb-16 font-light text-white text-2xl tracking-wide">
-                Relax and unwind at Easy & Co
+                Relax and unwind at EASY&CO
             </p>
 
             <!-- CTA Button -->
-            <a href="#book" class="inline-block bg-accent hover:bg-secondary shadow-lg px-16 py-5 font-bold text-black text-sm tracking-widest hover:scale-105 transition-all duration-300 transform">
+            <a href="/booking" class="inline-block bg-accent hover:bg-secondary shadow-lg px-16 py-5 font-bold text-black text-sm tracking-widest hover:scale-105 transition-all duration-300 transform">
                 BOOK NOW
             </a>
         </div>
