@@ -70,7 +70,7 @@
     </section>
 
     <!-- Info Cards Section -->
-    <?= view('components/cards') ?>
+    <?= view('components/cards/cards') ?>
 
 
     <!-- Image Gallery Section -->
