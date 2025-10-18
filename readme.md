@@ -13,8 +13,7 @@
 
 <!-- * Description Section -->
 <div align="center">
-    A simple online skin care store built with CodeIgniter 4.  
-    This project demonstrates a minimal e-commerce setup with product listings, cart, and checkout flow.
+    A simple online condo booking platform built with CodeIgniter 4. This project demonstrates a minimal Airbnb-style setup with condo listings, booking, and admin management.
 </div>
 
 <br/>
@@ -55,23 +54,24 @@
 
 ## Overview
 
-This repository provides a **minimal CodeIgniter 4 project layout** tailored to a small skin care e-commerce site.  
+This repository provides a minimal CodeIgniter 4 project layout tailored to a small Airbnb-style condo booking platform.
 It includes conventions for file organization, commit practices, and sample modules to help you iterate quickly.
 
-* **Purpose**: A clean starter template for a simple online store (catalog → cart → checkout).  
-* **Audience**: Students, hobbyists, and developers building small e-commerce projects with CI4.
-
+* **Purpose**: A clean starter template for a simple condo booking site (listings → booking → admin).  
+* **Audience**: Students, hobbyists, and developers building small booking platforms with CI4.
 ### Key Components
 
 These are **sample modules** included (or suggested) for learning how to add features:
 
-| Component                 | Purpose                                                             | Notes                                                   |
-| ------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------- |
-| **Auth (Sample)**         | Basic login/logout and role check (admin/customer).                  | Uses CI4 sessions + MySQL `users` table.                |
-| **Product Catalog**       | Product listing, categories, search and filters.                     | Product model, images, price, stock.                    |
-| **Cart & Checkout**       | Add/remove items, order summary, checkout form (no payment gateway). | Simple order flow for local/dev use.                    |
-| **Admin Panel**           | CRUD for products, categories, and orders.                           | Role-protected routes (admin only).                     |
-| **Scheduler (Sample)**    | Promotions or restock reminders (optional).          
+| Component                      | Purpose                                            | Notes                                              |
+| ------------------------------ | -------------------------------------------------- | -------------------------------------------------- |
+| **Auth (Sample)**              | Basic login/logout and role check (admin/guest).   | Uses CI4 sessions + MySQL `users` table.           |
+| **Condo Listings**             | Show available condos, details, amenities, images. | Condo model, images, description, price per night. |
+| **Booking System**             | Select dates, confirm booking, view order summary. | Handles reservations and availability.             |
+| **Admin Panel**                | CRUD for condos, bookings, users.                  | Role-protected routes (admin only).                |
+| **Gallery / Media**            | Display condo images, amenities, and highlights.   | Optional carousel or lightbox.                     |
+| **Promotions / Special Deals** | Showcase seasonal offers or discounts.             | Optional scheduler or admin entry.                 |
+
 
  <!-- ! Start simple. Use these modules as **learning samples**; extend or replace them based on your project’s needs. -->
 
