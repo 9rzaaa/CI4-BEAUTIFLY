@@ -8,13 +8,20 @@ class ClearDatabaseSeeder extends Seeder
 {
     public function run()
     {
-        $db      = \Config\Database::connect();
-        $builder = $db->table('funeral_requests');
-        $builder = $db->table('users');
+        $db = \Config\Database::connect();
 
-        // Use disableForeignKeyChecks if supported by the DB to avoid FK issues
+        // Only clear the 'users' table
+        $tablesInOrder = ['users'];
+
+        // Disable foreign key checks to avoid constraint errors
         $db->disableForeignKeyChecks();
-        $builder->truncate();
+
+        foreach ($tablesInOrder as $table) {
+            $db->table($table)->truncate();
+            echo "✅ Cleared table: {$table}\n";
+        }
+
+        // Re-enable foreign key checks
         $db->enableForeignKeyChecks();
     }
 }
