@@ -21,8 +21,18 @@
                 ACCOMMODATION
             </h3>
 
+            <?php
+            $session = session();
+            $user = $session->get('user');
+            $firstName = $user['first_name'] ?? '';
+            ?>
+
             <p class="mb-16 font-light text-white text-2xl tracking-wide">
-                Relax and unwind at EASY&CO
+                <?php if (!empty($firstName)): ?>
+                    Welcome back, <?= esc($firstName) ?>! Relax and unwind at EASY&CO
+                <?php else: ?>
+                    Relax and unwind at EASY&CO
+                <?php endif; ?>
             </p>
 
             <!-- CTA Button -->
@@ -34,9 +44,9 @@
     <section class="bg-light py-16">
         <div class="mx-auto px-6 max-w-6xl">
             <div class="relative shadow-2xl rounded-2xl overflow-hidden">
-                <!-- Placeholder for your condo image -->
-                <img src="/assets/img/condo.jpg" alt="EASY&CO Luxury Condo Interior" class="w-full h-auto object-cover">
-
+                <!-- Preload hero image -->
+                <img data-src="/assets/img/condo.jpg" alt="EASY&CO Luxury Condo Interior"
+                    class="w-full h-auto object-cover">
             </div>
         </div>
     </section>
@@ -63,7 +73,9 @@
 
                 <!-- Right Image -->
                 <div class="relative shadow-xl rounded-2xl overflow-hidden">
-                    <img src="/assets/img/room.jpg" alt="EASY&CO Condo Interior" class="w-full h-full object-cover">
+                    <img data-src="/assets/img/room.jpg"
+                        alt="EASY&CO Condo Interior"
+                        class="w-full h-full object-cover">
                 </div>
             </div>
         </div>
@@ -79,17 +91,17 @@
             <div class="gap-6 grid md:grid-cols-3">
                 <!-- Image 1 -->
                 <div class="relative shadow-lg hover:shadow-2xl rounded-xl overflow-hidden transition-shadow duration-300">
-                    <img src="/assets/img/room1.jpg" alt="EASY&CO Condo View 1" class="w-full h-full object-cover">
+                    <img data src="/assets/img/room1.jpg" alt="EASY&CO Condo View 1" class="w-full h-full object-cover">
                 </div>
 
                 <!-- Image 2 -->
                 <div class="relative shadow-lg hover:shadow-2xl rounded-xl overflow-hidden transition-shadow duration-300">
-                    <img src="/assets/img/room2.jpg" alt="EASY&CO Condo View 2" class="w-full h-full object-cover">
+                    <img data src="/assets/img/room2.jpg" alt="EASY&CO Condo View 2" class="w-full h-full object-cover">
                 </div>
 
                 <!-- Image 3 -->
                 <div class="relative shadow-lg hover:shadow-2xl rounded-xl overflow-hidden transition-shadow duration-300">
-                    <img src="/assets/img/room3.jpg" alt="EASY&CO Condo View 3" class="w-full h-full object-cover">
+                    <img data src="/assets/img/room3.jpg" alt="EASY&CO Condo View 3" class="w-full h-full object-cover">
                 </div>
             </div>
         </div>

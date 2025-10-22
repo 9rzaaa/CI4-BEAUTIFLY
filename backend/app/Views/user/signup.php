@@ -18,8 +18,41 @@
             <div class="space-y-8 text-center">
                 <h2 class="font-bold text-secondary text-5xl md:text-6xl">Sign Up</h2>
 
-                <form action="process_signup.php" method="POST" class="space-y-6">
-                    <!-- Email Input -->
+                <?php if (session()->getFlashdata('errors')): ?>
+                    <div class="bg-red-100 p-4 rounded-md text-red-700 text-sm text-left">
+                        <?php foreach (session()->getFlashdata('errors') as $error): ?>
+                            <p><?= esc($error) ?></p>
+                        <?php endforeach ?>
+                    </div>
+                <?php endif; ?>
+
+                <form action="<?= base_url('auth/signup') ?>" method="post" class="space-y-6">
+                    <?= csrf_field() ?>
+
+                    <!-- First Name -->
+                    <input
+                        type="text"
+                        name="first_name"
+                        placeholder="First Name"
+                        required
+                        class="bg-transparent placeholder-opacity-70 focus:ring-opacity-50 px-6 py-4 border-2 border-secondary rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary w-full font-light text-secondary text-lg placeholder-secondary">
+
+                    <!-- Middle Name -->
+                    <input
+                        type="text"
+                        name="middle_name"
+                        placeholder="Middle Name (optional)"
+                        class="bg-transparent placeholder-opacity-70 focus:ring-opacity-50 px-6 py-4 border-2 border-secondary rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary w-full font-light text-secondary text-lg placeholder-secondary">
+
+                    <!-- Last Name -->
+                    <input
+                        type="text"
+                        name="last_name"
+                        placeholder="Last Name"
+                        required
+                        class="bg-transparent placeholder-opacity-70 focus:ring-opacity-50 px-6 py-4 border-2 border-secondary rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary w-full font-light text-secondary text-lg placeholder-secondary">
+
+                    <!-- Email -->
                     <input
                         type="email"
                         name="email"
@@ -27,15 +60,7 @@
                         required
                         class="bg-transparent placeholder-opacity-70 focus:ring-opacity-50 px-6 py-4 border-2 border-secondary rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary w-full font-light text-secondary text-lg placeholder-secondary">
 
-                    <!-- Username Input -->
-                    <input
-                        type="text"
-                        name="username"
-                        placeholder="Username"
-                        required
-                        class="bg-transparent placeholder-opacity-70 focus:ring-opacity-50 px-6 py-4 border-2 border-secondary rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary w-full font-light text-secondary text-lg placeholder-secondary">
-
-                    <!-- Password Input -->
+                    <!-- Password -->
                     <input
                         type="password"
                         name="password"
@@ -43,7 +68,7 @@
                         required
                         class="bg-transparent placeholder-opacity-70 focus:ring-opacity-50 px-6 py-4 border-2 border-secondary rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary w-full font-light text-secondary text-lg placeholder-secondary">
 
-                    <!-- Confirm Password Input -->
+                    <!-- Confirm Password -->
                     <input
                         type="password"
                         name="confirm_password"
