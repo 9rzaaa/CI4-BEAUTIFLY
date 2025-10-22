@@ -90,8 +90,8 @@ class Auth extends BaseController
         $post = $request->getPost();
 
         // Validation Rules (adjust as needed)
-        $validation->setRule('first_name', 'First Name', 'required|min_length[2]');
-        $validation->setRule('last_name', 'Last Name', 'required|min_length[2]');
+        $validation->setRule('first_name', 'First Name', 'required|alpha_space|min_length[2]');
+        $validation->setRule('last_name', 'Last Name', 'required|alpha_space|min_length[2]');
         $validation->setRule('email', 'Email', 'required|valid_email|is_unique[users.email]');
         $validation->setRule('password', 'Password', 'required|min_length[6]');
         $validation->setRule('confirm_password', 'Confirm Password', 'required|matches[password]');
