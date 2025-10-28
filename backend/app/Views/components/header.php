@@ -6,6 +6,9 @@ $isLoggedIn = !empty($user);
 $firstName = $user['first_name'] ?? '';
 $displayName = $user['display_name'] ?? '';
 $email = $user['email'] ?? '';
+
+// Check if user is admin
+$isAdmin = ($user['type'] ?? '') === 'admin';
 ?>
 
 <header class="bg-primary">
@@ -17,12 +20,14 @@ $email = $user['email'] ?? '';
 
         <!-- Desktop Navigation -->
         <nav class="hidden md:flex items-center space-x-12">
-            <a href="/" class="text-white hover:text-accent text-lg tracking-wide transition-colors <?= ($active ?? '') === 'Home' ? 'underline' : '' ?>">
-                HOME
-            </a>
-            <a href="/about" class="text-white hover:text-accent text-lg tracking-wide transition-colors <?= ($active ?? '') === 'About' ? 'underline' : '' ?>">
-                ABOUT US
-            </a>
+            <?php if (!$isAdmin): ?>
+                <a href="/" class="text-white hover:text-accent text-lg tracking-wide transition-colors <?= ($active ?? '') === 'Home' ? 'underline' : '' ?>">
+                    HOME
+                </a>
+                <a href="/about" class="text-white hover:text-accent text-lg tracking-wide transition-colors <?= ($active ?? '') === 'About' ? 'underline' : '' ?>">
+                    ABOUT US
+                </a>
+            <?php endif; ?>
 
             <!-- Auth Section for Desktop -->
             <?php if ($isLoggedIn): ?>
@@ -42,7 +47,7 @@ $email = $user['email'] ?? '';
                     </button>
 
                     <!-- Dropdown Menu with Modern Design -->
-                    <div class="invisible group-hover:visible right-0 z-50 absolute bg-gray-900/95 opacity-0 group-hover:opacity-100 shadow-2xl backdrop-blur-xl mt-2 border border-white/10 rounded-xl w-56 overflow-hidden transition-all translate-y-2 group-hover:translate-y-0 duration-300 transform">
+                    <div class="invisible group-hover:visible right-0 z-50 absolute bg-gray-900/95 opacity-0 group-hover:opacity-100 shadow-2xl backdrop-blur-xl mt-2 border border-white/10 rounded-xl w-56 overflow-hidden transition-all translate-y-2 group-hover:translate-y-0 duration-300 transform" style="background-color: #4A5F8F;">
                         <!-- User Info with Gradient Background -->
                         <div class="bg-gradient-to-br from-primary to-primary/80 px-3 py-2.5 border-white/10 border-b">
                             <div class="flex items-center space-x-2">
@@ -108,8 +113,10 @@ $email = $user['email'] ?? '';
 
     <!-- Mobile Menu (hidden by default) -->
     <div class="hidden md:hidden bg-primary" id="mobileMenu">
-        <a href="/" class="block hover:bg-accent px-4 py-2 text-white">HOME</a>
-        <a href="/about" class="block hover:bg-accent px-4 py-2 text-white">ABOUT US</a>
+        <?php if (!$isAdmin): ?>
+            <a href="/" class="block hover:bg-accent px-4 py-2 text-white">HOME</a>
+            <a href="/about" class="block hover:bg-accent px-4 py-2 text-white">ABOUT US</a>
+        <?php endif; ?>
 
         <?php if ($isLoggedIn): ?>
             <!-- Mobile User Section -->
