@@ -14,3 +14,7 @@ $routes->get('/rm', 'Users::roadmap');
 $routes->post('auth/login', 'Auth::login');
 $routes->get('auth/logout', 'Auth::logout');
 $routes->post('auth/signup', 'Auth::signup');
+
+$routes->get('admin/dashboard', function () {
+    return view('admin/dashboard');
+});
