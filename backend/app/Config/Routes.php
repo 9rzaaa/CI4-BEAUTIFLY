@@ -33,4 +33,8 @@ $routes->get('test/user_create', 'CRUDTesting::index');
 // process create (form submit)
 $routes->post('crud-testing/create', 'CRUDTesting::create');
 
+// View update page (GET)
 $routes->get('/test/update/(:num)', 'CRUDTesting::showUpdateForm/$1');
+
+// Process update (POST)
+$routes->post('/crud-testing/update/(:num)', 'CRUDTesting::processUpdate/$1');

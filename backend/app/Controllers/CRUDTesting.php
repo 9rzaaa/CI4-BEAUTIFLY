@@ -42,15 +42,28 @@ class CRUDTesting extends BaseController
     {
         helper('form'); // this is needed for old() in the view
 
-        $model = new UsersModel();
-        $user = $model->find($id);
-
-        if (!$user) {
-            return redirect()
-                ->to(site_url('test/user'))
-                ->with('errors', ['User not found.']);
+        // Check if ID is provided
+        if (!$id) {
+            $user = "Missing requirements: ID";
+            return view('test/user_update', ['user' => $user]);
         }
 
+        // Access the database
+        $userModel = new UsersModel();
+
+        // Find the data with error handling
+        try {
+            $user = $userModel->find($id);
+
+            // Check if user exists
+            if (!$user) {
+                $user = "User not found with ID: " . $id;
+            }
+        } catch (\Exception $e) {
+            $user = "Server Issue: " . $e->getMessage();
+        }
+
+        // Show the page
         return view('test/user_update', ['user' => $user]);
     }
 
@@ -89,5 +102,88 @@ class CRUDTesting extends BaseController
 
         session()->setFlashdata('success', 'User has been created successfully!');
         return redirect()->to(site_url('test/user'));
+    }
+
+    public function processUpdate($id = null)
+    {
+        // Add session
+        $session = session();
+
+        // Check if ID is provided
+        if (!$id) {
+            $session->setFlashdata('errors', ['ID is required']);
+            return redirect()->to(site_url('test/user'));
+        }
+
+        // Get POST data
+        $post = $this->request->getPost();
+
+        // Use the model
+        $userModel = new UsersModel();
+
+        try {
+            // Check if the account exists
+            $account = $userModel->find($id);
+
+            if (!$account) {
+                $session->setFlashdata('errors', ['Account not found']);
+                return redirect()->to(site_url('test/user'));
+            }
+
+            // Simple validation
+            if (empty($post['first_name']) || empty($post['last_name']) || empty($post['email'])) {
+                $session->setFlashdata('errors', ['First name, last name, and email are required']);
+                return redirect()->to(site_url('test/user'));
+            }
+
+            // Validate email format
+            if (!filter_var($post['email'], FILTER_VALIDATE_EMAIL)) {
+                $session->setFlashdata('errors', ['Invalid email format']);
+                return redirect()->to(site_url('test/user'));
+            }
+
+            // If password is provided, validate it
+            if (!empty($post['password'])) {
+                if (strlen($post['password']) < 8) {
+                    $session->setFlashdata('errors', ['Password must be at least 8 characters']);
+                    return redirect()->to(site_url('test/user'));
+                }
+                if ($post['password'] !== $post['confirm_password']) {
+                    $session->setFlashdata('errors', ['Passwords do not match']);
+                    return redirect()->to(site_url('test/user'));
+                }
+            }
+
+            // Prepare data to be updated
+            $data = [
+                'first_name' => $post['first_name'],
+                'middle_name' => $post['middle_name'] ?? null,
+                'last_name' => $post['last_name'],
+                'email' => $post['email'],
+            ];
+
+            // Only add password if it's provided
+            if (!empty($post['password'])) {
+                $data['password_hash'] = password_hash($post['password'], PASSWORD_DEFAULT);
+            }
+
+            // Update using Query Builder directly
+            $db = \Config\Database::connect();
+            $builder = $db->table('users');
+            $builder->where('id', $id);
+            $result = $builder->update($data);
+
+            // Check if update was successful
+            if ($result && $db->affectedRows() > 0) {
+                $session->setFlashdata('success', 'User updated successfully!');
+            } else {
+                $session->setFlashdata('success', 'No changes were made.');
+            }
+
+            return redirect()->to(site_url('test/user'));
+        } catch (\Throwable $e) {
+            $session->setFlashdata('errors', ['Server error: ' . $e->getMessage()]);
+            return redirect()->to(site_url('test/user'));
+        }
     }
 }
