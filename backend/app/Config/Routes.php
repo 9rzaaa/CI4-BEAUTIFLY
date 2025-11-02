@@ -24,5 +24,11 @@ $routes->get('admin/dashboard', function () {
 });
 
 // ---------- Test / CRUD Pages ----------
-$routes->get('/test/user', 'CRUDTesting::showUsersPage'); 
+$routes->get('/test/user', 'CRUDTesting::showUsersPage');
 // Displays user list page (CRUD testing page)
+
+// open create form
+$routes->get('test/user_create', 'CRUDTesting::index');
+
+// process create (form submit)
+$routes->post('crud-testing/create', 'CRUDTesting::create');
