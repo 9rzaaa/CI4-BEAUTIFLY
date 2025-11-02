@@ -37,6 +37,23 @@ class CRUDTesting extends BaseController
         return view('test/user_create');
     }
 
+    // NEW — show update page
+    public function showUpdateForm($id = null)
+    {
+        helper('form'); // this is needed for old() in the view
+
+        $model = new UsersModel();
+        $user = $model->find($id);
+
+        if (!$user) {
+            return redirect()
+                ->to(site_url('test/user'))
+                ->with('errors', ['User not found.']);
+        }
+
+        return view('test/user_update', ['user' => $user]);
+    }
+
     // NEW — process insert
     public function create()
     {

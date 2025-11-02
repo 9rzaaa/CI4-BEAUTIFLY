@@ -153,13 +153,19 @@
                                             <!-- ACTION BUTTONS -->
                                             <td class="p-4">
                                                 <div class="flex justify-center gap-2">
-                                                    <!-- View -->
-                                                    <a class="bg-ocean hover:bg-ocean-dark px-3 py-2 rounded text-white text-sm transition-colors duration-200"
-                                                        href="<?= site_url('test/view/' . $user->id) ?>">View</a>
 
-                                                    <!-- Edit -->
-                                                    <a class="bg-mint-dark hover:bg-mint px-3 py-2 rounded text-white text-sm transition-colors duration-200"
-                                                        href="<?= site_url('test/update/' . $user->id) ?>">Edit</a>
+                                                    <!-- Edit (Now opens modal) -->
+                                                    <button
+                                                        onclick='openEditModal(<?= json_encode([
+                                                                                    "id" => $user->id,
+                                                                                    "first_name" => $user->first_name,
+                                                                                    "middle_name" => $user->middle_name,
+                                                                                    "last_name" => $user->last_name,
+                                                                                    "email" => $user->email
+                                                                                ]) ?>)'
+                                                        class="bg-mint-dark hover:bg-mint px-3 py-2 rounded text-white text-sm transition-colors duration-200">
+                                                        Edit
+                                                    </button>
 
                                                     <!-- Delete -->
                                                     <a class="bg-sky-dark hover:bg-sky px-3 py-2 rounded text-white text-sm transition-colors duration-200"
@@ -197,7 +203,116 @@
         </div>
     </div>
 
+    <!-- Edit User Modal -->
+    <div id="editUserModal" class="hidden z-50 fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 p-4">
+        <div class="bg-white shadow-2xl rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <!-- Modal Header -->
+            <div class="flex justify-between items-center bg-mint-dark p-6 rounded-t-2xl">
+                <h2 class="font-bold text-white text-2xl">Edit User</h2>
+                <button onclick="closeEditModal()" class="text-white hover:text-cream transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="p-8">
+                <form id="editUserForm" method="post" class="space-y-4">
+                    <?= csrf_field() ?>
+
+                    <div class="gap-4 grid grid-cols-1 md:grid-cols-2">
+                        <!-- First Name -->
+                        <div>
+                            <label class="block mb-2 font-semibold text-ocean-dark text-sm">First Name *</label>
+                            <input
+                                type="text"
+                                id="edit_first_name"
+                                name="first_name"
+                                placeholder="Enter first name"
+                                required
+                                class="px-4 py-3 border-2 border-sky focus:border-ocean rounded-lg focus:outline-none w-full text-gray-700 transition-colors">
+                        </div>
+
+                        <!-- Middle Name -->
+                        <div>
+                            <label class="block mb-2 font-semibold text-ocean-dark text-sm">Middle Name</label>
+                            <input
+                                type="text"
+                                id="edit_middle_name"
+                                name="middle_name"
+                                placeholder="Enter middle name (optional)"
+                                class="px-4 py-3 border-2 border-sky focus:border-ocean rounded-lg focus:outline-none w-full text-gray-700 transition-colors">
+                        </div>
+                    </div>
+
+                    <!-- Last Name -->
+                    <div>
+                        <label class="block mb-2 font-semibold text-ocean-dark text-sm">Last Name *</label>
+                        <input
+                            type="text"
+                            id="edit_last_name"
+                            name="last_name"
+                            placeholder="Enter last name"
+                            required
+                            class="px-4 py-3 border-2 border-sky focus:border-ocean rounded-lg focus:outline-none w-full text-gray-700 transition-colors">
+                    </div>
+
+                    <!-- Email -->
+                    <div>
+                        <label class="block mb-2 font-semibold text-ocean-dark text-sm">Email *</label>
+                        <input
+                            type="email"
+                            id="edit_email"
+                            name="email"
+                            placeholder="Enter email address"
+                            required
+                            class="px-4 py-3 border-2 border-sky focus:border-ocean rounded-lg focus:outline-none w-full text-gray-700 transition-colors">
+                    </div>
+
+                    <div class="gap-4 grid grid-cols-1 md:grid-cols-2">
+                        <!-- Password -->
+                        <div>
+                            <label class="block mb-2 font-semibold text-ocean-dark text-sm">Password</label>
+                            <input
+                                type="password"
+                                name="password"
+                                placeholder="Leave blank to keep current password"
+                                class="px-4 py-3 border-2 border-sky focus:border-ocean rounded-lg focus:outline-none w-full text-gray-700 transition-colors">
+                        </div>
+
+                        <!-- Confirm Password -->
+                        <div>
+                            <label class="block mb-2 font-semibold text-ocean-dark text-sm">Confirm Password</label>
+                            <input
+                                type="password"
+                                name="confirm_password"
+                                placeholder="Confirm new password"
+                                class="px-4 py-3 border-2 border-sky focus:border-ocean rounded-lg focus:outline-none w-full text-gray-700 transition-colors">
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex justify-center gap-3 pt-4">
+                        <button
+                            type="submit"
+                            class="bg-mint-dark hover:bg-mint shadow-lg px-8 py-3 rounded-lg font-bold text-white transition-colors duration-200">
+                            Update User
+                        </button>
+                        <button
+                            type="button"
+                            onclick="closeEditModal()"
+                            class="bg-gray-500 hover:bg-gray-600 px-8 py-3 rounded-lg font-bold text-white transition-colors duration-200">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // Create User Modal Functions
         function openModal() {
             document.getElementById('createUserModal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
@@ -208,17 +323,48 @@
             document.body.style.overflow = 'auto';
         }
 
-        // Close modal when clicking outside
+        // Edit User Modal Functions
+        function openEditModal(user) {
+            // Set form action with user ID
+            document.getElementById('editUserForm').action = '<?= site_url('crud-testing/update/') ?>' + user.id;
+
+            // Populate form fields
+            document.getElementById('edit_first_name').value = user.first_name || '';
+            document.getElementById('edit_middle_name').value = user.middle_name || '';
+            document.getElementById('edit_last_name').value = user.last_name || '';
+            document.getElementById('edit_email').value = user.email || '';
+
+            // Show modal
+            document.getElementById('editUserModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeEditModal() {
+            document.getElementById('editUserModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+
+            // Clear form
+            document.getElementById('editUserForm').reset();
+        }
+
+        // Close modals when clicking outside
         document.getElementById('createUserModal').addEventListener('click', function(e) {
             if (e.target === this) {
                 closeModal();
             }
         });
 
-        // Close modal with Escape key
+        document.getElementById('editUserModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeEditModal();
+            }
+        });
+
+        // Close modals with Escape key
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeModal();
+                closeEditModal();
             }
         });
     </script>
