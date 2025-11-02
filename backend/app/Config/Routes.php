@@ -5,16 +5,24 @@ use CodeIgniter\Router\RouteCollection;
 /**
  * @var RouteCollection $routes
  */
-$routes->get('/', 'Users::index');
-$routes->get('/login', 'Users::login');
-$routes->get('/signup', 'Users::signup');
-$routes->get('/mb', 'Users::moodboard');
-$routes->get('/rm', 'Users::roadmap');
 
-$routes->post('auth/login', 'Auth::login');
-$routes->get('auth/logout', 'Auth::logout');
-$routes->post('auth/signup', 'Auth::signup');
+// ---------- Public Pages ----------
+$routes->get('/', 'Users::index');          // Home page
+$routes->get('/login', 'Users::login');     // Login page
+$routes->get('/signup', 'Users::signup');   // Signup/registration page
+$routes->get('/mb', 'Users::moodboard');    // Moodboard page
+$routes->get('/rm', 'Users::roadmap');      // Roadmap page
 
+// ---------- Authentication ----------
+$routes->post('auth/login', 'Auth::login');     // Handle login form submission
+$routes->get('auth/logout', 'Auth::logout');    // Logout the current user
+$routes->post('auth/signup', 'Auth::signup');   // Handle signup form submission
+
+// ---------- Admin Pages ----------
 $routes->get('admin/dashboard', function () {
-    return view('admin/dashboard');
+    return view('admin/dashboard');            // Admin dashboard view
 });
+
+// ---------- Test / CRUD Pages ----------
+$routes->get('/test/user', 'CRUDTesting::showUsersPage'); 
+// Displays user list page (CRUD testing page)
