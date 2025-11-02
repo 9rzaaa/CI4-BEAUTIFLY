@@ -1,4 +1,3 @@
-<!-- views/admin/dashboard.php -->
 <!DOCTYPE html>
 <html lang="en">
 <?php include APPPATH . 'views/components/head.php'; ?>
@@ -17,7 +16,8 @@
             <nav class="px-4 pb-6">
                 <div class="mb-6">
                     <p class="mb-2 px-4 font-semibold text-gray-400 text-xs uppercase tracking-wider">Dashboard</p>
-                    <a href="#" class="flex items-center bg-blue-50 px-4 py-3 rounded-lg text-primary transition-colors">
+                    <a href="<?= site_url('admin/dashboard') ?>"
+                        class="flex items-center bg-blue-50 px-4 py-3 rounded-lg text-primary transition-colors">
                         <svg class="mr-3 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
@@ -29,13 +29,17 @@
 
                 <div class="mb-6">
                     <p class="mb-2 px-4 font-semibold text-gray-400 text-xs uppercase tracking-wider">Management</p>
-                    <a href="#" class="flex items-center hover:bg-gray-50 px-4 py-3 rounded-lg text-gray-700">
+
+                    <!-- ✅ Updated Users link -->
+                    <a href="<?= site_url('test/user') ?>"
+                        class="flex items-center hover:bg-gray-50 px-4 py-3 rounded-lg text-gray-700">
                         <svg class="mr-3 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1z"></path>
                         </svg>
                         <span class="font-medium">Users</span>
                     </a>
+
                     <a href="#" class="flex items-center hover:bg-gray-50 px-4 py-3 rounded-lg text-gray-700">
                         <svg class="mr-3 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -112,45 +116,6 @@
                     </div>
                     <div class="bg-blue-50 p-2 rounded-lg text-blue-700 text-sm">1k growth this month</div>
                 </div>
-            </div>
-
-            <!-- Chart + Table Section -->
-            <div class="bg-white shadow-sm p-6 rounded-xl">
-                <h3 class="mb-4 font-bold text-gray-800 text-xl">Recent Bookings</h3>
-                <table class="w-full text-sm">
-                    <thead class="bg-gray-100">
-                        <tr>
-                            <th class="px-4 py-3 font-semibold text-gray-600 text-left">Guest</th>
-                            <th class="px-4 py-3 font-semibold text-gray-600 text-left">Property</th>
-                            <th class="px-4 py-3 font-semibold text-gray-600 text-left">Check-in</th>
-                            <th class="px-4 py-3 font-semibold text-gray-600 text-left">Check-out</th>
-                            <th class="px-4 py-3 font-semibold text-gray-600 text-left">Status</th>
-                            <th class="px-4 py-3 font-semibold text-gray-600 text-left">Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-200">
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-4 py-3">John Doe</td>
-                            <td class="px-4 py-3">Cozy Apartment</td>
-                            <td class="px-4 py-3">Oct 15, 2025</td>
-                            <td class="px-4 py-3">Oct 18, 2025</td>
-                            <td class="px-4 py-3"><span
-                                    class="bg-blue-100 px-2 py-1 rounded-full text-blue-800 text-xs">Confirmed</span>
-                            </td>
-                            <td class="px-4 py-3">$250</td>
-                        </tr>
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-4 py-3">Jane Smith</td>
-                            <td class="px-4 py-3">Seaside Villa</td>
-                            <td class="px-4 py-3">Oct 10, 2025</td>
-                            <td class="px-4 py-3">Oct 12, 2025</td>
-                            <td class="px-4 py-3"><span
-                                    class="bg-yellow-100 px-2 py-1 rounded-full text-yellow-800 text-xs">Pending</span>
-                            </td>
-                            <td class="px-4 py-3">$400</td>
-                        </tr>
-                    </tbody>
-                </table>
             </div>
         </main>
     </div>
