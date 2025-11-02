@@ -14,10 +14,35 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: '#647FBC',
-                        secondary: '#91ADC8',
-                        accent: '#AED6CF',
-                        light: '#FAFDD6',
+                        // Ocean Blue (Main accent) - Dark to Light
+                        'ocean': {
+                            'dark': '#4A5F8F',
+                            'DEFAULT': '#647FBC',
+                            'light': '#9BA9CC',
+                        },
+                        // Sky Blue (Subtle warmth) - Dark to Light
+                        'sky': {
+                            'dark': '#7092B8',
+                            'DEFAULT': '#91ADC8',
+                            'light': '#C8D7E8',
+                        },
+                        // Mint Green (Highlight) - Dark to Light
+                        'mint': {
+                            'dark': '#8BC4BB',
+                            'DEFAULT': '#AED6CF',
+                            'light': '#D6EBE7',
+                        },
+                        // Cream (Background) - Dark to Light
+                        'cream': {
+                            'dark': '#F5F8C4',
+                            'DEFAULT': '#FAFDD6',
+                            'light': '#FDFEED',
+                        },
+                        // Legacy color mappings (for backward compatibility)
+                        primary: '#647FBC', // Ocean Blue DEFAULT
+                        secondary: '#91ADC8', // Sky Blue DEFAULT
+                        accent: '#AED6CF', // Mint Green DEFAULT
+                        light: '#FAFDD6', // Cream DEFAULT
                     },
                 }
             }
@@ -98,22 +123,25 @@
             z-index: 10;
         }
 
-        /* Custom scrollbar */
+        /* Custom scrollbar using color system */
         ::-webkit-scrollbar {
             width: 10px;
         }
 
         ::-webkit-scrollbar-track {
-            background: #f1f1f1;
+            background: #FDFEED;
+            /* Cream light */
         }
 
         ::-webkit-scrollbar-thumb {
             background: #91ADC8;
+            /* Sky blue */
             border-radius: 5px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: #5C7996;
+            background: #7092B8;
+            /* Sky blue dark */
         }
 
         /* Smooth scrolling */
