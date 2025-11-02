@@ -70,9 +70,9 @@
             </div>
 
             <!-- Error Handling -->
-            <?php if (is_string($pageItems)): ?>
+            <?php if (is_string($listOfUser)): ?>
                 <div class="bg-sky-light shadow-sm p-6 border-sky-dark border-l-4 rounded-xl">
-                    <p class="text-ocean-dark"><?= esc($pageItems) ?></p>
+                    <p class="text-ocean-dark"><?= esc($listOfUser) ?></p>
                 </div>
             <?php else: ?>
                 <!-- User Table Card -->
@@ -96,12 +96,12 @@
                             </thead>
 
                             <tbody>
-                                <?php if (empty($pageItems)) : ?>
+                                <?php if (empty($listOfUser)) : ?>
                                     <tr>
                                         <td class="p-4 text-gray-500 text-center" colspan="7">No users found</td>
                                     </tr>
                                 <?php else: ?>
-                                    <?php foreach ($pageItems as $user): ?>
+                                    <?php foreach ($listOfUser as $user): ?>
                                         <tr class="hover:bg-cream border-gray-100 border-b transition-colors">
                                             <td class="p-4 text-ocean-dark text-center"><?= esc($user->id) ?></td>
                                             <td class="p-4 font-medium text-ocean-dark text-center">

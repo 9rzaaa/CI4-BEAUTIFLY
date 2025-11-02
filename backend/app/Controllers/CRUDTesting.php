@@ -11,20 +11,23 @@ class CRUDTesting extends BaseController
 {
     public function showUsersPage()
     {
-        $userModel = new UsersModel();
+        $listOfUser = []; // default empty
 
         try {
-            $pageItems = $userModel->findAll(); // Fetch all users
+            // Fetch data structure from model
+            $model = new UsersModel();
 
-            if (!$pageItems) {
-                $pageItems = "No users found in the database";
-            }
+            // Fetch only active and available users, order by ID ascending
+            $listOfUser = $model
+                ->where('account_status', 1)
+                ->orderBy('id', 'ASC')
+                ->findAll();
         } catch (\Exception $e) {
-            $pageItems = "Database connection error: " . $e->getMessage();
+            // Feed back in case of DB issue
+            $listOfUser = "There is issue in DB: " . $e->getMessage();
         }
 
-        return view('test/user', [
-            'pageItems' => $pageItems
-        ]);
+        // Send to view
+        return view('test/user', ['listOfUser' => $listOfUser]);
     }
 }
