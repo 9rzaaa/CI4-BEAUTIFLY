@@ -64,10 +64,34 @@
 
         <!-- Main Content -->
         <main class="flex-1 ml-64 p-8">
-            <div class="mb-8">
-                <h1 class="mb-2 font-bold text-ocean-dark text-3xl">User Management</h1>
-                <p class="text-gray-600">Manage and monitor all registered users in the system.</p>
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <h1 class="mb-2 font-bold text-ocean-dark text-3xl">User Management</h1>
+                    <p class="text-gray-600">Manage and monitor all registered users in the system.</p>
+                </div>
+                <!-- Add New User Button -->
+                <button onclick="openModal()" class="flex items-center gap-2 bg-mint-dark hover:bg-mint shadow-lg px-6 py-3 rounded-lg font-semibold text-white transition-colors duration-200">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    Add New User
+                </button>
             </div>
+
+            <!-- Flash Messages -->
+            <?php if (session()->getFlashdata('errors')): ?>
+                <div class="bg-red-100 mb-6 p-4 border-red-500 border-l-4 rounded-lg">
+                    <?php foreach (session()->getFlashdata('errors') as $error): ?>
+                        <p class="text-red-700"><?= esc($error) ?></p>
+                    <?php endforeach ?>
+                </div>
+            <?php endif; ?>
+
+            <?php if (session()->getFlashdata('success')): ?>
+                <div class="bg-mint-light mb-6 p-4 border-mint-dark border-l-4 rounded-lg">
+                    <p class="font-medium text-mint-dark"><?= esc(session()->getFlashdata('success')) ?></p>
+                </div>
+            <?php endif; ?>
 
             <!-- Error Handling -->
             <?php if (is_string($listOfUser)): ?>
@@ -152,6 +176,52 @@
             <?php endif; ?>
         </main>
     </div>
+
+    <!-- Create User Modal -->
+    <div id="createUserModal" class="hidden z-50 fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 p-4">
+        <div class="bg-white shadow-2xl rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <!-- Modal Header -->
+            <div class="flex justify-between items-center bg-ocean p-6 rounded-t-2xl">
+                <h2 class="font-bold text-white text-2xl">Create New User</h2>
+                <button onclick="closeModal()" class="text-white hover:text-cream transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="p-8">
+                <?php include APPPATH . 'views/test/user_create.php'; ?>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openModal() {
+            document.getElementById('createUserModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('createUserModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('createUserModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
 
 </body>
 
