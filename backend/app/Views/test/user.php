@@ -276,6 +276,7 @@
                             <label class="block mb-2 font-semibold text-ocean-dark text-sm">Password</label>
                             <input
                                 type="password"
+                                id="edit_password"
                                 name="password"
                                 placeholder="Leave blank to keep current password"
                                 class="px-4 py-3 border-2 border-sky focus:border-ocean rounded-lg focus:outline-none w-full text-gray-700 transition-colors">
@@ -286,6 +287,7 @@
                             <label class="block mb-2 font-semibold text-ocean-dark text-sm">Confirm Password</label>
                             <input
                                 type="password"
+                                id="edit_confirm_password"
                                 name="confirm_password"
                                 placeholder="Confirm new password"
                                 class="px-4 py-3 border-2 border-sky focus:border-ocean rounded-lg focus:outline-none w-full text-gray-700 transition-colors">
@@ -325,14 +327,30 @@
 
         // Edit User Modal Functions
         function openEditModal(user) {
+            console.log('Opening edit modal for user:', user); // DEBUG
+
             // Set form action with user ID
-            document.getElementById('editUserForm').action = '<?= site_url('crud-testing/update/') ?>' + user.id;
+            const formAction = '<?= site_url('crud-testing/update/') ?>' + user.id;
+            document.getElementById('editUserForm').action = formAction;
+
+            console.log('Form action set to:', formAction); // DEBUG
 
             // Populate form fields
             document.getElementById('edit_first_name').value = user.first_name || '';
             document.getElementById('edit_middle_name').value = user.middle_name || '';
             document.getElementById('edit_last_name').value = user.last_name || '';
             document.getElementById('edit_email').value = user.email || '';
+
+            // Clear password fields
+            document.getElementById('edit_password').value = '';
+            document.getElementById('edit_confirm_password').value = '';
+
+            console.log('Form populated with:', { // DEBUG
+                first_name: user.first_name,
+                middle_name: user.middle_name,
+                last_name: user.last_name,
+                email: user.email
+            });
 
             // Show modal
             document.getElementById('editUserModal').classList.remove('hidden');
@@ -346,6 +364,18 @@
             // Clear form
             document.getElementById('editUserForm').reset();
         }
+
+        // Add form submit listener to debug
+        document.getElementById('editUserForm').addEventListener('submit', function(e) {
+            console.log('Form submitting to:', this.action); // DEBUG
+            console.log('Form data:', new FormData(this)); // DEBUG
+
+            // Log all form values
+            const formData = new FormData(this);
+            for (let [key, value] of formData.entries()) {
+                console.log(key + ':', value);
+            }
+        });
 
         // Close modals when clicking outside
         document.getElementById('createUserModal').addEventListener('click', function(e) {
