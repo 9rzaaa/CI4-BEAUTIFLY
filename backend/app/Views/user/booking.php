@@ -6,7 +6,8 @@
 <!-- Include Flatpickr CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
 
-<body class="bg-primary text-gray-900">
+<body class="relative text-gray-900 bg-cover bg-center bg-fixed min-h-screen" style="background-image: url('/assets/img/bookingbg.jpg');">
+
 
   <!-- Decorative Top Bar -->
   <div class="bg-accent h-3"></div>
@@ -91,7 +92,7 @@
 
   <!-- Gallery Section -->
 <section class="max-w-5xl mx-auto mt-16 px-4 md:px-0 pb-16">
-<h2 class="text-3xl font-bold mb-6 text-center text-white">Gallery</h2>
+<h2 class="text-3xl font-bold mb-6 text-center text-[#73AF6F]">Gallery</h2>
 
     <div class="grid grid-cols-2 gap-4">
 
@@ -113,7 +114,6 @@
 
     </div>
 </section>
-
 
   <!-- Footer -->
   <?= view('components/footer') ?>
