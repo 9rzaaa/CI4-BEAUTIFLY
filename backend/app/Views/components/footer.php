@@ -28,7 +28,7 @@
         COPYRIGHT 2025 EASY&CO. ALL RIGHTS RESERVED.
     </p>
     <p class="text-white text-xs tracking-wide">
-        WEBSITE BY DANIEL LING
+        WEBSITE BY BEAUTIFLY
     </p>
 </div>
 
