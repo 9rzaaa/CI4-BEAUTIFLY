@@ -168,8 +168,22 @@
                                                     </button>
 
                                                     <!-- Delete -->
-                                                    <a class="bg-sky-dark hover:bg-sky px-3 py-2 rounded text-white text-sm transition-colors duration-200"
-                                                        href="<?= site_url('test/delete/' . $user->id) ?>">Delete</a>
+                                                    <form action="<?= site_url('crud-testing/delete/' . $user->id) ?>"
+                                                        method="post"
+                                                        class="inline"
+                                                        onsubmit="return confirmDelete('<?= esc($user->first_name . ' ' . $user->last_name) ?>');">
+                                                        <?= csrf_field() ?>
+                                                        <button type="submit"
+                                                            class="bg-red-600 hover:bg-red-700 px-3 py-2 rounded text-white text-sm transition-colors duration-200">
+                                                            Delete
+                                                        </button>
+                                                    </form>
+
+                                                    <script>
+                                                        function confirmDelete(userName) {
+                                                            return confirm(`Are you sure you want to delete ${userName}?\n\nThis action cannot be undone.`);
+                                                        }
+                                                    </script>
                                                 </div>
                                             </td>
                                         </tr>

@@ -39,8 +39,10 @@ $routes->get('/test/update/(:num)', 'CRUDTesting::showUpdateForm/$1');
 // Process update (POST)
 $routes->post('/crud-testing/update/(:num)', 'CRUDTesting::processUpdate/$1');
 
+// Process delete (POST)
+$routes->post('/crud-testing/delete/(:num)', 'CRUDTesting::deleteUserData/$1');
+
 // Booking
 $routes->get('booking', function () {
     return view('user/booking'); // loads app/Views/booking.php
 });
-
