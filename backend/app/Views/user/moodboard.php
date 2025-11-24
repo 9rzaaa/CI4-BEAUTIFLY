@@ -51,6 +51,7 @@
         }
     </style>
 </head>
+<?= view('components/head') ?>
 
 <body class="bg-light bg-opacity-80">
 
@@ -71,6 +72,7 @@
             </nav>
         </div>
     </header>
+    <?= view('components/header') ?>
 
     <!-- Main Content -->
     <main class="mx-auto px-6 py-16 max-w-7xl">
@@ -235,6 +237,7 @@
                 </svg>
             </a>
         </div>
+    <?= view('components/footer') ?>
 
 <!-- Footer Links -->
 <div class="flex sm:flex-row flex-col justify-center items-center gap-8 mb-12 text-center">
