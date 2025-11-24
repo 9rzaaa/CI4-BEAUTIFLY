@@ -11,6 +11,25 @@
     <!-- Header -->
     <?= view('components/header', ['active' => 'Home']) ?>
 
+        <!-- Hero Image -->
+    <section class="relative w-full h-64 md:h-80 lg:h-96">
+        <!-- Background Image -->
+        <img src="/assets/img/condo.jpg" 
+             alt="Booking Header" 
+             class="w-full h-full object-cover">
+
+        <!-- Dark Overlay -->
+        <div class="absolute inset-0 bg-black/50"></div>
+
+        <!-- Text on Image -->
+        <div class="absolute inset-0 flex items-center justify-center">
+            <h1 class="text-white text-4xl md:text-5xl font-bold drop-shadow-lg">
+                Book Your Stay
+            </h1>
+        </div>
+    </section>
+
+
     <!-- Booking Section -->
     <section class="max-w-3xl mx-auto mt-10 mb-24 p-6 bg-white rounded-xl shadow-lg">
         <h2 class="text-2xl font-bold mb-6">Book Your Stay</h2>
