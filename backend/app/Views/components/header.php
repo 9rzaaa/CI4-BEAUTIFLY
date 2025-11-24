@@ -11,7 +11,7 @@ $email = $user['email'] ?? '';
 $isAdmin = ($user['type'] ?? '') === 'admin';
 ?>
 
-<header class="bg-primary">
+<header class="bg-[#73AF6F]">
     <div class="flex justify-between items-center mx-auto py-4 pr-6 pl-2 max-w-7xl">
         <!-- Logo Section -->
         <a href="/" class="flex items-center space-x-4">
