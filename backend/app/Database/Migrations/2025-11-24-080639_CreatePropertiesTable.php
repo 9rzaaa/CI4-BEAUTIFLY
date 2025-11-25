@@ -42,17 +42,29 @@ class CreatePropertiesTable extends Migration
             'price_per_night' => [
                 'type'       => 'DECIMAL',
                 'constraint' => '10,2',
-                'default'    => 100.00,
+                'default'    => 2000.00,
+            ],
+            'promo_price' => [
+                'type'       => 'DECIMAL',
+                'constraint' => '10,2',
+                'null'       => true,
+                'default'    => null,
+            ],
+            'peak_price' => [
+                'type'       => 'DECIMAL',
+                'constraint' => '10,2',
+                'null'       => true,
+                'default'    => null,
             ],
             'cleaning_fee' => [
                 'type'       => 'DECIMAL',
                 'constraint' => '10,2',
-                'default'    => 0.00,
+                'default'    => 300.00,
             ],
             'max_guests' => [
                 'type'       => 'INT',
-                'constraint' => 6,
-                'default'    => 1,
+                'constraint' => 3,
+                'default'    => 6,
             ],
             'amenities' => [
                 'type' => 'TEXT',
