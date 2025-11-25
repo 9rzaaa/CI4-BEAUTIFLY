@@ -50,7 +50,7 @@ h6 {
 /* Make the background scroll with the content */
 body {
     background-image: url('/assets/img/bookingbg.jpg');
-    background-size: 176%;
+    background-size: 200s%;
     background-position: center;
     background-attachment: scroll; /* change fixed -> scroll */
 }
@@ -95,44 +95,71 @@ body {
 
 <div class="px-6 md:px-20 lg:px-32 py-20">
 
-    <!-- TIMELINE SECTION -->
-    <section class="mb-16">
-        <div class="bg-primary/10 rounded-2xl shadow-lg p-10 backdrop-blur-sm">
-            <h3 class="text-2xl font-bold text-primary mb-8 text-center">
-                Journey Through the Years
-            </h3>
+<!-- MODERN TIMELINE SECTION -->
+<section class="mb-20 relative max-w-5xl mx-auto px-6">
+    <h3 class="text-3xl md:text-4xl font-bold text-primary mb-12 text-center">
+        Journey Through the Years
+    </h3>
 
-            <div class="relative border-l-4 border-primary space-y-10 pl-6">
-                <div>
-                    <h4 class="text-xl font-bold text-primary">2020 - The Idea Was Born</h4>
-                    <p class="text-gray-700">
-                        The founders envisioned a green-inspired condo experience blending nature with modern living.
-                    </p>
-                </div>
+    <div class="relative before:absolute before:top-0 before:left-1/2 before:w-1 before:h-full before:bg-primary/30 before:-translate-x-1/2">
+        <!-- Timeline Item 1 -->
+        <div class="mb-12 flex flex-col md:flex-row items-center md:justify-between">
+            <div class="md:w-5/12 md:text-right md:pr-8">
+                <h4 class="text-xl font-bold text-primary mb-2">2020 - The Idea Was Born</h4>
+                <p class="text-gray-700">
+                    The founders envisioned a green-inspired condo experience blending nature with modern living.
+                </p>
+            </div>
+            <div class="flex items-center justify-center w-10 h-10 bg-primary rounded-full text-white text-lg font-bold">
+                1
+            </div>
+            <div class="md:w-5/12 md:text-left md:pl-8 hidden md:block"></div>
+        </div>
 
-                <div>
-                    <h4 class="text-xl font-bold text-primary">2021 - Designing the Space</h4>
-                    <p class="text-gray-700">
-                        Interior designers, architects, and plant stylists collaborated to shape the signature garden-centric aesthetic.
-                    </p>
-                </div>
-
-                <div>
-                    <h4 class="text-xl font-bold text-primary">2023 - Soft Launch</h4>
-                    <p class="text-gray-700">
-                        EASY&CO welcomed its first guests, offering a peaceful escape in the heart of the city.
-                    </p>
-                </div>
-
-                <div>
-                    <h4 class="text-xl font-bold text-primary">2025 - Expansion & Digital Upgrade</h4>
-                    <p class="text-gray-700">
-                        The brand introduced online bookings, refreshed branding, and upgraded guest experience features.
-                    </p>
-                </div>
+        <!-- Timeline Item 2 -->
+        <div class="mb-12 flex flex-col md:flex-row items-center md:justify-between">
+            <div class="md:w-5/12 md:text-right md:pr-8 hidden md:block"></div>
+            <div class="flex items-center justify-center w-10 h-10 bg-primary rounded-full text-white text-lg font-bold">
+                2
+            </div>
+            <div class="md:w-5/12 md:text-left md:pl-8">
+                <h4 class="text-xl font-bold text-primary mb-2">2021 - Designing the Space</h4>
+                <p class="text-gray-700">
+                    Interior designers, architects, and plant stylists collaborated to shape the signature garden-centric aesthetic.
+                </p>
             </div>
         </div>
-    </section>
+
+        <!-- Timeline Item 3 -->
+        <div class="mb-12 flex flex-col md:flex-row items-center md:justify-between">
+            <div class="md:w-5/12 md:text-right md:pr-8">
+                <h4 class="text-xl font-bold text-primary mb-2">2023 - Soft Launch</h4>
+                <p class="text-gray-700">
+                    EASY&CO welcomed its first guests, offering a peaceful escape in the heart of the city.
+                </p>
+            </div>
+            <div class="flex items-center justify-center w-10 h-10 bg-primary rounded-full text-white text-lg font-bold">
+                3
+            </div>
+            <div class="md:w-5/12 md:text-left md:pl-8 hidden md:block"></div>
+        </div>
+
+        <!-- Timeline Item 4 -->
+        <div class="flex flex-col md:flex-row items-center md:justify-between">
+            <div class="md:w-5/12 md:text-right md:pr-8 hidden md:block"></div>
+            <div class="flex items-center justify-center w-10 h-10 bg-primary rounded-full text-white text-lg font-bold">
+                4
+            </div>
+            <div class="md:w-5/12 md:text-left md:pl-8">
+                <h4 class="text-xl font-bold text-primary mb-2">2025 - Expansion & Digital Upgrade</h4>
+                <p class="text-gray-700">
+                    The brand introduced online bookings, refreshed branding, and upgraded guest experience features.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
 
 <!-- PHOTO GALLERY SECTION -->
 <section class="mb-20 relative">
