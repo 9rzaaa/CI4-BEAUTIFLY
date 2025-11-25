@@ -46,3 +46,8 @@ $routes->post('/crud-testing/delete/(:num)', 'CRUDTesting::deleteUserData/$1');
 $routes->get('booking', function () {
     return view('user/booking'); // loads app/Views/booking.php
 });
+
+$routes->get('/about', function () {
+    return view('user/about');
+});
+
