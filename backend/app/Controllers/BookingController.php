@@ -127,4 +127,20 @@ class BookingController extends BaseController
 
         return ['valid' => true];
     }
+     /**
+     * Check for booking conflicts
+     */
+    private function checkBookingConflict($checkIn, $checkOut)
+    {
+        $builder = $this->db->table('bookings');
+        $builder->where('property_id', 1);
+        $builder->whereNotIn('status', ['cancelled', 'rejected']);
+        $builder->groupStart()
+            ->where("(check_in <= '$checkIn' AND check_out > '$checkIn')")
+            ->orWhere("(check_in < '$checkOut' AND check_out >= '$checkOut')")
+            ->orWhere("(check_in >= '$checkIn' AND check_out <= '$checkOut')")
+        ->groupEnd();
+
+        return $builder->countAllResults() > 0;
+    }
 }
