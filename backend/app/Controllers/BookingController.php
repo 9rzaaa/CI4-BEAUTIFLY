@@ -143,4 +143,36 @@ class BookingController extends BaseController
 
         return $builder->countAllResults() > 0;
     }
+    
+    /**
+     * Get all bookings for current user
+     */
+    public function list()
+    {
+        $userId = session()->get('user_id') ?? 1;
+
+        $builder = $this->db->table('bookings');
+        $builder->where('user_id', $userId);
+        $builder->orderBy('created_at', 'DESC');
+        $bookings = $builder->get()->getResultArray();
+
+        return $this->response->setJSON(['bookings' => $bookings]);
+    }
+
+    /**
+     * Get single booking
+     */
+    public function show($id)
+    {
+        $builder = $this->db->table('bookings');
+        $booking = $builder->where('id', $id)->get()->getRowArray();
+
+        if (!$booking) {
+            return $this->response
+                ->setStatusCode(404)
+                ->setJSON(['error' => 'Booking not found']);
+        }
+
+        return $this->response->setJSON(['booking' => $booking]);
+    }
 }
