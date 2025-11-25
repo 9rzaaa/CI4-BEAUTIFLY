@@ -50,7 +50,7 @@ h6 {
 /* Make the background scroll with the content */
 body {
     background-image: url('/assets/img/bookingbg.jpg');
-    background-size: 200s%;
+    background-size: 205%;
     background-position: center;
     background-attachment: scroll; /* change fixed -> scroll */
 }
