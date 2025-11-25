@@ -247,7 +247,7 @@ class BookingController extends BaseController
         ]);
     }
 
-    /** Check conflicts excluding specific booking */
+    // Check conflicts excluding specific booking
     private function checkBookingConflictExcluding($checkIn, $checkOut, $excludeId)
     {
         $builder = $this->db->table('bookings');
@@ -261,5 +261,28 @@ class BookingController extends BaseController
         ->groupEnd();
 
         return $builder->countAllResults() > 0;
+    }
+    // Cancel/Delete booking
+    public function delete($id)
+    {
+        $builder = $this->db->table('bookings');
+        $booking = $builder->where('id', $id)->get()->getRowArray();
+
+        if (!$booking) {
+            return $this->response
+                ->setStatusCode(404)
+                ->setJSON(['error' => 'Booking not found']);
+        }
+
+        // Soft delete - update status to cancelled
+        $builder->where('id', $id)->update([
+            'status' => 'cancelled',
+            'updated_at' => date('Y-m-d H:i:s')
+        ]);
+
+        return $this->response->setJSON([
+            'success' => true,
+            'message' => 'Booking cancelled successfully'
+        ]);
     }
 }
