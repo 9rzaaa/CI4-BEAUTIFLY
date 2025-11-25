@@ -79,4 +79,52 @@ class BookingController extends BaseController
             'message' => 'Booking created successfully'
         ]);
     }
+    /**
+     * Validate booking input
+     */
+    private function validateBooking($input)
+    {
+        // Check required fields
+        $required = ['check_in', 'check_out', 'adults'];
+        foreach ($required as $field) {
+            if (!isset($input[$field]) || empty($input[$field])) {
+                return ['valid' => false, 'message' => "Field '{$field}' is required"];
+            }
+        }
+
+        // Validate dates
+        try {
+            $checkIn = new \DateTime($input['check_in']);
+            $checkOut = new \DateTime($input['check_out']);
+            $today = new \DateTime('today');
+
+            if ($checkIn < $today) {
+                return ['valid' => false, 'message' => 'Check-in date cannot be in the past'];
+            }
+
+            if ($checkOut <= $checkIn) {
+                return ['valid' => false, 'message' => 'Check-out must be after check-in'];
+            }
+
+            $diff = $checkOut->diff($checkIn)->days;
+            if ($diff > 30) {
+                return ['valid' => false, 'message' => 'Maximum booking duration is 30 days'];
+            }
+
+        } catch (\Exception $e) {
+            return ['valid' => false, 'message' => 'Invalid date format'];
+        }
+
+        // Validate guests
+        if ($input['adults'] < 1 || $input['adults'] > 10) {
+            return ['valid' => false, 'message' => 'Adults must be between 1 and 10'];
+        }
+
+        $kids = $input['kids'] ?? 0;
+        if ($kids < 0 || $kids > 10) {
+            return ['valid' => false, 'message' => 'Kids must be between 0 and 10'];
+        }
+
+        return ['valid' => true];
+    }
 }
