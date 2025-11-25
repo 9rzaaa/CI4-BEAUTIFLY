@@ -175,4 +175,91 @@ class BookingController extends BaseController
 
         return $this->response->setJSON(['booking' => $booking]);
     }
+    /** Update booking */
+    public function update($id)
+    {
+        $json = $this->request->getJSON(true);
+
+        // Get existing booking
+        $builder = $this->db->table('bookings');
+        $booking = $builder->where('id', $id)->get()->getRowArray();
+
+        if (!$booking) {
+            return $this->response
+                ->setStatusCode(404)
+                ->setJSON(['error' => 'Booking not found']);
+        }
+
+        // Prepare update data
+        $updateData = ['updated_at' => date('Y-m-d H:i:s')];
+        $allowedFields = ['check_in', 'check_out', 'adults', 'kids', 'status', 'special_requests'];
+        
+        foreach ($allowedFields as $field) {
+            if (isset($json[$field])) {
+                $updateData[$field] = $json[$field];
+            }
+        }
+
+        if (count($updateData) === 1) { // Only updated_at
+            return $this->response
+                ->setStatusCode(400)
+                ->setJSON(['error' => 'No fields to update']);
+        }
+
+        // If dates changed, validate and check conflicts
+        if (isset($json['check_in']) || isset($json['check_out'])) {
+            $newCheckIn = $json['check_in'] ?? $booking['check_in'];
+            $newCheckOut = $json['check_out'] ?? $booking['check_out'];
+            
+            $validation = $this->validateBooking([
+                'check_in' => $newCheckIn,
+                'check_out' => $newCheckOut,
+                'adults' => $json['adults'] ?? $booking['adults'],
+                'kids' => $json['kids'] ?? $booking['kids']
+            ]);
+            
+            if (!$validation['valid']) {
+                return $this->response
+                    ->setStatusCode(400)
+                    ->setJSON(['error' => $validation['message']]);
+            }
+
+            // Check conflicts (excluding current booking)
+            if ($this->checkBookingConflictExcluding($newCheckIn, $newCheckOut, $id)) {
+                return $this->response
+                    ->setStatusCode(409)
+                    ->setJSON(['error' => 'Property is already booked for selected dates']);
+            }
+
+            // Recalculate price
+            $checkIn = new \DateTime($newCheckIn);
+            $checkOut = new \DateTime($newCheckOut);
+            $nights = $checkOut->diff($checkIn)->days;
+            $updateData['number_of_nights'] = $nights;
+            $updateData['total_price'] = $nights * $booking['price_per_night'];
+        }
+
+        $builder->where('id', $id)->update($updateData);
+
+        return $this->response->setJSON([
+            'success' => true,
+            'message' => 'Booking updated successfully'
+        ]);
+    }
+
+    /** Check conflicts excluding specific booking */
+    private function checkBookingConflictExcluding($checkIn, $checkOut, $excludeId)
+    {
+        $builder = $this->db->table('bookings');
+        $builder->where('property_id', 1);
+        $builder->where('id !=', $excludeId);
+        $builder->whereNotIn('status', ['cancelled', 'rejected']);
+        $builder->groupStart()
+            ->where("(check_in <= '$checkIn' AND check_out > '$checkIn')")
+            ->orWhere("(check_in < '$checkOut' AND check_out >= '$checkOut')")
+            ->orWhere("(check_in >= '$checkIn' AND check_out <= '$checkOut')")
+        ->groupEnd();
+
+        return $builder->countAllResults() > 0;
+    }
 }
