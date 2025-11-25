@@ -12,13 +12,15 @@ class PropertiesSeeder extends Seeder
 
         $data = [
             [
-                'host_id'          => 1, // Admin
+                'host_id'          => 1,
                 'title'            => 'Cozy Studio Unit in Quezon City',
-                'description'      => 'Comfortable and affordable studio unit perfect for solo travelers or couples. Located in a quiet neighborhood with easy access to restaurants, shops, and public transportation. Features modern amenities and a relaxing atmosphere for your stay.',
+                'description'      => 'Comfortable and affordable studio unit...',
                 'property_type'    => 'Studio',
                 'address'          => '123 Aurora Boulevard, Quezon City',
                 'city'             => 'Quezon City',
-                'price_per_night'  => 2000.00,
+                'price_per_night'  => 2000.00,  // Regular price
+                'promo_price'      => 1500.00,  // Promo/discount price
+                'peak_price'       => 3500.00,  // Holiday/peak season price
                 'cleaning_fee'     => 300.00,
                 'max_guests'       => 6,
                 'amenities'        => 'WiFi, Air Conditioning, Kitchen, Hot Shower, Cable TV, Work Desk, Parking',
