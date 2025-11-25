@@ -51,3 +51,20 @@ $routes->get('/about', function () {
     return view('user/about');
 });
 
+// BOOKING ROUTES
+// Show booking page
+$routes->get('booking', 'BookingController::index');
+
+// API endpoints for bookings
+$routes->post('api/bookings', 'BookingController::create');
+$routes->get('api/bookings', 'BookingController::list');
+$routes->get('api/bookings/(:num)', 'BookingController::show/$1');
+$routes->put('api/bookings/(:num)', 'BookingController::update/$1');
+$routes->delete('api/bookings/(:num)', 'BookingController::delete/$1');
+
+// PAYMENT ROUTES
+$routes->post('api/payment/process', 'PaymentController::processPayment');
+$routes->get('api/payment/(:num)', 'PaymentController::getPaymentDetails/$1');
+$routes->post('api/payment/refund/(:num)', 'PaymentController::refundPayment/$1');
+
+$routes->get('booking/history', 'BookingController::history'); 
