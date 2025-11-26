@@ -132,22 +132,25 @@
     </div>
   </section>
 
-<section class="relative -mt-20 max-w-2xl mx-auto bg-white rounded-xl shadow-xl z-10 p-6 pb-8">
-    <h2 class="text-xl md:text-2xl font-bold mb-4 text-center">Reserve Your Stay</h2>
+<section class="relative -mt-20 max-w-4xl mx-auto bg-white rounded-2xl shadow-2xl z-10 p-8 lg:p-10 border-t-4 border-accent">
+    <h2 class="text-3xl font-extrabold mb-6 text-center text-primary-dark">Book Now Your Perfect Escape</h2>
 
-    <form id="bookingForm" class="flex flex-col md:flex-row items-center gap-4">
+    <form id="bookingForm" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
 
-      <div class="flex-1 min-w-[200px]">
-        <label class="block mb-1 font-semibold">Date Range</label>
-        <input type="text" id="dateRange" class="w-full border rounded p-2" placeholder="Select date range" required readonly>
+      <div class="md:col-span-2">
+        <label class="block mb-2 font-bold text-gray-700">🗓️ Check-in & Check-out</label>
+        <input type="text" id="dateRange" 
+               class="w-full border-2 border-gray-300 focus:border-accent focus:ring focus:ring-accent/50 rounded-lg p-3 transition duration-150 shadow-sm" 
+               placeholder="Select date range" required readonly>
       </div>
 
-      <div class="relative flex-1 min-w-[180px]">
-        <label class="block mb-1 font-semibold">Guests</label>
+      <div class="relative md:col-span-1">
+        <label class="block mb-2 font-bold text-gray-700">👨‍👩‍👧 Guests</label>
         <div>
-          <button type="button" id="guestBtn" class="w-full border rounded p-2 text-left flex justify-between items-center">
-            <span id="guestSummary">1 Adult, 0 Kids</span>
-            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+          <button type="button" id="guestBtn" 
+                  class="w-full border-2 border-gray-300 focus:border-accent focus:ring focus:ring-accent/50 rounded-lg p-3 text-left flex justify-between items-center bg-white transition duration-150 shadow-sm hover:border-accent">
+            <span id="guestSummary" class="font-medium text-primary-dark">1 Adult, 0 Kids</span>
+            <svg class="w-5 h-5 ml-2 text-primary-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"
               xmlns="http://www.w3.org/2000/svg">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M19 9l-7 7-7-7"></path>
@@ -155,35 +158,40 @@
           </button>
         </div>
 
-        <div id="guestDropdown" class="hidden absolute left-0 mt-1 w-full bg-white border rounded shadow-lg z-20 p-4">
-          <div class="flex items-center justify-between mb-3">
-            <span class="font-medium">Adults</span>
-            <div class="flex items-center border rounded">
-              <button type="button" id="minusAdults" class="px-2 py-1 text-lg">-</button>
-              <input type="number" id="adults" value="1" min="1" max="10" class="w-12 text-center p-1" readonly>
-              <button type="button" id="plusAdults" class="px-2 py-1 text-lg">+</button>
+<div id="guestDropdown" class="hidden absolute left-0 right-0 mt-2 w-full bg-white border border-gray-200 rounded-xl shadow-2xl z-20 p-4 space-y-4">
+          
+          <div class="flex items-center justify-between py-1">
+            <span class="font-semibold text-gray-800">Adults</span>
+            <div class="flex items-center space-x-1">
+              <button type="button" id="minusAdults" class="w-8 h-8 flex items-center justify-center border border-accent text-accent rounded-full text-lg font-bold hover:bg-accent hover:text-white transition focus:outline-none focus:ring-2 focus:ring-accent/50 focus:ring-offset-1" aria-label="Subtract Adult">&minus;</button>
+              <input type="number" id="adults" value="1" min="1" max="10" class="w-10 text-center p-1 text-xl text-primary-dark font-extrabold bg-transparent focus:outline-none" readonly>
+              <button type="button" id="plusAdults" class="w-8 h-8 flex items-center justify-center bg-accent text-white rounded-full text-lg font-bold hover:bg-accent/90 transition focus:outline-none focus:ring-2 focus:ring-accent/50 focus:ring-offset-1" aria-label="Add Adult">&plus;</button>
             </div>
           </div>
-          <div class="flex items-center justify-between mb-3">
-            <span class="font-medium">Kids</span>
-            <div class="flex items-center border rounded">
-              <button type="button" id="minusKids" class="px-2 py-1 text-lg">-</button>
-              <input type="number" id="kids" value="0" min="0" max="10" class="w-12 text-center p-1" readonly>
-              <button type="button" id="plusKids" class="px-2 py-1 text-lg">+</button>
+          
+          <div class="flex items-center justify-between py-1">
+            <span class="font-semibold text-gray-800">Kids <span class="text-sm text-gray-500">(Under 12)</span></span>
+            <div class="flex items-center space-x-1">
+              <button type="button" id="minusKids" class="w-8 h-8 flex items-center justify-center border border-accent text-accent rounded-full text-lg font-bold hover:bg-accent hover:text-white transition focus:outline-none focus:ring-2 focus:ring-accent/50 focus:ring-offset-1" aria-label="Subtract Kid">&minus;</button>
+              <input type="number" id="kids" value="0" min="0" max="10" class="w-10 text-center p-1 text-xl text-primary-dark font-extrabold bg-transparent focus:outline-none" readonly>
+              <button type="button" id="plusKids" class="w-8 h-8 flex items-center justify-center bg-accent text-white rounded-full text-lg font-bold hover:bg-accent/90 transition focus:outline-none focus:ring-2 focus:ring-accent/50 focus:ring-offset-1" aria-label="Add Kid">&plus;</button>
             </div>
           </div>
-          <div class="text-right">
-            <button type="button" id="guestDone" class="px-4 py-1 bg-accent text-white rounded">Done</button>
+          
+          <div class="pt-3 text-right border-t border-gray-100">
+            <button type="button" id="guestDone" class="px-5 py-2 bg-primary-dark text-white rounded-full font-semibold shadow-lg hover:bg-[#1E3722] transition-colors duration-300">Done</button>
           </div>
-        </div>
+</div>
+
       </div>
 
-<div class="flex-1 md:flex-none">
-  <button type="button" id="reviewBooking" 
-          class="w-full bg-accent text-white py-3 px-8 rounded-lg font-semibold shadow-md hover:bg-accent/90 transition-colors duration-300">
-    Book Now
-  </button>
-</div>
+      <div class="md:col-span-1">
+        <label class="block mb-2 font-bold text-gray-700 invisible md:visible">_</label>
+        <button type="button" id="reviewBooking" 
+                class="w-full bg-primary-dark text-white py-3 rounded-lg font-bold shadow-lg hover:bg-[#1E3722] transition-colors duration-300 transform hover:scale-105 active:scale-100">
+          Book Now
+        </button>
+      </div>
 
 
     </form>
