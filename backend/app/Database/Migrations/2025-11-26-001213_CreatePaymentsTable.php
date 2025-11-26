@@ -88,7 +88,6 @@ class CreatePaymentsTable extends Migration
 
         $this->forge->addKey('id', true);
         $this->forge->addKey('booking_id');
-        $this->forge->addKey('transaction_id');
 
         $this->forge->createTable('payments');
     }
