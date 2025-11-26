@@ -3,8 +3,7 @@
 
 <?= view('components/head') ?>
 
-<body class="text-gray-900" >
-
+<body class="text-gray-900">
 
     <!-- Decorative Top Bar -->
     <div class="bg-accent h-3"></div>
@@ -12,7 +11,7 @@
     <!-- Header -->
     <?= view('components/header', ['active' => 'Home']) ?>
 
-    <!-- Hero Section -->
+<!-- Hero Section -->
 <section class="relative text-white text-center h-screen flex items-center">
     
     <!-- Background Image -->
@@ -34,15 +33,22 @@
             ACCOMMODATION
         </h3>
 
+        <?php
+        $session = session();
+        $user = $session->get('user');
+        $firstName = $user['first_name'] ?? '';
+        ?>
+
         <p class="mb-16 text-white text-2xl font-light tracking-wide">
-            Relax and unwind at Easy & Co
+            <?php if (!empty($firstName)): ?>
+                Welcome back, <?= esc($firstName) ?>! Relax and unwind at EASY&CO
+            <?php else: ?>
+                Relax and unwind at EASY&CO
+            <?php endif; ?>
         </p>
 
         <!-- CTA Button -->
-        <a href="#book" 
-           class="inline-block bg-accent hover:bg-secondary shadow-lg px-16 py-5 font-bold text-black text-sm tracking-widest hover:scale-105 transition-all duration-300 transform">
-            BOOK NOW
-        </a>
+        <?= view('components/buttons/button_primary', ['href' => '/booking', 'label' => 'BOOK NOW']) ?>
     </div>
 </section>
 
@@ -79,7 +85,6 @@
 
     <!-- Info Cards Section -->
     <?= view('components/cards/cards') ?>
-
 
     <!-- Image Gallery Section -->
     <section class="bg-light py-12 pb-20">
@@ -129,7 +134,5 @@
     <!-- Footer -->
     <?= view('components/footer') ?>
 
-
 </body>
-
 </html>
