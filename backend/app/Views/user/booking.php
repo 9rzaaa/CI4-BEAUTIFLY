@@ -3,19 +3,125 @@
 
 <?= view('components/head') ?>
 
-<!-- Include Flatpickr CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+
+<style>
+    /* Custom Accent Color - Main Garden Green */
+    .bg-accent {
+        background-color: #73AF6F; /* Original Green */
+    }
+    .hover\:bg-accent\/90:hover {
+        background-color: #629c5e; /* Slightly darker hover green */
+    }
+    .text-accent {
+        color: #73AF6F;
+    }
+    .border-accent {
+        border-color: #73AF6F;
+    }
+
+    /* New Garden Theme Colors */
+    .bg-primary-dark {
+        background-color: #2F5233; /* Deep Forest Green */
+    }
+    .text-primary-dark {
+        color: #2F5233;
+    }
+    .bg-secondary-light {
+        background-color: #F8F4E3; /* Soft Light Beige/Cream - like dry grass or sand */
+    }
+    .border-secondary-light {
+        border-color: #E0DBCF; /* Slightly darker beige border */
+    }
+    /* Updated styling for logo selection */
+    .payment-logo-option {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 3px solid #E0DBCF; /* Default border */
+        border-radius: 8px;
+        cursor: pointer;
+        padding: 1rem;
+        transition: all 0.2s ease-in-out;
+        height: 80px; /* Standard height for logos */
+        background-color: white;
+    }
+    .payment-logo-option:hover {
+        border-color: #73AF6F; /* Accent border on hover */
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+    }
+    .payment-logo-option.selected {
+        border-color: #73AF6F; /* Highlight selected item with accent green */
+        box-shadow: 0 0 0 4px #D4EDDA; /* Inner glow effect */
+        background-color: #D4EDDA; /* Light green background */
+    }
+
+    /* Hide the actual radio button, but keep its functionality */
+    .payment-logo-option input[type="radio"] {
+        opacity: 0;
+        width: 0;
+        height: 0;
+        margin: 0;
+        padding: 0;
+        pointer-events: none;
+    }
+
+    .payment-logo-option img {
+        max-height: 100%;
+        max-width: 100%;
+        object-fit: contain;
+    }
+    
+    .text-total-price {
+        color: #FFFFFF; /* White color for Total Price */
+    }
+
+    /* Modal Animation - unchanged */
+    @keyframes fadeInScale {
+        from {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    @keyframes fadeOutScale {
+        from {
+            opacity: 1;
+            transform: scale(1);
+        }
+        to {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+    }
+
+    .modal-enter {
+        animation: fadeInScale 0.3s ease-out forwards;
+    }
+
+    .modal-exit {
+        animation: fadeOutScale 0.3s ease-in forwards;
+    }
+
+    /* Ensure flex column layout for small screens in modal - unchanged */
+    @media (max-width: 768px) {
+        .modal-grid-layout {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
 
 <body class="relative text-gray-900 bg-cover bg-center bg-fixed min-h-screen" style="background-image: url('/assets/img/bookingbg.jpg');">
 
 
-  <!-- Decorative Top Bar -->
   <div class="bg-accent h-3"></div>
 
-  <!-- Header -->
   <?= view('components/header', ['active' => 'Home']) ?>
 
-  <!-- Hero Image -->
   <section class="relative w-full h-64 md:h-96 lg:h-[500px]">
     <img src="/assets/img/booking.webp" alt="Booking Header" class="w-full h-full object-cover">
     <div class="absolute inset-0 bg-black/50"></div>
@@ -26,19 +132,16 @@
     </div>
   </section>
 
-<!-- Booking Section -->
 <section class="relative -mt-20 max-w-2xl mx-auto bg-white rounded-xl shadow-xl z-10 p-6 pb-8">
     <h2 class="text-xl md:text-2xl font-bold mb-4 text-center">Reserve Your Stay</h2>
 
     <form id="bookingForm" class="flex flex-col md:flex-row items-center gap-4">
 
-      <!-- Date Range Picker -->
       <div class="flex-1 min-w-[200px]">
         <label class="block mb-1 font-semibold">Date Range</label>
         <input type="text" id="dateRange" class="w-full border rounded p-2" placeholder="Select date range" required readonly>
       </div>
 
-      <!-- Guests Dropdown -->
       <div class="relative flex-1 min-w-[180px]">
         <label class="block mb-1 font-semibold">Guests</label>
         <div>
@@ -52,9 +155,7 @@
           </button>
         </div>
 
-        <!-- Dropdown Panel -->
         <div id="guestDropdown" class="hidden absolute left-0 mt-1 w-full bg-white border rounded shadow-lg z-20 p-4">
-          <!-- Adults -->
           <div class="flex items-center justify-between mb-3">
             <span class="font-medium">Adults</span>
             <div class="flex items-center border rounded">
@@ -63,7 +164,6 @@
               <button type="button" id="plusAdults" class="px-2 py-1 text-lg">+</button>
             </div>
           </div>
-          <!-- Kids -->
           <div class="flex items-center justify-between mb-3">
             <span class="font-medium">Kids</span>
             <div class="flex items-center border rounded">
@@ -78,7 +178,6 @@
         </div>
       </div>
 
-<!-- Book Button -->
 <div class="flex-1 md:flex-none">
   <button type="button" id="reviewBooking" 
           class="w-full bg-accent text-white py-3 px-8 rounded-lg font-semibold shadow-md hover:bg-accent/90 transition-colors duration-300">
@@ -90,101 +189,311 @@
     </form>
   </section>
 
-  <!-- Gallery Section -->
-<section class="max-w-5xl mx-auto mt-16 px-4 md:px-0 pb-16">
+  <section class="max-w-5xl mx-auto mt-16 px-4 md:px-0 pb-16">
 <h2 class="text-3xl font-bold mb-6 text-center text-[#73AF6F]">Gallery</h2>
 
     <div class="grid grid-cols-2 gap-4">
 
-        <!-- Left Column -->
         <div class="flex flex-col gap-4">
-            <!-- Upper Left - Rectangle -->
             <img src="/assets/img/room4.jpg" alt="Room" class="rounded shadow object-cover w-full h-80 hover:scale-105 transition">
-            <!-- Lower Left - Square -->
             <img src="/assets/img/livingroom.jpg" alt="Living Room" class="rounded shadow object-cover w-full h-64 hover:scale-105 transition">
         </div>
 
-        <!-- Right Column -->
         <div class="flex flex-col gap-4">
-            <!-- Upper Right - Square -->
             <img src="/assets/img/kitchen.jpeg" alt="Kitchen" class="rounded shadow object-cover w-full h-64 hover:scale-105 transition">
-            <!-- Lower Right - Rectangle -->
             <img src="/assets/img/toilet.jpg" alt="Toilet" class="rounded shadow object-cover w-full h-80 hover:scale-105 transition">
         </div>
 
     </div>
 </section>
 
-  <!-- Footer -->
   <?= view('components/footer') ?>
 
-  <!-- JS -->
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-  <script>
+<div id="bookingModal" class="hidden fixed inset-0 bg-black bg-opacity-70 z-50 flex justify-center items-center p-4 transition-opacity duration-300">
+    <div class="bg-white rounded-xl shadow-3xl w-full max-w-4xl p-8 relative transform scale-95 opacity-0 transition-all duration-300 ease-out">
+        
+        <button id="closeModal" class="absolute top-4 left-4 text-gray-400 hover:text-gray-800 text-3xl font-bold transition-transform hover:rotate-90 duration-300">&times;</button>
+        
+        <h3 class="text-3xl font-extrabold mb-6 text-center text-primary-dark border-b-2 pb-3 border-accent">Confirm Your Booking</h3>
+        
+        <div class="grid md:grid-cols-2 modal-grid-layout">
+            
+            <div class="md:pr-4 pb-4 md:pb-0">
+                <h4 class="text-xl font-bold mb-3 text-primary-dark">Select Payment Method</h4>
+                
+                <div id="payment-logos" class="mb-5 grid grid-cols-3 gap-3">
+                    
+                    <label class="payment-logo-option selected" data-value="gcash">
+                        <input type="radio" name="paymentMethod" value="gcash" checked>
+                        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/5/5a/GCash_logo.svg/1200px-GCash_logo.svg.png" alt="GCash" class="h-8 md:h-10">
+                    </label>
+
+                    <label class="payment-logo-option" data-value="paymaya">
+                        <input type="radio" name="paymentMethod" value="paymaya">
+                        <img src="https://www.maya.ph/assets/images/header/maya-logo-2023.svg" alt="Maya" class="h-8 md:h-10">
+                    </label>
+                    
+                    <label class="payment-logo-option" data-value="visa">
+                        <input type="radio" name="paymentMethod" value="visa">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/1280px-Visa_Inc._logo.svg.png" alt="Visa" class="h-8 w-12 md:h-10 md:w-16">
+                    </label>
+
+                </div>
+                
+                <div class="mt-4 p-4 border-t-4 border-red-500 bg-red-50 rounded-lg shadow-md">
+                    <p class="text-base font-bold text-red-700 flex items-center mb-2">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+                        Cancellation Policy
+                    </p>
+                    <ul class="text-sm text-gray-600 ml-7 list-disc space-y-1">
+                        <li>**Strict:** Full refund for cancellations made within 48 hours of booking, if the check-in date is at least 14 days away.</li>
+                        <li>50% refund for cancellations made at least 7 days before check-in. **No refund** thereafter.</li>
+                        <li>Changing dates is subject to host approval and availability.</li>
+                        <li>Bookings made within 7 days of check-in are non-refundable.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="md:pl-4">
+                <h4 class="text-xl font-bold mb-3 text-primary-dark">Reservation Summary</h4>
+                <div class="space-y-4 p-5 bg-secondary-light rounded-lg border border-secondary-light shadow-inner">
+                    <div class="flex justify-between items-center border-b border-gray-200 pb-2">
+                        <span class="font-semibold text-gray-700">Transaction ID:</span>
+                        <span id="modalTransactionId" class="font-bold text-red-500"></span>
+                    </div>
+
+                    <div class="flex justify-between items-center border-b border-gray-200 pb-2">
+                        <span class="font-semibold text-gray-700">Check-in Date:</span>
+                        <span id="modalCheckIn" class="font-bold text-primary-dark"></span>
+                    </div>
+                    <div class="flex justify-between items-center border-b border-gray-200 pb-2">
+                        <span class="font-semibold text-gray-700">Check-out Date:</span>
+                        <span id="modalCheckOut" class="font-bold text-primary-dark"></span>
+                    </div>
+                    <div class="flex justify-between items-center border-b border-gray-200 pb-2">
+                        <span class="font-semibold text-gray-700">Nights:</span>
+                        <span id="modalNights" class="font-bold text-primary-dark"></span>
+                    </div>
+                    <div class="flex justify-between items-center pt-2">
+                        <span class="font-semibold text-gray-700">Price per night:</span>
+                        <span class="font-extrabold text-green-700 text-lg">₱<span id="modalPricePerNight">2,500</span></span>
+                    </div>
+                </div>
+                
+                <div class="flex justify-between items-center bg-primary-dark text-white p-4 rounded-lg mt-4 shadow-lg">
+                    <span class="text-xl font-bold">Total Payable:</span>
+                    <span class="text-3xl font-extrabold text-total-price">₱<span id="modalTotalPrice">0.00</span></span>
+                </div>
+            </div>
+
+        </div>
+        <div class="mt-8 text-center">
+            <button type="button" id="proceedToPayment" class="bg-accent text-white py-3 px-12 rounded-lg font-bold text-lg shadow-xl hover:bg-accent/90 transition-all duration-300 transform hover:scale-105">
+                Proceed to Payment
+            </button>
+        </div>
+
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+    let selectedDates = []; // Global array to store dates from Flatpickr
+    const PRICE_PER_NIGHT = 2500; // Define the price per night
+
+    // Function to generate a random alphanumeric ID
+    function generateTransactionId(length = 10) {
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        let result = '';
+        for (let i = 0; i < length; i++) {
+            result += characters.charAt(Math.floor(Math.random() * characters.length));
+        }
+        return 'TXN-' + result;
+    }
+
     // Initialize flatpickr as date range picker
     flatpickr("#dateRange", {
-      mode: "range",
-      dateFormat: "Y-m-d",
-      minDate: "today",
-      onChange: function(selectedDates, dateStr, instance) {
-        // dateStr will be like "2025-11-24 to 2025-11-27"
-      }
+        mode: "range",
+        dateFormat: "Y-m-d",
+        minDate: "today",
+        onChange: function(dates, dateStr, instance) {
+            selectedDates = dates; // Store the selected dates
+        }
     });
 
-    // Guest dropdown toggle
+    // Guest dropdown toggle - unchanged
     const guestBtn = document.getElementById("guestBtn");
     const guestDropdown = document.getElementById("guestDropdown");
     const guestSummary = document.getElementById("guestSummary");
     const guestDone = document.getElementById("guestDone");
 
     guestBtn.addEventListener("click", () => {
-      guestDropdown.classList.toggle("hidden");
+        guestDropdown.classList.toggle("hidden");
     });
 
     guestDone.addEventListener("click", () => {
-      updateGuestSummary();
-      guestDropdown.classList.add("hidden");
+        updateGuestSummary();
+        guestDropdown.classList.add("hidden");
     });
 
-    // Adults plus / minus
+    // Adults plus / minus - unchanged
     const adultsInput = document.getElementById("adults");
-    document.getElementById("plusAdults").addEventListener("click", () => {
-      if (adultsInput.value < 10) adultsInput.value = parseInt(adultsInput.value) + 1;
+    document.getElementById("plusAdults").addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (adultsInput.value < 10) adultsInput.value = parseInt(adultsInput.value) + 1;
+        updateGuestSummary();
     });
-    document.getElementById("minusAdults").addEventListener("click", () => {
-      if (adultsInput.value > 1) adultsInput.value = parseInt(adultsInput.value) - 1;
+    document.getElementById("minusAdults").addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (adultsInput.value > 1) adultsInput.value = parseInt(adultsInput.value) - 1;
+        updateGuestSummary();
     });
 
-    // Kids plus / minus
+    // Kids plus / minus - unchanged
     const kidsInput = document.getElementById("kids");
-    document.getElementById("plusKids").addEventListener("click", () => {
-      if (kidsInput.value < 10) kidsInput.value = parseInt(kidsInput.value) + 1;
+    document.getElementById("plusKids").addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (kidsInput.value < 10) kidsInput.value = parseInt(kidsInput.value) + 1;
+        updateGuestSummary();
     });
-    document.getElementById("minusKids").addEventListener("click", () => {
-      if (kidsInput.value > 0) kidsInput.value = parseInt(kidsInput.value) - 1;
+    document.getElementById("minusKids").addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (kidsInput.value > 0) kidsInput.value = parseInt(kidsInput.value) - 1;
+        updateGuestSummary();
     });
 
     function updateGuestSummary() {
-      const adults = adultsInput.value;
-      const kids = kidsInput.value;
-      guestSummary.textContent = `${adults} Adult${adults > 1 ? 's' : ''}, ${kids} Kid${kids > 1 ? 's' : ''}`;
+        const adults = adultsInput.value;
+        const kids = kidsInput.value;
+        guestSummary.textContent = `${adults} Adult${adults > 1 ? 's' : ''}, ${kids} Kid${kids > 1 ? 's' : ''}`;
     }
 
-    // Book button review
+    // Modal elements
+    const bookingModal = document.getElementById("bookingModal");
+    const modalContent = bookingModal.querySelector('div:first-child'); 
+    const closeModalBtn = document.getElementById("closeModal");
+    const proceedToPaymentBtn = document.getElementById("proceedToPayment");
+    const modalCheckIn = document.getElementById("modalCheckIn");
+    const modalCheckOut = document.getElementById("modalCheckOut");
+    const modalNights = document.getElementById("modalNights");
+    const modalPricePerNight = document.getElementById("modalPricePerNight");
+    const modalTotalPrice = document.getElementById("modalTotalPrice");
+    const modalTransactionId = document.getElementById("modalTransactionId"); 
+
+    // Helper function to format currency - unchanged
+    function formatCurrency(amount) {
+        return new Intl.NumberFormat('en-PH', { style: 'decimal' }).format(amount);
+    }
+
+    // Function to show/hide the modal - unchanged
+    function showModal() {
+        bookingModal.classList.remove("hidden");
+        void bookingModal.offsetWidth; 
+        bookingModal.classList.add("opacity-100");
+        modalContent.classList.add("modal-enter");
+        modalContent.classList.remove("opacity-0", "scale-95");
+    }
+
+    function hideModal() {
+        bookingModal.classList.remove("opacity-100");
+        modalContent.classList.remove("modal-enter");
+        modalContent.classList.add("modal-exit"); 
+        modalContent.classList.add("opacity-0", "scale-95"); 
+
+        modalContent.addEventListener('animationend', function handler() {
+            bookingModal.classList.add("hidden");
+            modalContent.classList.remove("modal-exit"); 
+            modalContent.removeEventListener('animationend', handler);
+        }, { once: true });
+    }
+
+    // Book button review (shows the modal) - unchanged logic
     document.getElementById("reviewBooking").addEventListener("click", () => {
-      const dateRange = document.getElementById("dateRange").value;
-      const adults = adultsInput.value;
-      const kids = kidsInput.value;
-      alert(`Booking: ${dateRange}\nAdults: ${adults}\nKids: ${kids}`);
-      // You can replace this with real form submission logic
+        if (selectedDates.length !== 2) {
+            alert("Please select a check-in and check-out date range.");
+            return;
+        }
+
+        const checkInDate = selectedDates[0];
+        const checkOutDate = selectedDates[1];
+
+        const oneDay = 24 * 60 * 60 * 1000;
+        const diffTime = Math.abs(checkOutDate.getTime() - checkInDate.getTime());
+        const diffDays = Math.round(diffTime / oneDay);
+
+        if (diffDays <= 0) {
+            alert("Check-out date must be after check-in date.");
+            return;
+        }
+        
+        const totalPrice = diffDays * PRICE_PER_NIGHT;
+
+        // Populate Modal
+        modalTransactionId.textContent = generateTransactionId(); 
+        modalCheckIn.textContent = checkInDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        modalCheckOut.textContent = checkOutDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        modalNights.textContent = `${diffDays} night${diffDays > 1 ? 's' : ''}`;
+        
+        modalPricePerNight.textContent = formatCurrency(PRICE_PER_NIGHT);
+        modalTotalPrice.textContent = formatCurrency(totalPrice);
+        
+        showModal(); 
+    });
+    
+    // Close Modal event listeners - unchanged
+    closeModalBtn.addEventListener("click", hideModal);
+    bookingModal.addEventListener('click', (e) => {
+        if (e.target === bookingModal) {
+            hideModal();
+        }
     });
 
-    // Close dropdown when clicking outside
+    // Handle Proceed to Payment button click - unchanged logic
+    proceedToPaymentBtn.addEventListener('click', () => {
+        const selectedPayment = document.querySelector('input[name="paymentMethod"]:checked').value;
+        const totalAmount = modalTotalPrice.textContent; 
+        const transactionId = modalTransactionId.textContent;
+        
+        alert(`Proceeding to payment.\nTransaction ID: ${transactionId}\nTotal Amount: ₱${totalAmount}\nMethod: ${selectedPayment.toUpperCase()}`);
+        hideModal(); 
+    });
+
+    // Close dropdown when clicking outside - unchanged
     document.addEventListener("click", function(e) {
-      if (!guestBtn.contains(e.target) && !guestDropdown.contains(e.target)) {
+      if (!guestBtn.contains(e.target) && !guestDropdown.contains(e.target) && !modalContent.contains(e.target)) {
         guestDropdown.classList.add("hidden");
       }
     });
-  </script>
+    
+    // Set initial price per night on load - unchanged
+    document.getElementById("modalPricePerNight").textContent = formatCurrency(PRICE_PER_NIGHT);
+
+    // NEW: Payment Option Click Handler (Logo Selection)
+    document.querySelectorAll('.payment-logo-option').forEach(label => {
+        label.addEventListener('click', (event) => {
+            // Remove 'selected' class from all options
+            document.querySelectorAll('.payment-logo-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+
+            // Add 'selected' class to the clicked label
+            const currentLabel = event.currentTarget;
+            currentLabel.classList.add('selected');
+            
+            // Manually check the hidden radio button
+            const radioInput = currentLabel.querySelector('input[type="radio"]');
+            if (radioInput) {
+                radioInput.checked = true;
+            }
+        });
+    });
+
+    // Set initial style for the default checked radio button
+    // This is run once on script load
+    const initiallyCheckedRadio = document.querySelector('input[name="paymentMethod"]:checked');
+    if (initiallyCheckedRadio) {
+        initiallyCheckedRadio.closest('.payment-logo-option').classList.add('selected');
+    }
+
+</script>
 </body>
 </html>
