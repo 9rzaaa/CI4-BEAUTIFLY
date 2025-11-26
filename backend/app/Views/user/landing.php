@@ -13,44 +13,39 @@
     <?= view('components/header', ['active' => 'Home']) ?>
 
     <!-- Hero Section -->
-    <section class="relative bg-primary text-white text-center">
-        <div class="mx-auto px-6 py-32 max-w-7xl">
-            <h2 class="mb-6 font-bold text-white text-6xl md:text-7xl leading-tight tracking-tight">
-                LUXURY CONDO
-            </h2>
-            <h3 class="mb-16 font-bold text-white text-6xl md:text-7xl leading-tight tracking-tight">
-                ACCOMMODATION
-            </h3>
+<section class="relative text-white text-center h-screen flex items-center">
+    
+    <!-- Background Image -->
+    <div class="absolute inset-0 w-full h-full">
+        <img src="/assets/img/landingbg.webp" 
+             class="w-full h-full object-cover" 
+             alt="Luxury Condo Background">
+    </div>
 
-            <?php
-            $session = session();
-            $user = $session->get('user');
-            $firstName = $user['first_name'] ?? '';
-            ?>
+    <!-- Dark Overlay -->
+    <div class="absolute inset-0 bg-black/50"></div>
 
-            <p class="mb-16 font-light text-white text-2xl tracking-wide">
-                <?php if (!empty($firstName)): ?>
-                    Welcome back, <?= esc($firstName) ?>! Relax and unwind at EASY&CO
-                <?php else: ?>
-                    Relax and unwind at EASY&CO
-                <?php endif; ?>
-            </p>
+    <!-- Content -->
+    <div class="relative mx-auto px-6 max-w-7xl">
+        <h2 class="mb-6 font-bold text-white text-6xl md:text-7xl leading-tight tracking-tight">
+            LUXURY CONDO
+        </h2>
+        <h3 class="mb-16 font-bold text-white text-6xl md:text-7xl leading-tight tracking-tight">
+            ACCOMMODATION
+        </h3>
 
-            <!-- CTA Button -->
-            <?= view('components/buttons/button_primary', ['href' => '/booking', 'label' => 'BOOK NOW']) ?>
-        </div>
-    </section>
+        <p class="mb-16 text-white text-2xl font-light tracking-wide">
+            Relax and unwind at Easy & Co
+        </p>
 
-    <!-- Showcase Image Section -->
-    <section class="bg-light py-16">
-        <div class="mx-auto px-6 max-w-6xl">
-            <div class="relative shadow-2xl rounded-2xl overflow-hidden">
-                <!-- Preload hero image -->
-                <img data-src="/assets/img/condo.jpg" alt="EASY&CO Luxury Condo Interior"
-                    class="w-full h-auto object-cover">
-            </div>
-        </div>
-    </section>
+        <!-- CTA Button -->
+        <a href="#book" 
+           class="inline-block bg-accent hover:bg-secondary shadow-lg px-16 py-5 font-bold text-black text-sm tracking-widest hover:scale-105 transition-all duration-300 transform">
+            BOOK NOW
+        </a>
+    </div>
+</section>
+
 
     <!-- About Section - Two Column Layout -->
     <section class="bg-light py-20">
