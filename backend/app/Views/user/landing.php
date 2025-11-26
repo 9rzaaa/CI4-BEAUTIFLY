@@ -3,7 +3,8 @@
 
 <?= view('components/head') ?>
 
-<body class="bg-primary text-gray-900">
+<body class="text-gray-900" >
+
 
     <!-- Decorative Top Bar -->
     <div class="bg-accent h-3"></div>
