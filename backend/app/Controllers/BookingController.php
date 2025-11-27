@@ -1,4 +1,3 @@
-boc
 <?php
 
 namespace App\Controllers;
