@@ -197,134 +197,226 @@
 
 
     <script>
-        // Helper function to format currency (unchanged)
-        function formatCurrency(amount) {
-            return new Intl.NumberFormat('en-PH', { style: 'decimal', minimumFractionDigits: 2 }).format(amount);
+    // Helper function to format currency
+function formatCurrency(amount) {
+    return new Intl.NumberFormat('en-PH', { style: 'decimal', minimumFractionDigits: 2 }).format(amount);
+}
+
+
+// Function to extract query parameters
+function getQueryParams() {
+    const params = {};
+    const queryString = window.location.search.substring(1);
+    const regex = /([^&=]+)=([^&]*)/g;
+    let m;
+    while (m = regex.exec(queryString)) {
+        params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+    }
+    return params;
+}
+
+
+// Populate booking details from URL
+function populateBookingDetails() {
+    const params = getQueryParams();
+   
+    const PRICE_PER_NIGHT = parseFloat(params.pricePerNight) || 0;
+    const CLEANING_FEE = parseFloat(params.cleaningFee) || 0;
+    const totalPrice = parseFloat(params.totalPrice) || 0;
+
+
+    const checkIn = params.checkIn;
+    const checkOut = params.checkOut;
+    const adults = params.adults || '1';
+    const kids = params.kids || '0';
+    const nights = parseInt(params.nights) || 0;
+   
+    if (checkIn && checkOut && nights > 0 && totalPrice > 0) {
+        const checkInDate = new Date(checkIn).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        const checkOutDate = new Date(checkOut).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+
+        document.getElementById("modalTransactionId").textContent = params.transactionId || 'N/A';
+        document.getElementById("modalCheckIn").textContent = checkInDate;
+        document.getElementById("modalCheckOut").textContent = checkOutDate;
+        document.getElementById("modalNights").textContent = `${nights} night${nights > 1 ? 's' : ''}`;
+        document.getElementById("modalGuests").textContent = `${adults} Adult${adults > 1 ? 's' : ''}, ${kids} Kid${kids > 1 ? 's' : ''}`;
+        document.getElementById("modalPricePerNight").textContent = formatCurrency(PRICE_PER_NIGHT);
+        document.getElementById("modalCleaningFee").textContent = formatCurrency(CLEANING_FEE);
+        document.getElementById("modalTotalPrice").textContent = formatCurrency(totalPrice);
+       
+        document.getElementById("proceedToPayment").dataset.bookingData = JSON.stringify({
+            check_in: checkIn,
+            check_out: checkOut,
+            adults: parseInt(adults),
+            kids: parseInt(kids),
+            transaction_id: params.transactionId,
+            total_amount: totalPrice
+        });
+    } else {
+        alert("Booking details are missing. Redirecting back to the booking page.");
+        window.location.href = '/booking';
+    }
+}
+
+
+populateBookingDetails();
+
+
+// Payment method selection
+document.querySelectorAll('.payment-logo-option').forEach(label => {
+    label.addEventListener('click', (event) => {
+        document.querySelectorAll('.payment-logo-option').forEach(opt => {
+            opt.classList.remove('selected');
+        });
+        const currentLabel = event.currentTarget;
+        currentLabel.classList.add('selected');
+       
+        const radioInput = currentLabel.querySelector('input[type="radio"]');
+        if (radioInput) {
+            radioInput.checked = true;
         }
+    });
+});
 
-        // Function to extract query parameters (unchanged)
-        function getQueryParams() {
-            const params = {};
-            const queryString = window.location.search.substring(1);
-            const regex = /([^&=]+)=([^&]*)/g;
-            let m;
-            while (m = regex.exec(queryString)) {
-                params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
-            }
-            return params;
+
+// Function to show QR code modal (GCash/Maya) - 40 SECONDS
+function showQRModal(paymentMethod, callback) {
+    // Create modal HTML
+    const modalHTML = `
+        <div id="qrModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70" style="animation: fadeIn 0.3s;">
+            <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4 text-center" style="animation: slideUp 0.3s;">
+                <h3 class="text-2xl font-bold mb-4" style="color: #2F5233;">Scan to Pay</h3>
+                <p class="text-gray-600 mb-6">Scan this QR code using your ${paymentMethod === 'gcash' ? 'GCash' : 'Maya'} app</p>
+               
+                <!-- QR Code Image -->
+                <div class="bg-gray-100 p-6 rounded-xl mb-6">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=DUMMY_${paymentMethod.toUpperCase()}_PAYMENT"
+                         alt="QR Code" class="mx-auto w-64 h-64">
+                </div>
+               
+                <!-- Timer -->
+                <div class="mb-4">
+                    <div class="inline-flex items-center justify-center w-20 h-20 rounded-full text-white text-2xl font-bold mb-2" style="background-color: #73AF6F;">
+                        <span id="qrTimer">40</span>
+                    </div>
+                    <p class="text-sm text-gray-500">Seconds remaining</p>
+                </div>
+               
+                <p class="text-xs text-gray-400">Processing payment automatically...</p>
+            </div>
+        </div>
+        <style>
+            @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+            @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        </style>
+    `;
+   
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+   
+    // Start countdown - 40 SECONDS
+    let timeLeft = 40;
+    const timerElement = document.getElementById('qrTimer');
+   
+    const countdown = setInterval(() => {
+        timeLeft--;
+        timerElement.textContent = timeLeft;
+       
+        if (timeLeft <= 0) {
+            clearInterval(countdown);
+            document.getElementById('qrModal').remove();
+            callback(); // Proceed to create booking
         }
+    }, 1000);
+}
 
-        // Populate details from URL query parameters (unchanged logic)
-        function populateBookingDetails() {
-            const params = getQueryParams();
-            
-            const PRICE_PER_NIGHT = parseFloat(params.pricePerNight) || 0;
-            const CLEANING_FEE = parseFloat(params.cleaningFee) || 0;
-            const totalPrice = parseFloat(params.totalPrice) || 0;
 
-            const checkIn = params.checkIn;
-            const checkOut = params.checkOut;
-            const adults = params.adults || '1';
-            const kids = params.kids || '0';
-            const nights = parseInt(params.nights) || 0;
-            
-            if (checkIn && checkOut && nights > 0 && totalPrice > 0) {
-                
-                const checkInDate = new Date(checkIn).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-                const checkOutDate = new Date(checkOut).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-
-                // Populate Summary Fields
-                document.getElementById("modalTransactionId").textContent = params.transactionId || 'N/A';
-                document.getElementById("modalCheckIn").textContent = checkInDate;
-                document.getElementById("modalCheckOut").textContent = checkOutDate;
-                document.getElementById("modalNights").textContent = `${nights} night${nights > 1 ? 's' : ''}`;
-                document.getElementById("modalGuests").textContent = `${adults} Adult${adults > 1 ? 's' : ''}, ${kids} Kid${kids > 1 ? 's' : ''}`;
-                
-                // Populate Price Fields
-                document.getElementById("modalPricePerNight").textContent = formatCurrency(PRICE_PER_NIGHT);
-                document.getElementById("modalCleaningFee").textContent = formatCurrency(CLEANING_FEE);
-                document.getElementById("modalTotalPrice").textContent = formatCurrency(totalPrice);
-                
-                // Store core data for payment processing
-                document.getElementById("proceedToPayment").dataset.bookingData = JSON.stringify({
-                    check_in: checkIn,
-                    check_out: checkOut,
-                    adults: parseInt(adults),
-                    kids: parseInt(kids),
-                    transaction_id: params.transactionId,
-                    total_amount: totalPrice
-                });
-
-            } else {
-                alert("Booking details are missing. Redirecting back to the booking page.");
-                window.location.href = '/user/booking-form'; 
-            }
+// Function to show Visa payment form
+function showVisaPaymentForm(callback) {
+    // Your frontend team will create the actual form
+    // For now, just show an alert that redirects to visa payment page
+    alert('Redirecting to Credit/Debit Card payment form...\n\n(Frontend team will implement the actual form)');
+   
+    // Placeholder: Simulate form submission after 3 seconds
+    setTimeout(() => {
+        const confirmed = confirm('Payment form submitted. Confirm payment?');
+        if (confirmed) {
+            callback(); // Proceed to create booking
         }
-        
-        populateBookingDetails();
-        
-        document.querySelectorAll('.payment-logo-option').forEach(label => {
-            label.addEventListener('click', (event) => {
-                document.querySelectorAll('.payment-logo-option').forEach(opt => {
-                    opt.classList.remove('selected');
-                });
-                const currentLabel = event.currentTarget;
-                currentLabel.classList.add('selected');
-                
-                const radioInput = currentLabel.querySelector('input[type="radio"]');
-                if (radioInput) {
-                    radioInput.checked = true;
-                }
+    }, 3000);
+}
+
+
+// Main payment processing
+document.getElementById('proceedToPayment').addEventListener('click', async (e) => {
+    const btn = e.currentTarget;
+    const selectedPayment = document.querySelector('input[name="paymentMethod"]:checked').value;
+    let bookingData = JSON.parse(btn.dataset.bookingData);
+   
+    const specialRequests = document.getElementById('specialRequests').value.trim();
+    bookingData.payment_method = selectedPayment;
+    bookingData.special_requests = specialRequests || null;
+   
+    btn.disabled = true;
+    btn.textContent = 'Processing...';
+
+
+    try {
+        // STEP 1: Show payment UI based on method
+        if (selectedPayment === 'gcash' || selectedPayment === 'paymaya') {
+            // Show QR code modal for 40 seconds
+            showQRModal(selectedPayment, async () => {
+                // After QR modal closes, create booking
+                await createBooking(bookingData, btn);
             });
+        } else if (selectedPayment === 'visa') {
+            // Show Visa payment form (handled by frontend team)
+            showVisaPaymentForm(async () => {
+                // After form submission, create booking
+                await createBooking(bookingData, btn);
+            });
+        }
+       
+    } catch (error) {
+        console.error('Error:', error);
+        alert(`Error: ${error.message}\n\nPlease try again or contact support.`);
+        btn.disabled = false;
+        btn.textContent = 'Proceed to Payment';
+    }
+});
+
+
+// Function to create booking via API
+async function createBooking(bookingData, btn) {
+    try {
+        btn.textContent = 'Creating Booking...';
+       
+        const bookingResponse = await fetch('/booking/create', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(bookingData)
         });
+       
+        const bookingResult = await bookingResponse.json();
 
-        document.getElementById('proceedToPayment').addEventListener('click', async (e) => {
-            const btn = e.currentTarget;
-            const selectedPayment = document.querySelector('input[name="paymentMethod"]:checked').value;
-            let bookingData = JSON.parse(btn.dataset.bookingData);
-            
-            const specialRequests = document.getElementById('specialRequests').value.trim();
-            
-            bookingData.payment_method = selectedPayment;
-            bookingData.special_requests = specialRequests || null;
-            
-            btn.disabled = true;
-            btn.textContent = 'Processing Booking...';
 
-            try {
-                // STEP 1: Create booking
-                const bookingResponse = await fetch('/api/bookings/create', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(bookingData) });
-                const bookingResult = await bookingResponse.json();
+        if (!bookingResponse.ok || !bookingResult.success) {
+            throw new Error(bookingResult.error || 'Booking creation failed');
+        }
 
-                if (!bookingResponse.ok || !bookingResult.success) { throw new Error(bookingResult.error || 'Booking creation failed'); }
 
-                // STEP 2: Process payment
-                btn.textContent = 'Processing Payment...';
+        // Redirect to booking success page with booking details
+        window.location.href = `/booking/success?id=${bookingResult.booking_id}&transaction_id=${bookingResult.transaction_id}&total=${bookingResult.total_price}`;
 
-                const paymentResponse = await fetch('/api/payments/process', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ booking_id: bookingResult.booking_id, payment_method: selectedPayment, amount: bookingData.total_amount })
-                });
 
-                const paymentResult = await paymentResponse.json();
-
-                if (paymentResponse.ok && paymentResult.success) {
-                    alert(`Payment Successful! 🎉\n\nBooking ID: ${bookingResult.booking_id}...\n\nYour booking is confirmed!`);
-                    window.location.href = '/booking-confirmation?id=' + bookingResult.booking_id;
-                } else {
-                    alert(`Payment Failed ❌\n\n${paymentResult.error || 'Payment was declined.'}\n\nBooking created but not confirmed.`);
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert(`Error: ${error.message}\n\nPlease try again or contact support.`);
-            } finally {
-                btn.disabled = false;
-                btn.textContent = 'Proceed to Payment';
-            }
-        });
+    } catch (error) {
+        alert(`Error: ${error.message}\n\nPlease try again or contact support.`);
+        btn.disabled = false;
+        btn.textContent = 'Proceed to Payment';
+    }
+}
     </script>
-    
+   
     <?= view('components/footer') ?>
 
 </body>
