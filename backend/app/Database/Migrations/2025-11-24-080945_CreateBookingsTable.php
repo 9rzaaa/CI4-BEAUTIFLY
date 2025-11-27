@@ -19,22 +19,28 @@ class CreateBookingsTable extends Migration
                 'type'       => 'INT',
                 'constraint' => 11,
                 'unsigned'   => true,
+                'default'    => 1,
             ],
-            'guest_id' => [
+            'user_id' => [  
                 'type'       => 'INT',
                 'constraint' => 11,
                 'unsigned'   => true,
             ],
-            'check_in_date' => [
+            'check_in' => [  
                 'type' => 'DATE',
             ],
-            'check_out_date' => [
+            'check_out' => [  
                 'type' => 'DATE',
             ],
-            'number_of_guests' => [
+            'adults' => [
                 'type'       => 'INT',
                 'constraint' => 3,
                 'default'    => 1,
+            ],
+            'kids' => [ 
+                'type'       => 'INT',
+                'constraint' => 3,
+                'default'    => 0,
             ],
             'number_of_nights' => [
                 'type'       => 'INT',
@@ -43,55 +49,48 @@ class CreateBookingsTable extends Migration
             'price_per_night' => [
                 'type'       => 'DECIMAL',
                 'constraint' => '10,2',
+                'default'    => 100.00,
             ],
-            'cleaning_fee' => [
-                'type'       => 'DECIMAL',
-                'constraint' => '10,2',
-                'default'    => 0.00,
-            ],
-            'service_fee' => [
-                'type'       => 'DECIMAL',
-                'constraint' => '10,2',
-                'default'    => 0.00,
-            ],
-            'total_amount' => [
+            'total_price' => [  
                 'type'       => 'DECIMAL',
                 'constraint' => '10,2',
             ],
             'status' => [
                 'type'       => 'ENUM',
-                'constraint' => ['pending', 'confirmed', 'checked_in', 'checked_out', 'completed', 'cancelled'],
+                'constraint' => ['pending', 'confirmed', 'cancelled', 'completed', 'rejected'],
                 'default'    => 'pending',
             ],
             'payment_status' => [
                 'type'       => 'ENUM',
-                'constraint' => ['pending', 'paid', 'refunded', 'partially_refunded'],
-                'default'    => 'pending',
+                'constraint' => ['unpaid', 'paid', 'refunded', 'failed'],
+                'default'    => 'unpaid',
             ],
             'payment_method' => [
                 'type'       => 'VARCHAR',
                 'constraint' => 50,
                 'null'       => true,
             ],
-            'special_requests' => [
-                'type' => 'TEXT',
-                'null' => true,
+            'transaction_id' => [  
+                'type'       => 'VARCHAR',
+                'constraint' => 100,
+                'null'       => true,
             ],
-            'cancellation_reason' => [
+            'special_requests' => [
                 'type' => 'TEXT',
                 'null' => true,
             ],
             'created_at' => [
                 'type' => 'DATETIME',
+                'null' => true,
             ],
             'updated_at' => [
                 'type' => 'DATETIME',
+                'null' => true,
             ],
         ]);
 
-        $this->forge->addKey('id', true);
-        $this->forge->addForeignKey('property_id', 'properties', 'id', 'CASCADE', 'CASCADE');
-        $this->forge->addForeignKey('guest_id', 'users', 'id', 'CASCADE', 'CASCADE');
+        $this->forge->addKey('id', true);    
+        
         $this->forge->createTable('bookings');
     }
 

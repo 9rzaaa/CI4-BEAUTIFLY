@@ -15,5 +15,7 @@ class DatabaseSeeder extends Seeder
         $this->call('App\\Database\\Seeds\\PropertiesSeeder');
 
         $this->call('App\\Database\\Seeds\\BookingsSeeder');
+
+        $this->call('App\\Database\\Seeds\\PaymentsSeeder');
     }
 }
