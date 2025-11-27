@@ -228,4 +228,10 @@ class BookingController extends BaseController
 
         return $this->response->setJSON(['property' => $property]);
     }
+
+   public function review()
+{
+    return view('user/booking_review');
 }
+
+} // <-- This is the final, correct closing brace for the class.
