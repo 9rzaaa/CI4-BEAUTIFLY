@@ -18,7 +18,7 @@ class BookingController extends BaseController
      */
     public function index()
     {
-        return view('pages/booking');
+        return view('user/booking');
     }
 
     /**
@@ -229,9 +229,53 @@ class BookingController extends BaseController
         return $this->response->setJSON(['property' => $property]);
     }
 
-   public function review()
+/**
+ * Show booking review page
+ */
+public function review()
 {
-    return view('user/booking_review');
+    // Check if user is logged in
+    $userId = session()->get('user_id');
+    
+    if (!$userId) {
+        // Store where user wanted to go
+        session()->set('redirect_url', current_url());
+        
+        return redirect()->to('/login')
+            ->with('error', 'Please login to continue with your booking');
+    }
+    
+    // Get all booking parameters from URL
+    $checkIn = $this->request->getGet('checkIn');
+    $checkOut = $this->request->getGet('checkOut');
+    $adults = $this->request->getGet('adults');
+    $kids = $this->request->getGet('kids');
+    $nights = $this->request->getGet('nights');
+    $transactionId = $this->request->getGet('transactionId');
+    $pricePerNight = $this->request->getGet('pricePerNight');
+    $cleaningFee = $this->request->getGet('cleaningFee');
+    $totalPrice = $this->request->getGet('totalPrice');
+    
+    // Validate required parameters
+    if (!$checkIn || !$checkOut || !$adults || !$nights) {
+        return redirect()->to('/booking')
+            ->with('error', 'Invalid booking parameters. Please try again.');
+    }
+    
+    // Pass data to view
+    $data = [
+        'checkIn' => $checkIn,
+        'checkOut' => $checkOut,
+        'adults' => $adults,
+        'kids' => $kids ?? 0,
+        'nights' => $nights,
+        'transactionId' => $transactionId,
+        'pricePerNight' => $pricePerNight,
+        'cleaningFee' => $cleaningFee,
+        'totalPrice' => $totalPrice,
+        'userId' => $userId
+    ];
+    
+    return view('user/booking_review', $data);
 }
-
-} // <-- This is the final, correct closing brace for the class.
+} 
