@@ -28,8 +28,8 @@ class PaymentController extends BaseController
         }
 
         // Get booking
-        $builder = $this->db->table('bookings');
-        $booking = $builder->where('id', $bookingId)
+        $bookingBuilder = $this->db->table('bookings');
+        $booking = $bookingBuilder->where('id', $bookingId)
             ->where('status', 'pending')
             ->get()
             ->getRowArray();
@@ -51,13 +51,34 @@ class PaymentController extends BaseController
 
         if ($paymentSuccess) {
             // Update booking to confirmed
-            $builder->where('id', $bookingId)->update([
+            $bookingBuilder->where('id', $bookingId)->update([
                 'status' => 'confirmed',
                 'payment_status' => 'paid',
                 'payment_method' => $paymentMethod,
                 'transaction_id' => $transactionId,
                 'updated_at' => date('Y-m-d H:i:s')
             ]);
+
+            // ✅ INSERT INTO PAYMENTS TABLE
+            $paymentBuilder = $this->db->table('payments');
+            $paymentData = [
+                'booking_id' => $bookingId,
+                'user_id' => $booking['user_id'],
+                'transaction_id' => $transactionId,
+                'payment_method' => $paymentMethod,
+                'amount' => $booking['total_price'],
+                'currency' => 'PHP',
+                'status' => 'completed',
+                'payment_details' => json_encode([
+                    'gateway' => 'Dummy Gateway',
+                    'method' => $paymentMethod,
+                    'processed_at' => date('Y-m-d H:i:s')
+                ]),
+                'notes' => 'Payment processed successfully',
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ];
+            $paymentBuilder->insert($paymentData);
 
             // Log successful payment
             log_message('info', "Payment successful for booking #{$bookingId}, Transaction: {$transactionId}");
@@ -71,10 +92,30 @@ class PaymentController extends BaseController
             ]);
         } else {
             // Payment failed
-            $builder->where('id', $bookingId)->update([
+            $bookingBuilder->where('id', $bookingId)->update([
                 'payment_status' => 'failed',
                 'updated_at' => date('Y-m-d H:i:s')
             ]);
+
+            // ✅ INSERT FAILED PAYMENT INTO PAYMENTS TABLE
+            $paymentBuilder = $this->db->table('payments');
+            $paymentData = [
+                'booking_id' => $bookingId,
+                'user_id' => $booking['user_id'],
+                'transaction_id' => $transactionId,
+                'payment_method' => $paymentMethod,
+                'amount' => $booking['total_price'],
+                'currency' => 'PHP',
+                'status' => 'failed',
+                'payment_details' => json_encode([
+                    'error' => 'Payment declined',
+                    'error_code' => 'DECLINED_001'
+                ]),
+                'notes' => 'Payment declined by gateway',
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ];
+            $paymentBuilder->insert($paymentData);
 
             log_message('error', "Payment failed for booking #{$bookingId}");
 
@@ -92,9 +133,9 @@ class PaymentController extends BaseController
      */
     public function getPaymentDetails($bookingId)
     {
-        $builder = $this->db->table('bookings');
-        $payment = $builder->select('id, transaction_id, payment_method, payment_status, total_price')
-            ->where('id', $bookingId)
+        $builder = $this->db->table('payments');
+        $payment = $builder->where('booking_id', $bookingId)
+            ->orderBy('created_at', 'DESC')
             ->get()
             ->getRowArray();
 
@@ -112,8 +153,8 @@ class PaymentController extends BaseController
      */
     public function refundPayment($bookingId)
     {
-        $builder = $this->db->table('bookings');
-        $booking = $builder->where('id', $bookingId)
+        $bookingBuilder = $this->db->table('bookings');
+        $booking = $bookingBuilder->where('id', $bookingId)
             ->where('payment_status', 'paid')
             ->get()
             ->getRowArray();
@@ -124,14 +165,34 @@ class PaymentController extends BaseController
                 ->setJSON(['error' => 'Booking not found or not eligible for refund']);
         }
 
+        // Get original payment
+        $paymentBuilder = $this->db->table('payments');
+        $payment = $paymentBuilder->where('booking_id', $bookingId)
+            ->where('status', 'completed')
+            ->get()
+            ->getRowArray();
+
         // Simulate refund processing
         $refundId = 'RFND' . time() . rand(1000, 9999);
 
-        $builder->where('id', $bookingId)->update([
+        // Update booking
+        $bookingBuilder->where('id', $bookingId)->update([
             'payment_status' => 'refunded',
             'status' => 'cancelled',
             'updated_at' => date('Y-m-d H:i:s')
         ]);
+
+        // ✅ UPDATE PAYMENT RECORD WITH REFUND INFO
+        if ($payment) {
+            $paymentBuilder->where('id', $payment['id'])->update([
+                'status' => 'refunded',
+                'refund_id' => $refundId,
+                'refund_amount' => $booking['total_price'],
+                'refund_reason' => 'Customer requested cancellation',
+                'refunded_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ]);
+        }
 
         log_message('info', "Refund processed for booking #{$bookingId}, Refund ID: {$refundId}");
 

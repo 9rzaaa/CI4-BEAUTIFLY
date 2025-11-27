@@ -56,7 +56,8 @@ $routes->get('/about', function () {
 $routes->get('booking', 'BookingController::index');
 
 // API endpoints for bookings
-$routes->post('api/bookings', 'BookingController::create');
+$routes->get('/api/bookings/property/(:num)', 'BookingController::getProperty/$1');
+$routes->post('api/bookings/create', 'BookingController::create');
 $routes->get('api/bookings', 'BookingController::list');
 $routes->get('api/bookings/(:num)', 'BookingController::show/$1');
 $routes->put('api/bookings/(:num)', 'BookingController::update/$1');
@@ -67,4 +68,4 @@ $routes->post('api/payment/process', 'PaymentController::processPayment');
 $routes->get('api/payment/(:num)', 'PaymentController::getPaymentDetails/$1');
 $routes->post('api/payment/refund/(:num)', 'PaymentController::refundPayment/$1');
 
-$routes->get('booking/history', 'BookingController::history'); 
+$routes->get('booking/history', 'BookingController::history');
