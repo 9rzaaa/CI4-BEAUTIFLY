@@ -28,7 +28,7 @@ class BookingController extends BaseController
     {
         // Get JSON input
         $json = $this->request->getJSON(true);
-        
+
         // Validate input
         $validation = $this->validateBooking($json);
         if (!$validation['valid']) {
@@ -43,16 +43,31 @@ class BookingController extends BaseController
                 ->setStatusCode(409)
                 ->setJSON(['error' => 'Property is already booked for selected dates']);
         }
+
+        // Get property details from database
+        $propertyBuilder = $this->db->table('properties');
+        $property = $propertyBuilder->where('id', 1)->get()->getRowArray();
+
+        if (!$property) {
+            return $this->response
+                ->setStatusCode(404)
+                ->setJSON(['error' => 'Property not found']);
+        }
+
         // Calculate pricing
         $checkIn = new \DateTime($json['check_in']);
         $checkOut = new \DateTime($json['check_out']);
         $nights = $checkOut->diff($checkIn)->days;
-        $pricePerNight = 100;
-        $totalPrice = $nights * $pricePerNight;
+        $pricePerNight = $property['price_per_night']; // From database
+        $cleaningFee = $property['cleaning_fee']; // From database
+        $totalPrice = ($nights * $pricePerNight) + $cleaningFee;
+
+        // Generate transaction ID
+        $transactionId = $json['transaction_id'] ?? 'TXN' . time() . rand(1000, 9999);
 
         // Insert booking
         $data = [
-            'user_id' => session()->get('user_id') ?? 1,
+            'user_id' => session()->get('user_id') ?? 2, // Default to guest user
             'property_id' => 1,
             'check_in' => $json['check_in'],
             'check_out' => $json['check_out'],
@@ -63,6 +78,9 @@ class BookingController extends BaseController
             'total_price' => $totalPrice,
             'status' => 'pending',
             'payment_status' => 'unpaid',
+            'payment_method' => $json['payment_method'] ?? null,
+            'transaction_id' => $transactionId,
+            'special_requests' => $json['special_requests'] ?? null,
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
         ];
@@ -75,72 +93,139 @@ class BookingController extends BaseController
             'success' => true,
             'booking_id' => $bookingId,
             'total_price' => $totalPrice,
+            'price_per_night' => $pricePerNight,
+            'cleaning_fee' => $cleaningFee,
             'nights' => $nights,
+            'transaction_id' => $transactionId,
             'message' => 'Booking created successfully'
         ]);
     }
-    /**
-     * Validate booking input
-     */
-    private function validateBooking($input)
+
+    /** Update booking */
+    public function update($id)
     {
-        // Check required fields
-        $required = ['check_in', 'check_out', 'adults'];
-        foreach ($required as $field) {
-            if (!isset($input[$field]) || empty($input[$field])) {
-                return ['valid' => false, 'message' => "Field '{$field}' is required"];
+        $json = $this->request->getJSON(true);
+
+        // Get existing booking
+        $builder = $this->db->table('bookings');
+        $booking = $builder->where('id', $id)->get()->getRowArray();
+
+        if (!$booking) {
+            return $this->response
+                ->setStatusCode(404)
+                ->setJSON(['error' => 'Booking not found']);
+        }
+
+        // Prepare update data
+        $updateData = ['updated_at' => date('Y-m-d H:i:s')];
+        $allowedFields = ['check_in', 'check_out', 'adults', 'kids', 'status', 'special_requests'];
+
+        foreach ($allowedFields as $field) {
+            if (isset($json[$field])) {
+                $updateData[$field] = $json[$field];
             }
         }
 
-        // Validate dates
-        try {
-            $checkIn = new \DateTime($input['check_in']);
-            $checkOut = new \DateTime($input['check_out']);
-            $today = new \DateTime('today');
-
-            if ($checkIn < $today) {
-                return ['valid' => false, 'message' => 'Check-in date cannot be in the past'];
-            }
-
-            if ($checkOut <= $checkIn) {
-                return ['valid' => false, 'message' => 'Check-out must be after check-in'];
-            }
-
-            $diff = $checkOut->diff($checkIn)->days;
-            if ($diff > 30) {
-                return ['valid' => false, 'message' => 'Maximum booking duration is 30 days'];
-            }
-
-        } catch (\Exception $e) {
-            return ['valid' => false, 'message' => 'Invalid date format'];
+        if (count($updateData) === 1) { // Only updated_at
+            return $this->response
+                ->setStatusCode(400)
+                ->setJSON(['error' => 'No fields to update']);
         }
 
-        // Validate guests
-        if ($input['adults'] < 1 || $input['adults'] > 10) {
-            return ['valid' => false, 'message' => 'Adults must be between 1 and 10'];
+        // If dates changed, validate and check conflicts
+        if (isset($json['check_in']) || isset($json['check_out'])) {
+            $newCheckIn = $json['check_in'] ?? $booking['check_in'];
+            $newCheckOut = $json['check_out'] ?? $booking['check_out'];
+
+            $validation = $this->validateBooking([
+                'check_in' => $newCheckIn,
+                'check_out' => $newCheckOut,
+                'adults' => $json['adults'] ?? $booking['adults'],
+                'kids' => $json['kids'] ?? $booking['kids']
+            ]);
+
+            if (!$validation['valid']) {
+                return $this->response
+                    ->setStatusCode(400)
+                    ->setJSON(['error' => $validation['message']]);
+            }
+
+            // Check conflicts (excluding current booking)
+            if ($this->checkBookingConflictExcluding($newCheckIn, $newCheckOut, $id)) {
+                return $this->response
+                    ->setStatusCode(409)
+                    ->setJSON(['error' => 'Property is already booked for selected dates']);
+            }
+
+            // Recalculate price
+            $checkIn = new \DateTime($newCheckIn);
+            $checkOut = new \DateTime($newCheckOut);
+            $nights = $checkOut->diff($checkIn)->days;
+            $updateData['number_of_nights'] = $nights;
+            $updateData['total_price'] = $nights * $booking['price_per_night'];
         }
 
-        $kids = $input['kids'] ?? 0;
-        if ($kids < 0 || $kids > 10) {
-            return ['valid' => false, 'message' => 'Kids must be between 0 and 10'];
-        }
+        $builder->where('id', $id)->update($updateData);
 
-        return ['valid' => true];
+        return $this->response->setJSON([
+            'success' => true,
+            'message' => 'Booking updated successfully'
+        ]);
     }
-     /**
-     * Check for booking conflicts
-     */
-    private function checkBookingConflict($checkIn, $checkOut)
+
+    // Check conflicts excluding specific booking
+    private function checkBookingConflictExcluding($checkIn, $checkOut, $excludeId)
     {
         $builder = $this->db->table('bookings');
         $builder->where('property_id', 1);
+        $builder->where('id !=', $excludeId);
         $builder->whereNotIn('status', ['cancelled', 'rejected']);
         $builder->groupStart()
             ->where("(check_in <= '$checkIn' AND check_out > '$checkIn')")
             ->orWhere("(check_in < '$checkOut' AND check_out >= '$checkOut')")
             ->orWhere("(check_in >= '$checkIn' AND check_out <= '$checkOut')")
-        ->groupEnd();
+            ->groupEnd();
 
         return $builder->countAllResults() > 0;
+    }
+    // Cancel/Delete booking
+    public function delete($id)
+    {
+        $builder = $this->db->table('bookings');
+        $booking = $builder->where('id', $id)->get()->getRowArray();
+
+        if (!$booking) {
+            return $this->response
+                ->setStatusCode(404)
+                ->setJSON(['error' => 'Booking not found']);
+        }
+
+        // Soft delete - update status to cancelled
+        $builder->where('id', $id)->update([
+            'status' => 'cancelled',
+            'updated_at' => date('Y-m-d H:i:s')
+        ]);
+
+        return $this->response->setJSON([
+            'success' => true,
+            'message' => 'Booking cancelled successfully'
+        ]);
+    }
+
+    /**
+     * Get property details
+     */
+    public function getProperty($id = 1)
+    {
+        $builder = $this->db->table('properties');
+        $property = $builder->where('id', $id)->get()->getRowArray();
+
+        if (!$property) {
+            return $this->response
+                ->setStatusCode(404)
+                ->setJSON(['error' => 'Property not found']);
+        }
+
+        return $this->response->setJSON(['property' => $property]);
     }
 }

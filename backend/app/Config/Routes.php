@@ -46,3 +46,26 @@ $routes->post('/crud-testing/delete/(:num)', 'CRUDTesting::deleteUserData/$1');
 $routes->get('booking', function () {
     return view('user/booking'); // loads app/Views/booking.php
 });
+
+$routes->get('/about', function () {
+    return view('user/about');
+});
+
+// BOOKING ROUTES
+// Show booking page
+$routes->get('booking', 'BookingController::index');
+
+// API endpoints for bookings
+$routes->get('/api/bookings/property/(:num)', 'BookingController::getProperty/$1');
+$routes->post('api/bookings/create', 'BookingController::create');
+$routes->get('api/bookings', 'BookingController::list');
+$routes->get('api/bookings/(:num)', 'BookingController::show/$1');
+$routes->put('api/bookings/(:num)', 'BookingController::update/$1');
+$routes->delete('api/bookings/(:num)', 'BookingController::delete/$1');
+
+// PAYMENT ROUTES
+$routes->post('api/payment/process', 'PaymentController::processPayment');
+$routes->get('api/payment/(:num)', 'PaymentController::getPaymentDetails/$1');
+$routes->post('api/payment/refund/(:num)', 'PaymentController::refundPayment/$1');
+
+$routes->get('booking/history', 'BookingController::history');
