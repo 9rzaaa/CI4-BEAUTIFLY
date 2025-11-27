@@ -21,15 +21,15 @@ class CreateBookingsTable extends Migration
                 'unsigned'   => true,
                 'default'    => 1,
             ],
-            'user_id' => [  
+            'user_id' => [
                 'type'       => 'INT',
                 'constraint' => 11,
                 'unsigned'   => true,
             ],
-            'check_in' => [  
+            'check_in' => [
                 'type' => 'DATE',
             ],
-            'check_out' => [  
+            'check_out' => [
                 'type' => 'DATE',
             ],
             'adults' => [
@@ -37,7 +37,7 @@ class CreateBookingsTable extends Migration
                 'constraint' => 3,
                 'default'    => 1,
             ],
-            'kids' => [ 
+            'kids' => [
                 'type'       => 'INT',
                 'constraint' => 3,
                 'default'    => 0,
@@ -51,7 +51,12 @@ class CreateBookingsTable extends Migration
                 'constraint' => '10,2',
                 'default'    => 100.00,
             ],
-            'total_price' => [  
+            'cleaning_fee' => [
+                'type'       => 'DECIMAL',
+                'constraint' => '10,2',
+                'default'    => 300.00,
+            ],
+            'total_price' => [
                 'type'       => 'DECIMAL',
                 'constraint' => '10,2',
             ],
@@ -70,7 +75,7 @@ class CreateBookingsTable extends Migration
                 'constraint' => 50,
                 'null'       => true,
             ],
-            'transaction_id' => [  
+            'transaction_id' => [
                 'type'       => 'VARCHAR',
                 'constraint' => 100,
                 'null'       => true,
@@ -89,8 +94,8 @@ class CreateBookingsTable extends Migration
             ],
         ]);
 
-        $this->forge->addKey('id', true);    
-        
+        $this->forge->addKey('id', true);
+
         $this->forge->createTable('bookings');
     }
 
