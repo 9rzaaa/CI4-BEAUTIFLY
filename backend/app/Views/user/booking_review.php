@@ -4,38 +4,51 @@
 <?= view('components/head') ?>
 
 <style>
-    /* ... (CSS Styles for colors, buttons, and payment selection remain the same) ... */
     .bg-accent { background-color: #73AF6F; }
     .text-accent { color: #73AF6F; }
     .bg-primary-dark { background-color: #2F5233; }
     .bg-secondary-light { background-color: #F8F4E3; }
-    
-    /* Custom style for payment selection */
-    .payment-logo-option {
-        padding: 5px;
-        border: 2px solid #E0DBCF;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: all 0.2s;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
 
-    .payment-logo-option:hover {
-        border-color: #73AF6F;
-    }
+/* Square logo containers */
+.payment-logo-option {
+    width: 100%;
+    /* Reduced height to make logo area smaller, improving overall balance */
+    height: 100px; 
+    padding: 10px;
+    border: 2px solid #E0DBCF;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: white;
+    /* Added flex column for text/logo stacking */
+    flex-direction: column; 
+    text-align: center;
+}
 
-    .payment-logo-option.selected {
-        border-color: #2F5233;
-        box-shadow: 0 0 0 3px rgba(47, 82, 51, 0.5);
-    }
-    
-    .payment-logo-option input[type="radio"] {
-        display: none;
-    }
+.payment-logo-option:hover {
+    border-color: #73AF6F;
+}
 
-    /* Animation for the Proceed button */
+.payment-logo-option.selected {
+    border-color: #2F5233;
+    box-shadow: 0 0 0 3px rgba(47, 82, 51, 0.4);
+}
+
+.payment-logo-option img {
+    /* Adjusted image size to fit better with text and reduced container height */
+    width: 80%;
+    max-height: 40px; 
+    object-fit: contain;
+    margin-bottom: 4px;
+}
+
+.payment-logo-option input[type="radio"] {
+    display: none;
+}
+
     .btn-pulse:hover {
         animation: pulse-shadow 1.5s infinite;
     }
@@ -46,113 +59,142 @@
     }
 </style>
 
-<body class="bg-secondary-light min-h-screen text-gray-900 transition duration-500">
+<body class="bg-secondary-light min-h-screen text-gray-900">
 
-    <div class="bg-accent h-3"></div>
+<div class="bg-accent h-3"></div>
 
-    <?= view('components/header', ['active' => 'Home']) ?>
+<?= view('components/header', ['active' => 'Home']) ?>
 
-    <main class="py-16">
-        <div class="shadow-2xl p-8 rounded-xl w-full bg-white transition duration-500 hover:shadow-2xl">
+<main class="py-16">
+    <div class="w-full max-w-7xl mx-auto bg-white shadow-2xl p-10 rounded-xl">
 
-            <a href="/user/booking-form" class="flex items-center mb-6 font-semibold text-accent hover:text-primary-dark transition-colors duration-300 transform hover:scale-105">
-                <svg class="mr-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                Back to Booking
-            </a>
+        <a href="/user/booking-form"
+           class="flex items-center mb-6 font-semibold text-accent hover:text-primary-dark transition-all hover:scale-105">
+            <svg class="mr-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path
+                    stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            Back to Booking
+        </a>
 
-            <h3 class="mb-8 pb-3 border-accent border-b-2 font-extrabold text-primary-dark text-4xl text-center">Confirm & Pay</h3>
+        <h3 class="mb-12 pb-3 border-b-2 border-accent font-extrabold text-primary-dark text-4xl text-center">
+            Confirm & Pay
+        </h3>
 
-            <div class="mb-8 max-w-5xl lg:max-w-7xl xl:max-w-full mx-auto">
-                <h4 class="mb-3 font-bold text-primary-dark text-xl">Reservation Summary</h4>
-                <div class="space-y-4 bg-secondary-light shadow-inner p-5 border border-secondary-light rounded-lg transition duration-300 hover:bg-white/80">
-                    <div class="flex justify-between items-center pb-2 border-gray-200 border-b"><span class="font-semibold text-gray-700">Transaction ID:</span><span id="modalTransactionId" class="font-bold text-red-500"></span></div>
-                    <div class="flex justify-between items-center pb-2 border-gray-200 border-b"><span class="font-semibold text-gray-700">Check-in Date:</span><span id="modalCheckIn" class="font-bold text-primary-dark"></span></div>
-                    <div class="flex justify-between items-center pb-2 border-gray-200 border-b"><span class="font-semibold text-gray-700">Check-out Date:</span><span id="modalCheckOut" class="font-bold text-primary-dark"></span></div>
-                    <div class="flex justify-between items-center pb-2 border-gray-200 border-b"><span class="font-semibold text-gray-700">Nights:</span><span id="modalNights" class="font-bold text-primary-dark"></span></div>
-                    <div class="flex justify-between items-center pb-2 border-gray-200 border-b"><span class="font-semibold text-gray-700">Guests:</span><span id="modalGuests" class="font-bold text-primary-dark"></span></div>
-                    <div class="flex justify-between items-center pb-2 border-gray-200 border-b pt-2"><span class="font-semibold text-gray-700">Price per night:</span><span class="font-extrabold text-green-700 text-lg">₱<span id="modalPricePerNight">0.00</span></span></div>
-                    
-                    <div class="flex justify-between items-center pt-2"><span class="font-semibold text-gray-700">Cleaning Fee:</span><span class="font-extrabold text-green-700 text-lg">₱<span id="modalCleaningFee">0.00</span></span></div>
-                    
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+
+            <div class="w-full space-y-8">
+
+                <div>
+                    <h4 class="mb-3 font-bold text-primary-dark text-xl">Reservation Summary</h4>
+
+                    <div class="space-y-4 bg-secondary-light shadow-inner p-5 border rounded-lg">
+                        <div class="flex justify-between pb-2 border-b">
+                            <span class="font-semibold">Transaction ID:</span>
+                            <span id="modalTransactionId" class="font-bold text-red-500"></span>
+                        </div>
+                        <div class="flex justify-between pb-2 border-b">
+                            <span class="font-semibold">Check-in Date:</span>
+                            <span id="modalCheckIn" class="font-bold text-primary-dark"></span>
+                        </div>
+                        <div class="flex justify-between pb-2 border-b">
+                            <span class="font-semibold">Check-out Date:</span>
+                            <span id="modalCheckOut" class="font-bold text-primary-dark"></span>
+                        </div>
+                        <div class="flex justify-between pb-2 border-b">
+                            <span class="font-semibold">Nights:</span>
+                            <span id="modalNights" class="font-bold text-primary-dark"></span>
+                        </div>
+                        <div class="flex justify-between pb-2 border-b">
+                            <span class="font-semibold">Guests:</span>
+                            <span id="modalGuests" class="font-bold text-primary-dark"></span>
+                        </div>
+                        <div class="flex justify-between pb-2 border-b">
+                            <span class="font-semibold">Price per night:</span>
+                            <span class="font-extrabold text-green-700 text-lg">₱<span id="modalPricePerNight"></span></span>
+                        </div>
+
+                        <div class="flex justify-between">
+                            <span class="font-semibold">Cleaning Fee:</span>
+                            <span class="font-extrabold text-green-700 text-lg">₱<span id="modalCleaningFee"></span></span>
+                        </div>
+                    </div>
                 </div>
-                
-                <div class="flex justify-between items-center bg-primary-dark shadow-lg mt-4 p-4 rounded-lg text-white transition duration-300 transform hover:scale-[1.005]">
+
+                <div class="flex justify-between bg-primary-dark shadow-xl mt-4 p-5 rounded-lg text-white">
                     <span class="font-bold text-xl">Total Payable:</span>
-                    <span class="font-extrabold text-total-price text-3xl">₱<span id="modalTotalPrice">0.00</span></span>
-                </div>
-            </div>
-
-            <hr class="border-gray-300 my-8">
-
-            <div class="mb-8 max-w-3xl mx-auto">
-                <h4 class="mb-3 font-bold text-primary-dark text-xl">Select Payment Method</h4>
-                <div id="payment-logos" class="gap-3 grid grid-cols-3">
-                    <label class="payment-logo-option selected" data-value="gcash">
-                        <input type="radio" name="paymentMethod" value="gcash" checked>
-                        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/5/5a/GCash_logo.svg/1200px-GCash_logo.svg.png" alt="GCash" class="w-auto h-8 md:h-10 object-contain">
-                    </label>
-                    <label class="payment-logo-option" data-value="paymaya">
-                        <input type="radio" name="paymentMethod" value="paymaya">
-                        <img src="https://www.maya.ph/assets/images/header/maya-logo-2023.svg" alt="Maya" class="w-auto h-8 md:h-10 object-contain">
-                    </label>
-                    <label class="payment-logo-option" data-value="visa">
-                        <input type="radio" name="paymentMethod" value="visa">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/1280px-Visa_Inc._logo.svg.png" alt="Visa" class="w-auto h-8 md:h-10 object-contain">
-                    </label>
-                </div>
-            </div>
-
-            <hr class="border-gray-300 my-8">
-
-            <div class="mb-8 max-w-5xl mx-auto">
-                <h4 class="mb-3 font-bold text-primary-dark text-xl">Important Policies</h4>
-
-                <div class="bg-red-50 shadow-md mb-6 p-4 border-red-500 border-t-4 rounded-lg transition duration-300 hover:shadow-lg">
-                    <p class="flex items-center mb-2 font-bold text-red-700 text-base">
-                        <svg class="mr-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.3 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                        Cancellation Policy (Strict)
-                    </p>
-                    <ul class="space-y-1 ml-7 text-gray-600 text-sm list-disc">
-                        <li>**Full refund** for cancellations made within 48 hours of booking, if the check-in date is at least 14 days away.</li>
-                        <li>**50% refund** for cancellations made at least 7 days before check-in.</li>
-                        <li>**No refund** for cancellations made within 7 days of check-in.</li>
-                    </ul>
+                    <span class="font-extrabold text-3xl">₱<span id="modalTotalPrice"></span></span>
                 </div>
 
-                <div class="bg-secondary-light shadow-md p-4 border-accent border-t-4 rounded-lg transition duration-300 hover:shadow-lg">
-                    <p class="flex items-center mb-2 font-bold text-primary-dark text-base">
-                        <svg class="mr-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                        Check-in & Check-out Policies
-                    </p>
-                    <ul class="space-y-2 ml-7 text-gray-700 text-sm list-disc">
-                        <li>**Standard Check-in:** **4:00 PM** (16:00) onwards.</li>
-                        <li>**Standard Check-out:** **10:00 AM** (10:00) **sharp**.</li>
-                        <li>**Access:** Self check-in via keypad/lockbox. Code sent at 3:30 PM.</li>
-                        <li>**Early Check-in (12:00 PM):** Not guaranteed. Fee: **₱800.00**.</li>
-                        <li>**Late Check-out (after 10 AM):** Penalty of **₱800.00** up to 12 PM. After 12 PM, a full night's rate applies.</li>
-                    </ul>
+                <div class="mt-10">
+                    <h4 class="mb-3 font-bold text-primary-dark text-xl">Special Requests / Notes</h4>
+                    <textarea id="specialRequests"
+                              class="w-full p-3 border-2 border-gray-300 rounded-lg shadow-sm focus:border-accent focus:ring-accent/50"
+                              rows="4"
+                              placeholder="Any special requests (optional)..."></textarea>
                 </div>
-            </div>
-            
-            <hr class="border-gray-300 my-8">
 
-            <div class="mb-8 max-w-5xl mx-auto">
-                <h4 class="mb-3 font-bold text-primary-dark text-xl">Special Requests / Notes</h4>
-                <textarea id="specialRequests" rows="4" 
-                    class="shadow-sm p-3 border-2 border-gray-300 focus:border-accent rounded-lg focus:ring focus:ring-accent/50 w-full transition duration-150"
-                    placeholder="E.g., Early check-in request, dietary restrictions, need extra towels, etc. (Optional)"></textarea>
             </div>
 
-            <div class="mt-8 text-center">
-                <button type="button" id="proceedToPayment" class="btn-pulse bg-accent hover:bg-accent/90 shadow-xl px-12 py-3 rounded-lg font-bold text-white text-lg hover:scale-105 transition-all duration-300 transform">
-                    Proceed to Payment
-                </button>
-            </div>
+            <div class="w-full flex flex-col justify-start">
 
+                <div>
+                    <h4 class="mb-3 font-bold text-primary-dark text-xl">Important Policies</h4>
+
+                    <div class="bg-red-50 shadow-md mb-6 p-4 border-t-4 border-red-600 rounded-lg">
+                        <p class="mb-2 font-bold text-red-700">Cancellation Policy (Strict)</p>
+                        <ul class="ml-6 text-gray-700 text-sm list-disc">
+                            <li>Full refund within 48 hours...</li>
+                            <li>50% refund 7 days before check-in.</li>
+                            <li>No refund within 7 days.</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-secondary-light shadow-md p-4 border-t-4 border-accent rounded-lg">
+                        <p class="mb-2 font-bold text-primary-dark">Check-in & Check-out Policies</p>
+                        <ul class="ml-6 text-gray-700 text-sm list-disc">
+                            <li>Check-in: 4:00 PM</li>
+                            <li>Check-out: 10:00 AM</li>
+                            <li>Self check-in code sent 3:30 PM</li>
+                            <li>Early check-in fee: ₱800</li>
+                            <li>Late check-out penalty: ₱800 up to 12 PM</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mt-8"> 
+                    <h4 class="mb-2 font-bold text-primary-dark text-xl">Select Payment Method</h4>
+                    <div id="payment-logos" class="grid grid-cols-3 gap-3">
+                        <label class="payment-logo-option selected" data-value="gcash">
+                            <input type="radio" name="paymentMethod" value="gcash" checked>
+                            <img src="https://upload.wikimedia.org/wikipedia/en/thumb/5/5a/GCash_logo.svg/1200px-GCash_logo.svg.png">
+                            <span class="text-xs font-semibold text-primary-dark">GCash (Recommended)</span>
+                        </label>
+                        <label class="payment-logo-option" data-value="paymaya">
+                            <input type="radio" name="paymentMethod" value="paymaya">
+                            <img src="https://www.maya.ph/assets/images/header/maya-logo-2023.svg">
+                            <span class="text-xs font-semibold text-primary-dark">Maya (PayMaya)</span>
+                        </label>
+                        <label class="payment-logo-option" data-value="visa">
+                            <input type="radio" name="paymentMethod" value="visa">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg">
+                            <span class="text-xs font-semibold text-primary-dark">Credit/Debit Card</span>
+                        </label>
+                    </div>
+                </div>
+
+            </div>
         </div>
-    </main>
+        <hr class="border-gray-300 my-8">
 
-    <?= view('components/footer') ?>
+        <div class="mt-8 text-center">
+            <button id="proceedToPayment"
+                    class="btn-pulse bg-accent hover:bg-accent/90 shadow-xl px-12 py-3 rounded-lg font-bold text-white text-lg hover:scale-105 transition-all">
+                Proceed to Payment
+            </button>
+        </div>
+    </div>
+</main>
+
 
     <script>
         // Helper function to format currency (unchanged)
