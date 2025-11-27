@@ -69,3 +69,6 @@ $routes->get('api/payment/(:num)', 'PaymentController::getPaymentDetails/$1');
 $routes->post('api/payment/refund/(:num)', 'PaymentController::refundPayment/$1');
 
 $routes->get('booking/history', 'BookingController::history');
+
+$routes->get('user/booking_review', 'BookingController::review');
+
