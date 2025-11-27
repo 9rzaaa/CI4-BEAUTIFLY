@@ -66,3 +66,6 @@ $routes->get('api/bookings', 'BookingController::list');
 $routes->get('api/bookings/(:num)', 'BookingController::show/$1');
 $routes->put('api/bookings/(:num)', 'BookingController::update/$1');
 $routes->delete('api/bookings/(:num)', 'BookingController::delete/$1');
+
+$routes->post('/booking/create', 'BookingController::create');
+$routes->get('/booking/success', 'BookingController::success');
