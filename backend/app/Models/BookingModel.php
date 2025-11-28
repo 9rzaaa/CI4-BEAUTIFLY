@@ -115,3 +115,69 @@ class BookingModel extends Model
         
         return $builder->get()->getResultArray();
     }
+
+// get cancelled bookings
+    public function getCancelledBookings($userId)
+    {
+        $builder = $this->db->table('bookings b');
+        $builder->select('b.*, p.name as property_name, p.image as property_image');
+        $builder->join('properties p', 'p.id = b.property_id', 'left');
+        $builder->where('b.user_id', $userId);
+        $builder->where('b.status', 'cancelled');
+        $builder->orderBy('b.updated_at', 'DESC');
+        
+        return $builder->get()->getResultArray();
+    }
+
+    // Cancel booking with refund calculation
+     // Returns: ['success' => bool, 'refund_amount' => float, 'refund_percentage' => int, 'message' => string]
+    public function cancelBooking($bookingId, $userId)
+    {
+        $booking = $this->where('id', $bookingId)
+                        ->where('user_id', $userId)
+                        ->first();
+
+        if (!$booking) {
+            return [
+                'success' => false,
+                'message' => 'Booking not found'
+            ];
+        }
+
+        if ($booking['status'] === 'cancelled') {
+            return [
+                'success' => false,
+                'message' => 'Booking is already cancelled'
+            ];
+        }
+
+        if ($booking['status'] === 'completed') {
+            return [
+                'success' => false,
+                'message' => 'Cannot cancel completed booking'
+            ];
+        }
+
+        // Calculate refund based on cancellation policy
+        $refundData = $this->calculateRefund($booking);
+
+        // Update booking status
+        $updateData = [
+            'status' => 'cancelled',
+            'updated_at' => date('Y-m-d H:i:s')
+        ];
+
+        // If there's a refund, update payment status
+        if ($refundData['refund_amount'] > 0) {
+            $updateData['payment_status'] = 'refunded';
+        }
+
+        $this->update($bookingId, $updateData);
+
+        return [
+            'success' => true,
+            'refund_amount' => $refundData['refund_amount'],
+            'refund_percentage' => $refundData['refund_percentage'],
+            'message' => $refundData['message']
+        ];
+    }
