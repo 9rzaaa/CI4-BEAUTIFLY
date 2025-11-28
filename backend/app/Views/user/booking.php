@@ -156,30 +156,18 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
         let selectedDates = [];
-        let PRICE_PER_NIGHT = 2500.00; // Hardcoded default price
-        let CLEANING_FEE = 350.00; // Hardcoded default cleaning fee
 
-        // Function to generate a random alphanumeric ID
-        function generateTransactionId(length = 10) {
-            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-            let result = '';
-            for (let i = 0; i < length; i++) {
-                result += characters.charAt(Math.floor(Math.random() * characters.length));
-            }
-            return 'TXN-' + result;
-        }
-
-        // Initialize flatpickr
+        // Initialize flatpickr for date selection
         flatpickr("#dateRange", {
             mode: "range",
             dateFormat: "Y-m-d",
             minDate: "today",
             onChange: function(dates, dateStr, instance) {
-                selectedDates = dates; // Store the selected dates
+                selectedDates = dates;
             }
         });
 
-        // Guest dropdown toggle and update logic
+        // Guest dropdown elements
         const guestBtn = document.getElementById("guestBtn");
         const guestDropdown = document.getElementById("guestDropdown");
         const guestSummary = document.getElementById("guestSummary");
@@ -187,57 +175,74 @@
         const adultsInput = document.getElementById("adults");
         const kidsInput = document.getElementById("kids");
 
+        // Toggle guest dropdown
         guestBtn.addEventListener("click", () => {
             guestDropdown.classList.toggle("hidden");
         });
 
+        // Close dropdown when "Done" is clicked
         guestDone.addEventListener("click", () => {
             updateGuestSummary();
             guestDropdown.classList.add("hidden");
         });
 
+        // Adults increment/decrement
         document.getElementById("plusAdults").addEventListener("click", (e) => {
             e.stopPropagation();
-            if (adultsInput.value < 6) adultsInput.value = parseInt(adultsInput.value) + 1;
-            updateGuestSummary();
+            if (adultsInput.value < 6) {
+                adultsInput.value = parseInt(adultsInput.value) + 1;
+                updateGuestSummary();
+            }
         });
+
         document.getElementById("minusAdults").addEventListener("click", (e) => {
             e.stopPropagation();
-            if (adultsInput.value > 1) adultsInput.value = parseInt(adultsInput.value) - 1;
-            updateGuestSummary();
+            if (adultsInput.value > 1) {
+                adultsInput.value = parseInt(adultsInput.value) - 1;
+                updateGuestSummary();
+            }
         });
 
+        // Kids increment/decrement
         document.getElementById("plusKids").addEventListener("click", (e) => {
             e.stopPropagation();
-            if (kidsInput.value < 6) kidsInput.value = parseInt(kidsInput.value) + 1;
-            updateGuestSummary();
-        });
-        document.getElementById("minusKids").addEventListener("click", (e) => {
-            e.stopPropagation();
-            if (kidsInput.value > 0) kidsInput.value = parseInt(kidsInput.value) - 1;
-            updateGuestSummary();
+            if (kidsInput.value < 6) {
+                kidsInput.value = parseInt(kidsInput.value) + 1;
+                updateGuestSummary();
+            }
         });
 
+        document.getElementById("minusKids").addEventListener("click", (e) => {
+            e.stopPropagation();
+            if (kidsInput.value > 0) {
+                kidsInput.value = parseInt(kidsInput.value) - 1;
+                updateGuestSummary();
+            }
+        });
+
+        // Update guest summary text
         function updateGuestSummary() {
             const adults = adultsInput.value;
             const kids = kidsInput.value;
             guestSummary.textContent = `${adults} Adult${adults > 1 ? 's' : ''}, ${kids} Kid${kids > 1 ? 's' : ''}`;
         }
-        
+
+        // Close dropdown when clicking outside
         document.addEventListener("click", function(e) {
             if (!guestBtn.contains(e.target) && !guestDropdown.contains(e.target)) {
                 guestDropdown.classList.add("hidden");
             }
         });
 
-
-        // ➡️ REDIRECTION LOGIC 
+        // Book Now button - Redirect to review page
         document.getElementById("reviewBooking").addEventListener("click", () => {
+            // Validate date selection
             if (selectedDates.length !== 2) {
                 alert("Please select a check-in and check-out date range.");
                 return;
             }
 
+            // Validate date range
             const checkInDate = selectedDates[0];
             const checkOutDate = selectedDates[1];
 
@@ -250,37 +255,32 @@
                 return;
             }
 
-            // Check guest count
+            // Validate guest count
             const totalGuests = parseInt(adultsInput.value) + parseInt(kidsInput.value);
             if (totalGuests > 6) {
                 alert("Maximum 6 guests allowed.");
                 return;
             }
 
-            const transactionId = generateTransactionId();
+            if (totalGuests === 0) {
+                alert("Please select at least one guest.");
+                return;
+            }
+
+            // Format dates
             const checkIn = checkInDate.toISOString().split('T')[0];
             const checkOut = checkOutDate.toISOString().split('T')[0];
-            
-            // Calculate total price including cleaning fee
-            const totalPrice = (diffDays * PRICE_PER_NIGHT) + CLEANING_FEE;
 
-
-            // Prepare query parameters to pass all booking details
+            // Prepare query parameters (no price calculations here)
             const queryParams = new URLSearchParams({
                 checkIn: checkIn,
                 checkOut: checkOut,
                 adults: adultsInput.value,
-                kids: kidsInput.value,
-                nights: diffDays,
-                transactionId: transactionId,
-                pricePerNight: PRICE_PER_NIGHT.toFixed(2), 
-                cleaningFee: CLEANING_FEE.toFixed(2),
-                totalPrice: totalPrice.toFixed(2)
+                kids: kidsInput.value
             }).toString();
 
-            // FIX: Change 'booking_review' (underscore) to 'booking-review' (hyphen)
-            window.location.href = `/user/booking_review?${queryParams}`; 
-
+            // Redirect to booking review page
+            window.location.href = `/user/booking_review?${queryParams}`;
         });
     </script>
 
