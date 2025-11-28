@@ -72,3 +72,8 @@ $routes->get('booking/history', 'BookingController::history');
 
 $routes->get('user/booking_review', 'BookingController::review');
 
+$routes->get('/user/booking-form', 'User::bookingForm');  // Booking form page
+$routes->get('/user/booking-confirmation', 'User::bookingConfirmation'); // Booking confirmation page
+$routes->get('/booking_success', 'User::bookingSuccess'); // Success page after payment
+
+
