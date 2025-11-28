@@ -69,7 +69,7 @@
             
             /* Image lazy loading skeleton */
             img[data-src] {
-                background: linear-gradient(135deg, var(--sky-blue), var(--ocean-blue));
+                background: linear-gradient(135deg, #C8A998, #A67C52);
                 background-size: 200% 100%;
                 animation: loading 1.5s infinite;
             }
@@ -86,7 +86,7 @@
                 right: 30px;
                 width: 50px;
                 height: 50px;
-                background: linear-gradient(135deg, #91ADC8 0%, #5C7996 100%);
+                background: linear-gradient(135deg, #C8A998 0%, #A67C52 100%);
                 color: white;
                 border: none;
                 border-radius: 50%;

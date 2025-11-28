@@ -11,7 +11,7 @@ class ClearDatabaseSeeder extends Seeder
         $db = \Config\Database::connect();
 
         // Clear tables in reverse order (to respect foreign key constraints)
-        $tablesInOrder = ['bookings', 'properties', 'users'];
+        $tablesInOrder = ['payments', 'bookings', 'properties', 'users'];
 
         // Disable foreign key checks to avoid constraint errors
         $db->disableForeignKeyChecks();

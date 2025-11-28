@@ -186,4 +186,59 @@ class CRUDTesting extends BaseController
             return redirect()->to(site_url('test/user'));
         }
     }
+
+    public function deleteUserData($id = null)
+    {
+        // Step 1: Get request and session services
+        $request = service('request');
+        $session = session();
+
+        // Step 2: Initialize the model
+        $userModel = new UsersModel();
+
+        // Step 3: Validate input
+        $validation = \Config\Services::validation();
+        $validation->setRule('id', 'ID', 'required|numeric|min_length[1]');
+
+        $post = ['id' => $id];
+
+        if (!$validation->run($post)) {
+            $session->setFlashdata('errors', $validation->getErrors());
+            return redirect()->back()->withInput();
+        }
+
+        // Step 4: Try-catch block for error handling
+        try {
+            // Step 5: Check if account exists
+            $account = $userModel->where('id', $id)->first();
+
+            if (!$account) {
+                return $this->response->setStatusCode(ResponseInterface::HTTP_NOT_FOUND)
+                    ->setJSON(['success' => false, 'message' => 'Account not found']);
+            }
+
+            // Step 6: Prepare data for soft deletion
+            $payload = [
+                'id' => $id,
+                'account_status' => 0,
+                'deleted_at' => date('Y-m-d H:i:s'),
+            ];
+
+            // Step 7: Save to database
+            $ok = $userModel->save($payload);
+
+            // Step 8: Check if save was successful
+            if ($ok === false) {
+                throw new \Exception('Model deletion failed');
+            }
+
+            // Step 9: Return success response
+            return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
+                ->setJSON(['success' => true, 'message' => 'Account Deleted', 'data' => ['id' => $id]]);
+        } catch (\Throwable $e) {
+            // Step 10: Handle any errors
+            return $this->response->setStatusCode(ResponseInterface::HTTP_INTERNAL_SERVER_ERROR)
+                ->setJSON(['success' => false, 'message' => 'Server error while deleting account: ' . $e->getMessage()]);
+        }
+    }
 }
