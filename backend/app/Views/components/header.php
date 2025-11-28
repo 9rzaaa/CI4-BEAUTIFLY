@@ -12,6 +12,7 @@ $isAdmin = ($user['type'] ?? '') === 'admin';
 ?>
 
 <header class="bg-[#73AF6F]">
+    <header class="bg-[#73AF6F] sticky top-0 z-50">
     <div class="flex justify-between items-center mx-auto py-4 pr-6 pl-2 max-w-7xl">
         <!-- Logo Section -->
         <a href="/" class="flex items-center space-x-4">
