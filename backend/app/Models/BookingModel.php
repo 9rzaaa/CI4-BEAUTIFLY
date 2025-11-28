@@ -71,7 +71,9 @@ class BookingModel extends Model
         
         return $builder->get()->getResultArray();
     }
-    // Get single booking with property details
+    /**
+     * Get single booking with property details
+     */
     public function getBookingWithProperty($bookingId, $userId = null)
     {
         $builder = $this->db->table('bookings b');
@@ -84,4 +86,32 @@ class BookingModel extends Model
         }
         
         return $builder->get()->getRowArray();
+    }
+
+    // Get upcoming bookings (check-in date is in the future)
+    public function getUpcomingBookings($userId)
+    {
+        $builder = $this->db->table('bookings b');
+        $builder->select('b.*, p.name as property_name, p.image as property_image');
+        $builder->join('properties p', 'p.id = b.property_id', 'left');
+        $builder->where('b.user_id', $userId);
+        $builder->where('b.check_in >', date('Y-m-d'));
+        $builder->where('b.status', 'confirmed');
+        $builder->orderBy('b.check_in', 'ASC');
+        
+        return $builder->get()->getResultArray();
+    }
+
+    //  Get completed bookings (check-out date has passed)
+    public function getCompletedBookings($userId)
+    {
+        $builder = $this->db->table('bookings b');
+        $builder->select('b.*, p.name as property_name, p.image as property_image');
+        $builder->join('properties p', 'p.id = b.property_id', 'left');
+        $builder->where('b.user_id', $userId);
+        $builder->where('b.check_out <', date('Y-m-d'));
+        $builder->whereIn('b.status', ['confirmed', 'completed']);
+        $builder->orderBy('b.check_out', 'DESC');
+        
+        return $builder->get()->getResultArray();
     }
