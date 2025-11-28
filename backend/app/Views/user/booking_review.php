@@ -299,9 +299,9 @@
             });
         });
 
-        // Function to show QR code modal (GCash/Maya) - 40 SECONDS
-        function showQRModal(paymentMethod, callback) {
-            const modalHTML = `
+// Function to show QR code modal (GCash/Maya) with Done button
+function showQRModal(paymentMethod, callback) {
+    const modalHTML = `
         <div id="qrModal" class="z-50 fixed inset-0 flex justify-center items-center bg-black bg-opacity-70" style="animation: fadeIn 0.3s;">
             <div class="bg-white mx-4 p-8 rounded-2xl w-full max-w-md text-center" style="animation: slideUp 0.3s;">
                 <h3 class="mb-4 font-bold text-2xl" style="color: #2F5233;">Scan to Pay</h3>
@@ -319,19 +319,26 @@
                     <p class="text-gray-500 text-sm">Seconds remaining</p>
                 </div>
                
-                <p class="text-gray-400 text-xs">Processing payment automatically...</p>
+                <button id="qrDoneButton" 
+                    class="bg-accent hover:bg-accent/90 shadow-lg px-8 py-3 rounded-lg w-full font-bold text-white text-lg hover:scale-105 transition-all"
+                    style="background-color: #73AF6F;">
+                    Done
+                </button>
+               
+                <p class="mt-4 text-gray-400 text-xs">Or wait for automatic processing...</p>
             </div>
         </div>
         <style>
             @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
             @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         </style>
-        `;
+            `;
 
             document.body.insertAdjacentHTML('beforeend', modalHTML);
 
             let timeLeft = 40;
             const timerElement = document.getElementById('qrTimer');
+            const doneButton = document.getElementById('qrDoneButton');
 
             const countdown = setInterval(() => {
                 timeLeft--;
@@ -343,8 +350,14 @@
                     callback();
                 }
             }, 1000);
-        }
 
+            // Add click handler for Done button
+            doneButton.addEventListener('click', () => {
+                clearInterval(countdown);
+                document.getElementById('qrModal').remove();
+                callback();
+            });
+        }
         // Function to show Visa payment form
         function showVisaPaymentForm(callback) {
             alert('Redirecting to Credit/Debit Card payment form...\n\n(Frontend team will implement the actual form)');
