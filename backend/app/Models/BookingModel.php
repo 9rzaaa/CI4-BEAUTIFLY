@@ -220,3 +220,40 @@ class BookingModel extends Model
             'message' => 'No refund - Cancelled within 7 days of check-in'
         ];
     } 
+    // Get booking statistics for user
+    public function getUserBookingStats($userId)
+    {
+        $builder = $this->db->table('bookings');
+        $builder->where('user_id', $userId);
+
+        // Total bookings
+        $total = $builder->countAllResults(false);
+
+        // Upcoming
+        $builder->resetQuery();
+        $builder->where('user_id', $userId);
+        $builder->where('check_in >', date('Y-m-d'));
+        $builder->where('status', 'confirmed');
+        $upcoming = $builder->countAllResults(false);
+
+        // Completed
+        $builder->resetQuery();
+        $builder->where('user_id', $userId);
+        $builder->where('check_out <', date('Y-m-d'));
+        $builder->whereIn('status', ['confirmed', 'completed']);
+        $completed = $builder->countAllResults(false);
+
+        // Cancelled
+        $builder->resetQuery();
+        $builder->where('user_id', $userId);
+        $builder->where('status', 'cancelled');
+        $cancelled = $builder->countAllResults(false);
+
+        return [
+            'total' => $total,
+            'upcoming' => $upcoming,
+            'completed' => $completed,
+            'cancelled' => $cancelled
+        ];
+    }
+}
