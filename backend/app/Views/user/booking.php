@@ -5,115 +5,6 @@
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
 
-<style>
-    /* Custom Accent Color - Main Garden Green */
-    .bg-accent {
-        background-color: #73AF6F; /* Original Green */
-    }
-    .hover\:bg-accent\/90:hover {
-        background-color: #629c5e; /* Slightly darker hover green */
-    }
-    .text-accent {
-        color: #73AF6F;
-    }
-    .border-accent {
-        border-color: #73AF6F;
-    }
-
-    /* New Garden Theme Colors */
-    .bg-primary-dark {
-        background-color: #2F5233; /* Deep Forest Green */
-    }
-    .text-primary-dark {
-        color: #2F5233;
-    }
-    .bg-secondary-light {
-        background-color: #F8F4E3; /* Soft Light Beige/Cream - like dry grass or sand */
-    }
-    .border-secondary-light {
-        border-color: #E0DBCF; /* Slightly darker beige border */
-    }
-    /* Updated styling for logo selection */
-    .payment-logo-option {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 3px solid #E0DBCF; /* Default border */
-        border-radius: 8px;
-        cursor: pointer;
-        padding: 1rem;
-        transition: all 0.2s ease-in-out;
-        height: 80px; /* Standard height for logos */
-        background-color: white;
-    }
-    .payment-logo-option:hover {
-        border-color: #73AF6F; /* Accent border on hover */
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
-    }
-    .payment-logo-option.selected {
-        border-color: #73AF6F; /* Highlight selected item with accent green */
-        box-shadow: 0 0 0 4px #D4EDDA; /* Inner glow effect */
-        background-color: #D4EDDA; /* Light green background */
-    }
-
-    /* Hide the actual radio button, but keep its functionality */
-    .payment-logo-option input[type="radio"] {
-        opacity: 0;
-        width: 0;
-        height: 0;
-        margin: 0;
-        padding: 0;
-        pointer-events: none;
-    }
-
-    .payment-logo-option img {
-        max-height: 100%;
-        max-width: 100%;
-        object-fit: contain;
-    }
-    
-    .text-total-price {
-        color: #FFFFFF; /* White color for Total Price */
-    }
-
-    /* Modal Animation - unchanged */
-    @keyframes fadeInScale {
-        from {
-            opacity: 0;
-            transform: scale(0.9);
-        }
-        to {
-            opacity: 1;
-            transform: scale(1);
-        }
-    }
-
-    @keyframes fadeOutScale {
-        from {
-            opacity: 1;
-            transform: scale(1);
-        }
-        to {
-            opacity: 0;
-            transform: scale(0.9);
-        }
-    }
-
-    .modal-enter {
-        animation: fadeInScale 0.3s ease-out forwards;
-    }
-
-    .modal-exit {
-        animation: fadeOutScale 0.3s ease-in forwards;
-    }
-
-    /* Ensure flex column layout for small screens in modal - unchanged */
-    @media (max-width: 768px) {
-        .modal-grid-layout {
-            grid-template-columns: 1fr;
-        }
-    }
-</style>
 
 <body class="relative text-gray-900 bg-cover bg-center bg-fixed min-h-screen" style="background-image: url('/assets/img/bookingbg.jpg');">
 
@@ -122,15 +13,16 @@
 
   <?= view('components/header', ['active' => 'Home']) ?>
 
-  <section class="relative w-full h-64 md:h-96 lg:h-[500px]">
-    <img src="/assets/img/booking.webp" alt="Booking Header" class="w-full h-full object-cover">
-    <div class="absolute inset-0 bg-black/50"></div>
-    <div class="absolute inset-0 flex items-center justify-center">
-      <h1 class="text-white text-4xl md:text-6xl font-bold drop-shadow-lg text-center px-4">
-       EASY&CO
-      </h1>
-    </div>
-  </section>
+<section class="relative w-full h-96 md:h-[550px] lg:h-[550px]">
+  <img src="/assets/img/booking.webp" alt="Booking Header" class="w-full h-full object-cover">
+  <div class="absolute inset-0 bg-black/50"></div>
+  <div class="absolute inset-0 flex items-center justify-center">
+    <h1 class="text-white text-4xl md:text-6xl font-bold drop-shadow-lg text-center px-4">
+      EASY&CO
+    </h1>
+  </div>
+</section>
+
 
 <section class="relative -mt-20 max-w-4xl mx-auto bg-white rounded-2xl shadow-2xl z-10 p-8 lg:p-10 border-t-4 border-accent">
     <h2 class="text-3xl font-extrabold mb-6 text-center text-primary-dark">Book Now Your Perfect Escape</h2>
