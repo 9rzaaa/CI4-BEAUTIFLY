@@ -6,6 +6,10 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
 <style>
     /* Custom Accent Color - Main Garden Green */
     .bg-accent {
@@ -70,6 +74,19 @@
     <!-- HEADER IMAGE -->
     <section class="relative w-full h-96 md:h-[550px] lg:h-[550px]">
 >>>>>>> Stashed changes
+<<<<<<< Updated upstream
+=======
+=======
+<body class="relative bg-cover bg-center bg-fixed min-h-screen text-gray-900" style="background-image: url('/assets/img/bookingbg.jpg');">
+
+    <div class="bg-accent h-3"></div>
+
+    <?= view('components/header', ['active' => 'Home']) ?>
+
+    <!-- HEADER IMAGE -->
+    <section class="relative w-full h-96 md:h-[550px] lg:h-[550px]">
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
         <img src="/assets/img/booking.webp" alt="Booking Header" class="w-full h-full object-cover">
         <div class="absolute inset-0 bg-black/50"></div>
         <div class="absolute inset-0 flex justify-center items-center">
@@ -80,6 +97,13 @@
     </section>
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+=======
+    <!-- BOOKING BOX -->
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 =======
     <!-- BOOKING BOX -->
 >>>>>>> Stashed changes
@@ -89,6 +113,13 @@
         <form id="bookingForm" class="items-end gap-4 grid grid-cols-1 md:grid-cols-4">
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+=======
+            <!-- Date Picker -->
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 =======
             <!-- Date Picker -->
 >>>>>>> Stashed changes
@@ -100,6 +131,10 @@
             </div>
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
             <div class="relative md:col-span-1">
                 <label class="block mb-2 font-bold text-gray-700">👨‍👩‍👧 Guests</label>
                 <div>
@@ -150,6 +185,15 @@
             <div class="relative md:col-span-1">
                 <label class="block mb-2 font-bold text-gray-700">👨‍👩‍👧 Guests</label>
 
+<<<<<<< Updated upstream
+=======
+=======
+            <!-- Guest Picker -->
+            <div class="relative md:col-span-1">
+                <label class="block mb-2 font-bold text-gray-700">👨‍👩‍👧 Guests</label>
+
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
                 <!-- Guest button -->
                 <button type="button" id="guestBtn"
                     class="flex justify-between items-center bg-white shadow-sm p-3 border-2 border-gray-300 hover:border-accent focus:border-accent rounded-lg focus:ring focus:ring-accent/50 w-full text-left transition duration-150">
@@ -192,21 +236,42 @@
                     type="button"
                     id="reviewBooking"
                     class="bg-[#73AF6F] hover:bg-[#5B9358] shadow-lg py-3 rounded-lg w-full font-bold text-white hover:scale-105 active:scale-100 transition-all duration-300 transform">
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
 >>>>>>> Stashed changes
                     Book Now
                 </button>
             </div>
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
 
         </form>
     </section>
 
 =======
+<<<<<<< Updated upstream
+=======
+=======
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
         </form>
     </section>
 
     <!-- GALLERY -->
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
 >>>>>>> Stashed changes
     <section class="mx-auto mt-16 px-4 md:px-0 pb-16 max-w-5xl">
         <h2 class="mb-6 font-bold text-[#73AF6F] text-3xl text-center">Gallery</h2>
@@ -215,6 +280,10 @@
 
             <div class="flex flex-col gap-4">
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
                 <img src="/assets/img/room4.jpg" alt="Room" class="shadow rounded w-full h-80 object-cover hover:scale-105 transition">
                 <img src="/assets/img/livingroom.jpg" alt="Living Room" class="shadow rounded w-full h-64 object-cover hover:scale-105 transition">
             </div>
@@ -223,6 +292,11 @@
                 <img src="/assets/img/kitchen.jpeg" alt="Kitchen" class="shadow rounded w-full h-64 object-cover hover:scale-105 transition">
                 <img src="/assets/img/toilet.jpg" alt="Toilet" class="shadow rounded w-full h-80 object-cover hover:scale-105 transition">
 =======
+<<<<<<< Updated upstream
+=======
+=======
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
                 <img src="/assets/img/room4.jpg" class="shadow rounded w-full h-80 object-cover hover:scale-105 transition">
                 <img src="/assets/img/livingroom.jpg" class="shadow rounded w-full h-64 object-cover hover:scale-105 transition">
             </div>
@@ -230,6 +304,12 @@
             <div class="flex flex-col gap-4">
                 <img src="/assets/img/kitchen.jpeg" class="shadow rounded w-full h-64 object-cover hover:scale-105 transition">
                 <img src="/assets/img/toilet.jpg" class="shadow rounded w-full h-80 object-cover hover:scale-105 transition">
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
 >>>>>>> Stashed changes
             </div>
 
@@ -248,9 +328,19 @@
             dateFormat: "Y-m-d",
             minDate: "today",
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
             onChange: function(dates, dateStr, instance) {
 =======
             onChange: function(dates) {
+>>>>>>> Stashed changes
+<<<<<<< Updated upstream
+=======
+=======
+            onChange: function(dates) {
+>>>>>>> Stashed changes
 >>>>>>> Stashed changes
                 selectedDates = dates;
             }
@@ -261,8 +351,17 @@
         const guestDropdown = document.getElementById("guestDropdown");
         const guestSummary = document.getElementById("guestSummary");
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         const guestDone = document.getElementById("guestDone");
 =======
+>>>>>>> Stashed changes
+=======
+<<<<<<< Updated upstream
+        const guestDone = document.getElementById("guestDone");
+=======
+>>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
 >>>>>>> Stashed changes
         const adultsInput = document.getElementById("adults");
         const kidsInput = document.getElementById("kids");
@@ -273,6 +372,10 @@
         });
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
         // Close dropdown when "Done" is clicked
         guestDone.addEventListener("click", () => {
             updateGuestSummary();
@@ -290,6 +393,15 @@
             e.stopPropagation();
             if (adultsInput.value < 6) {
                 adultsInput.value = parseInt(adultsInput.value) + 1;
+<<<<<<< Updated upstream
+=======
+=======
+        // Adults increment/decrement
+        document.getElementById("plusAdults").addEventListener("click", (e) => {
+            e.stopPropagation();
+            if (adultsInput.value < 6) {
+                adultsInput.value = parseInt(adultsInput.value) + 1;
+>>>>>>> Stashed changes
                 updateGuestSummary();
             }
         });
@@ -308,6 +420,10 @@
             e.stopPropagation();
             if (adultsInput.value > 1) {
                 adultsInput.value = parseInt(adultsInput.value) - 1;
+<<<<<<< Updated upstream
+=======
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 =======
         // Kids increment/decrement
         document.getElementById("plusKids").addEventListener("click", (e) => {
@@ -320,6 +436,33 @@
         });
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+        document.getElementById("minusAdults").addEventListener("click", (e) => {
+            e.stopPropagation();
+            if (adultsInput.value > 1) {
+                adultsInput.value = parseInt(adultsInput.value) - 1;
+=======
+        // Kids increment/decrement
+        document.getElementById("plusKids").addEventListener("click", (e) => {
+            e.stopPropagation();
+            if (kidsInput.value < 6) {
+                kidsInput.value = parseInt(kidsInput.value) + 1;
+>>>>>>> Stashed changes
+=======
+        document.getElementById("minusKids").addEventListener("click", (e) => {
+            e.stopPropagation();
+            if (kidsInput.value > 0) {
+                kidsInput.value = parseInt(kidsInput.value) - 1;
+>>>>>>> Stashed changes
+                updateGuestSummary();
+            }
+        });
+
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
         // Kids increment/decrement
         document.getElementById("plusKids").addEventListener("click", (e) => {
             e.stopPropagation();
@@ -432,6 +575,75 @@
                 kids: kidsInput.value
             }).toString();
 
+=======
+        // Update guest summary text
+        function updateGuestSummary() {
+            const adults = adultsInput.value;
+            const kids = kidsInput.value;
+            guestSummary.textContent = `${adults} Adult${adults > 1 ? 's' : ''}, ${kids} Kid${kids > 1 ? 's' : ''}`;
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener("click", function(e) {
+            if (!guestBtn.contains(e.target) && !guestDropdown.contains(e.target)) {
+                guestDropdown.classList.add("hidden");
+            }
+        });
+
+        // Helper function to format date without timezone issues
+        function formatDateLocal(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        // Book Now button - Redirect to review page
+        document.getElementById("reviewBooking").addEventListener("click", () => {
+            // Validate date selection
+            if (selectedDates.length !== 2) {
+                alert("Please select a check-in and check-out date range.");
+                return;
+            }
+
+            // Validate date range
+            const checkInDate = selectedDates[0];
+            const checkOutDate = selectedDates[1];
+
+            const oneDay = 24 * 60 * 60 * 1000;
+            const diffTime = Math.abs(checkOutDate.getTime() - checkInDate.getTime());
+            const diffDays = Math.round(diffTime / oneDay);
+
+            if (diffDays <= 0) {
+                alert("Check-out date must be after check-in date.");
+                return;
+            }
+
+            // Validate guest count
+            const totalGuests = parseInt(adultsInput.value) + parseInt(kidsInput.value);
+            if (totalGuests > 6) {
+                alert("Maximum 6 guests allowed.");
+                return;
+            }
+
+            if (totalGuests === 0) {
+                alert("Please select at least one guest.");
+                return;
+            }
+
+            // Format dates without timezone conversion issues
+            const checkIn = formatDateLocal(checkInDate);
+            const checkOut = formatDateLocal(checkOutDate);
+
+            // Prepare query parameters (no price calculations here)
+            const queryParams = new URLSearchParams({
+                checkIn: checkIn,
+                checkOut: checkOut,
+                adults: adultsInput.value,
+                kids: kidsInput.value
+            }).toString();
+
+>>>>>>> Stashed changes
             // Redirect to booking review page
             window.location.href = `/user/booking_review?${queryParams}`;
         });
