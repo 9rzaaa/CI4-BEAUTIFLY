@@ -181,3 +181,42 @@ class BookingModel extends Model
             'message' => $refundData['message']
         ];
     }
+   // Calculate refund amount based on cancellation policy
+    private function calculateRefund($booking)
+    {
+        $totalPrice = $booking['total_price'];
+        $bookingDate = new \DateTime($booking['created_at']);
+        $checkInDate = new \DateTime($booking['check_in']);
+        $today = new \DateTime();
+
+        // Calculate hours since booking
+        $hoursSinceBooking = $today->diff($bookingDate)->days * 24 + $today->diff($bookingDate)->h;
+        
+        // Calculate days until check-in
+        $daysUntilCheckIn = $today->diff($checkInDate)->days;
+
+        // Full refund within 48 hours of booking
+        if ($hoursSinceBooking <= 48) {
+            return [
+                'refund_amount' => $totalPrice,
+                'refund_percentage' => 100,
+                'message' => 'Full refund - Cancelled within 48 hours of booking'
+            ];
+        }
+
+        // 50% refund if 7+ days before check-in
+        if ($daysUntilCheckIn >= 7) {
+            return [
+                'refund_amount' => $totalPrice * 0.5,
+                'refund_percentage' => 50,
+                'message' => '50% refund - Cancelled 7+ days before check-in'
+            ];
+        }
+
+        // No refund within 7 days of check-in
+        return [
+            'refund_amount' => 0,
+            'refund_percentage' => 0,
+            'message' => 'No refund - Cancelled within 7 days of check-in'
+        ];
+    } 
