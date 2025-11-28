@@ -59,6 +59,16 @@ class Auth extends BaseController
             'display_name' => trim(($userArr['first_name'][0] ?? '') . ' ' . ($userArr['middle_name'][0] ?? '') . ' ' . ($userArr['last_name'] ?? '')),
         ]);
 
+        // IMPORTANT: Also set user_id for BookingController compatibility
+        $session->set('user_id', $userArr['id'] ?? null);
+
+        // CHECK FOR REDIRECT URL (for booking flow)
+        $redirectUrl = $session->get('redirect_url');
+        if ($redirectUrl) {
+            $session->remove('redirect_url');
+            return redirect()->to($redirectUrl);
+        }
+
         // Redirect based on user type
         $type = strtolower($userArr['type'] ?? 'client');
         if ($type === 'admin') {

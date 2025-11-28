@@ -26,6 +26,7 @@ class CreatePropertiesTable extends Migration
             ],
             'description' => [
                 'type' => 'TEXT',
+                'null' => true,
             ],
             'property_type' => [
                 'type'       => 'VARCHAR',
@@ -38,45 +39,32 @@ class CreatePropertiesTable extends Migration
                 'type'       => 'VARCHAR',
                 'constraint' => 100,
             ],
-            'country' => [
-                'type'       => 'VARCHAR',
-                'constraint' => 100,
-            ],
-            'latitude' => [
-                'type'       => 'DECIMAL',
-                'constraint' => '10,8',
-                'null'       => true,
-            ],
-            'longitude' => [
-                'type'       => 'DECIMAL',
-                'constraint' => '11,8',
-                'null'       => true,
-            ],
             'price_per_night' => [
                 'type'       => 'DECIMAL',
                 'constraint' => '10,2',
+                'default'    => 2000.00,
+            ],
+            'promo_price' => [
+                'type'       => 'DECIMAL',
+                'constraint' => '10,2',
+                'null'       => true,
+                'default'    => null,
+            ],
+            'peak_price' => [
+                'type'       => 'DECIMAL',
+                'constraint' => '10,2',
+                'null'       => true,
+                'default'    => null,
             ],
             'cleaning_fee' => [
                 'type'       => 'DECIMAL',
                 'constraint' => '10,2',
-                'default'    => 0.00,
+                'default'    => 300.00,
             ],
             'max_guests' => [
                 'type'       => 'INT',
                 'constraint' => 3,
-                'default'    => 1,
-            ],
-            'bedrooms' => [
-                'type'       => 'INT',
-                'constraint' => 3,
-            ],
-            'beds' => [
-                'type'       => 'INT',
-                'constraint' => 3,
-            ],
-            'bathrooms' => [
-                'type'       => 'DECIMAL',
-                'constraint' => '3,1',
+                'default'    => 6,
             ],
             'amenities' => [
                 'type' => 'TEXT',
@@ -93,14 +81,16 @@ class CreatePropertiesTable extends Migration
             ],
             'created_at' => [
                 'type' => 'DATETIME',
+                'null' => true,
             ],
             'updated_at' => [
                 'type' => 'DATETIME',
+                'null' => true,
             ],
         ]);
 
         $this->forge->addKey('id', true);
-        $this->forge->addForeignKey('host_id', 'users', 'id', 'CASCADE', 'CASCADE');
+
         $this->forge->createTable('properties');
     }
 
