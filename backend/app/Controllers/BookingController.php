@@ -31,9 +31,7 @@ class BookingController extends BaseController
         $userId = session()->get('user_id');
 
         if (!$userId) {
-            // Store where user wanted to go
             session()->set('redirect_url', current_url());
-
             return redirect()->to('/login')
                 ->with('error', 'Please login to continue with your booking');
         }
@@ -46,7 +44,7 @@ class BookingController extends BaseController
 
         // Validate required parameters
         if (!$checkIn || !$checkOut || !$adults) {
-            return redirect()->to('/booking')
+            return redirect()->to('/user/booking')
                 ->with('error', 'Invalid booking parameters. Please try again.');
         }
 
@@ -57,7 +55,7 @@ class BookingController extends BaseController
             ->getRowArray();
 
         if (!$property) {
-            return redirect()->to('/booking')
+            return redirect()->to('/user/booking')
                 ->with('error', 'Property not available.');
         }
 
@@ -74,10 +72,16 @@ class BookingController extends BaseController
         // Generate transaction ID server-side
         $transactionId = 'TXN-' . strtoupper(bin2hex(random_bytes(5)));
 
+        // Format dates for display (server-side to avoid timezone issues)
+        $checkInFormatted = $checkInDate->format('M d, Y');
+        $checkOutFormatted = $checkOutDate->format('M d, Y');
+
         // Pass data to view
         $data = [
-            'checkIn' => $checkIn,
-            'checkOut' => $checkOut,
+            'checkIn' => $checkIn, // Raw format for API
+            'checkOut' => $checkOut, // Raw format for API
+            'checkInFormatted' => $checkInFormatted, // Formatted for display
+            'checkOutFormatted' => $checkOutFormatted, // Formatted for display
             'adults' => $adults,
             'kids' => $kids,
             'nights' => $nights,
