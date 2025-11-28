@@ -71,3 +71,17 @@ class BookingModel extends Model
         
         return $builder->get()->getResultArray();
     }
+    // Get single booking with property details
+    public function getBookingWithProperty($bookingId, $userId = null)
+    {
+        $builder = $this->db->table('bookings b');
+        $builder->select('b.*, p.name as property_name, p.description as property_description, p.image as property_image, p.location as property_location');
+        $builder->join('properties p', 'p.id = b.property_id', 'left');
+        $builder->where('b.id', $bookingId);
+        
+        if ($userId) {
+            $builder->where('b.user_id', $userId);
+        }
+        
+        return $builder->get()->getRowArray();
+    }
