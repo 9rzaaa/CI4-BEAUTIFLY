@@ -3,7 +3,7 @@
 
 <?= view('components/head') ?>
 
-<body class="bg-primary text-gray-900">
+<body class="text-gray-900">
 
     <!-- Decorative Top Bar -->
     <div class="bg-accent h-3"></div>
@@ -11,35 +11,47 @@
     <!-- Header -->
     <?= view('components/header', ['active' => 'Home']) ?>
 
-    <!-- Hero Section -->
-    <section class="relative bg-primary text-white text-center">
-        <div class="mx-auto px-6 py-32 max-w-7xl">
-            <h2 class="mb-6 font-bold text-white text-6xl md:text-7xl leading-tight tracking-tight">
-                LUXURY CONDO
-            </h2>
-            <h3 class="mb-16 font-bold text-white text-6xl md:text-7xl leading-tight tracking-tight">
-                ACCOMMODATION
-            </h3>
+<!-- Hero Section -->
+<section class="relative text-white text-center h-screen flex items-center">
+    
+    <!-- Background Image -->
+    <div class="absolute inset-0 w-full h-full">
+        <img src="/assets/img/landingbg.webp" 
+             class="w-full h-full object-cover" 
+             alt="Luxury Condo Background">
+    </div>
 
-            <p class="mb-16 font-light text-white text-2xl tracking-wide">
+    <!-- Dark Overlay -->
+    <div class="absolute inset-0 bg-black/50"></div>
+
+    <!-- Content -->
+    <div class="relative mx-auto px-6 max-w-7xl">
+        <h2 class="mb-6 font-bold text-white text-6xl md:text-7xl leading-tight tracking-tight">
+            LUXURY CONDO
+        </h2>
+        <h3 class="mb-16 font-bold text-white text-6xl md:text-7xl leading-tight tracking-tight">
+            ACCOMMODATION
+        </h3>
+
+        <?php
+        $session = session();
+        $user = $session->get('user');
+        $firstName = $user['first_name'] ?? '';
+        ?>
+
+        <p class="mb-16 text-white text-2xl font-light tracking-wide">
+            <?php if (!empty($firstName)): ?>
+                Welcome back, <?= esc($firstName) ?>! Relax and unwind at EASY&CO
+            <?php else: ?>
                 Relax and unwind at EASY&CO
-            </p>
+            <?php endif; ?>
+        </p>
 
-            <!-- CTA Button -->
-            <?= view('components/buttons/button_primary', ['href' => '/booking', 'label' => 'BOOK NOW']) ?>
-        </div>
-    </section>
+        <!-- CTA Button -->
+        <?= view('components/buttons/button_primary', ['href' => '/booking', 'label' => 'BOOK NOW']) ?>
+    </div>
+</section>
 
-    <!-- Showcase Image Section -->
-    <section class="bg-light py-16">
-        <div class="mx-auto px-6 max-w-6xl">
-            <div class="relative shadow-2xl rounded-2xl overflow-hidden">
-                <!-- Placeholder for your condo image -->
-                <img src="/assets/img/condo.jpg" alt="EASY&CO Luxury Condo Interior" class="w-full h-auto object-cover">
-
-            </div>
-        </div>
-    </section>
 
     <!-- About Section - Two Column Layout -->
     <section class="bg-light py-20">
@@ -63,7 +75,9 @@
 
                 <!-- Right Image -->
                 <div class="relative shadow-xl rounded-2xl overflow-hidden">
-                    <img src="/assets/img/room.jpg" alt="EASY&CO Condo Interior" class="w-full h-full object-cover">
+                    <img data-src="/assets/img/room.jpg"
+                        alt="EASY&CO Condo Interior"
+                        class="w-full h-full object-cover">
                 </div>
             </div>
         </div>
@@ -72,24 +86,23 @@
     <!-- Info Cards Section -->
     <?= view('components/cards/cards') ?>
 
-
     <!-- Image Gallery Section -->
     <section class="bg-light py-12 pb-20">
         <div class="mx-auto px-6 max-w-7xl">
             <div class="gap-6 grid md:grid-cols-3">
                 <!-- Image 1 -->
                 <div class="relative shadow-lg hover:shadow-2xl rounded-xl overflow-hidden transition-shadow duration-300">
-                    <img src="/assets/img/room1.jpg" alt="EASY&CO Condo View 1" class="w-full h-full object-cover">
+                    <img data src="/assets/img/room1.jpg" alt="EASY&CO Condo View 1" class="w-full h-full object-cover">
                 </div>
 
                 <!-- Image 2 -->
                 <div class="relative shadow-lg hover:shadow-2xl rounded-xl overflow-hidden transition-shadow duration-300">
-                    <img src="/assets/img/room2.jpg" alt="EASY&CO Condo View 2" class="w-full h-full object-cover">
+                    <img data src="/assets/img/room2.jpg" alt="EASY&CO Condo View 2" class="w-full h-full object-cover">
                 </div>
 
                 <!-- Image 3 -->
                 <div class="relative shadow-lg hover:shadow-2xl rounded-xl overflow-hidden transition-shadow duration-300">
-                    <img src="/assets/img/room3.jpg" alt="EASY&CO Condo View 3" class="w-full h-full object-cover">
+                    <img data src="/assets/img/room3.jpg" alt="EASY&CO Condo View 3" class="w-full h-full object-cover">
                 </div>
             </div>
         </div>
@@ -121,7 +134,5 @@
     <!-- Footer -->
     <?= view('components/footer') ?>
 
-
 </body>
-
 </html>

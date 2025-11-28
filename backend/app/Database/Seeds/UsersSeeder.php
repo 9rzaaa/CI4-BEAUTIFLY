@@ -30,7 +30,7 @@ class UsersSeeder extends Seeder
                 'first_name'       => 'Billie',
                 'middle_name'      => null,
                 'last_name'        => 'Eilish',
-                'email'            => 'billieeilish@gmail..com',
+                'email'            => 'billieeilish@gmail.com',
                 'password_hash'    => password_hash('Billie08', PASSWORD_DEFAULT),
                 'type'             => 'client',
                 'account_status'   => 1,

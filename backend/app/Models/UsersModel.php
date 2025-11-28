@@ -24,7 +24,8 @@ class UsersModel extends Model
         'email_activated',
         'newsletter',
         'gender',
-        'profile_image'
+        'profile_image',
+        'deleted_at'
     ];
 
     // Dates
