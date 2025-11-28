@@ -1,5 +1,3 @@
-<!-- head.php -->
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,15 +10,45 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
 
+    <!-- Tailwind Extended Config (merged both color systems) -->
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
+                        /* Ocean System (from old head.php) */
+                        'ocean': {
+                            'dark': '#4A5F8F',
+                            'DEFAULT': '#647FBC',
+                            'light': '#9BA9CC',
+                        },
+                        'sky': {
+                            'dark': '#7092B8',
+                            'DEFAULT': '#91ADC8',
+                            'light': '#C8D7E8',
+                        },
+                        'mint': {
+                            'dark': '#8BC4BB',
+                            'DEFAULT': '#AED6CF',
+                            'light': '#D6EBE7',
+                        },
+                        'cream': {
+                            'dark': '#F5F8C4',
+                            'DEFAULT': '#FAFDD6',
+                            'light': '#FDFEED',
+                        },
+
+                        /* Current Color System (active design) */
                         primary: '#4B7447',
                         secondary: '#7CA982',
                         accent: '#D4A373',
                         light: '#F4F1DE',
+
+                        /* Backward Compatibility Colors */
+                        legacy_primary: '#647FBC',
+                        legacy_secondary: '#91ADC8',
+                        legacy_accent: '#AED6CF',
+                        legacy_light: '#FAFDD6'
                     },
                 }
             }
@@ -34,7 +62,7 @@
     <link rel="icon" type="image/png" href="/assets/logo/favicon.png">
 
     <style>
-        /* Font Setup */
+        /* Global Fonts */
         body,
         p,
         a,
@@ -55,15 +83,15 @@
             font-family: 'Playfair Display', serif !important;
         }
 
-        /* Global Background (About Us requirement) */
+        /* Background Image for General Pages */
         body {
             background-image: url('/assets/img/bookingbg.jpg');
             background-size: 205%;
             background-position: center;
-            background-attachment: scroll; /* scroll instead of fixed */
+            background-attachment: scroll;
         }
 
-        /* Login / Signup Backgrounds */
+        /* Login/Signup Backgrounds */
         .login-container,
         .signup-container {
             background-size: cover;
@@ -98,7 +126,7 @@
         }
         ::-webkit-scrollbar-thumb:hover { background: #3F613C; }
 
-        /* Smooth Scrolling */
+        /* Smooth Scroll */
         html { scroll-behavior: smooth; }
 
         /* Fade-in Animation */

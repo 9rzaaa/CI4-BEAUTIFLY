@@ -5,66 +5,49 @@
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
 
-<style>
-    /* Custom Accent Color - Main Garden Green */
-    .bg-accent {
-        background-color: #73AF6F;
-        /* Original Green */
-    }
 
-    .hover\:bg-accent\/90:hover {
-        background-color: #629c5e;
-        /* Slightly darker hover green */
-    }
-
-    .text-accent {
-        color: #73AF6F;
-    }
-
-    .border-accent {
-        border-color: #73AF6F;
-    }
-
-    /* New Garden Theme Colors */
-    .bg-primary-dark {
-        background-color: #2F5233;
-        /* Deep Forest Green */
-    }
-
-    .text-primary-dark {
-        color: #2F5233;
-    }
-
-    .bg-secondary-light {
-        background-color: #F8F4E3;
-        /* Soft Light Beige/Cream - like dry grass or sand */
-    }
-
-    .border-secondary-light {
-        border-color: #E0DBCF;
-        /* Slightly darker beige border */
-    }
-
-    .text-total-price {
-        color: #FFFFFF;
-        /* White color for Total Price */
-    }
-</style>
-
-<body class="relative bg-cover bg-center bg-fixed min-h-screen text-gray-900" style="background-image: url('/assets/img/bookingbg.jpg');">
+<body class="relative text-gray-900 bg-cover bg-center bg-fixed min-h-screen" style="background-image: url('/assets/img/bookingbg.jpg');">
 
 
-    <div class="bg-accent h-3"></div>
+  <div class="bg-accent h-3"></div>
 
-    <?= view('components/header', ['active' => 'Home']) ?>
+  <?= view('components/header', ['active' => 'Home']) ?>
 
-    <section class="relative w-full h-64 md:h-96 lg:h-[500px]">
-        <img src="/assets/img/booking.webp" alt="Booking Header" class="w-full h-full object-cover">
-        <div class="absolute inset-0 bg-black/50"></div>
-        <div class="absolute inset-0 flex justify-center items-center">
-            <h1 class="drop-shadow-lg px-4 font-bold text-white text-4xl md:text-6xl text-center">
-                EASY&CO
-            </h1>
+<section class="relative w-full h-96 md:h-[550px] lg:h-[550px]">
+  <img src="/assets/img/booking.webp" alt="Booking Header" class="w-full h-full object-cover">
+  <div class="absolute inset-0 bg-black/50"></div>
+  <div class="absolute inset-0 flex items-center justify-center">
+    <h1 class="text-white text-4xl md:text-6xl font-bold drop-shadow-lg text-center px-4">
+      EASY&CO
+    </h1>
+  </div>
+</section>
+
+
+<section class="relative -mt-20 max-w-4xl mx-auto bg-white rounded-2xl shadow-2xl z-10 p-8 lg:p-10 border-t-4 border-accent">
+    <h2 class="text-3xl font-extrabold mb-6 text-center text-primary-dark">Book Now Your Perfect Escape</h2>
+
+    <form id="bookingForm" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+
+      <div class="md:col-span-2">
+        <label class="block mb-2 font-bold text-gray-700">🗓️ Check-in & Check-out</label>
+        <input type="text" id="dateRange" 
+               class="w-full border-2 border-gray-300 focus:border-accent focus:ring focus:ring-accent/50 rounded-lg p-3 transition duration-150 shadow-sm" 
+               placeholder="Select date range" required readonly>
+      </div>
+
+      <div class="relative md:col-span-1">
+        <label class="block mb-2 font-bold text-gray-700">👨‍👩‍👧 Guests</label>
+        <div>
+          <button type="button" id="guestBtn" 
+                  class="w-full border-2 border-gray-300 focus:border-accent focus:ring focus:ring-accent/50 rounded-lg p-3 text-left flex justify-between items-center bg-white transition duration-150 shadow-sm hover:border-accent">
+            <span id="guestSummary" class="font-medium text-primary-dark">1 Adult, 0 Kids</span>
+            <svg class="w-5 h-5 ml-2 text-primary-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </button>
         </div>
     </section>
 
