@@ -217,29 +217,22 @@
 
 
     <script>
-        // Get data passed from PHP controller (not from URL!)
+        // Get data passed from PHP controller (already formatted!)
         const bookingData = {
-            checkIn: '<?= esc($checkIn) ?>',
-            checkOut: '<?= esc($checkOut) ?>',
+            checkIn: '<?= esc($checkIn) ?>', // Raw for API
+            checkOut: '<?= esc($checkOut) ?>', // Raw for API
+            checkInFormatted: '<?= esc($checkInFormatted) ?>', // Pre-formatted by PHP
+            checkOutFormatted: '<?= esc($checkOutFormatted) ?>', // Pre-formatted by PHP
             adults: <?= (int)$adults ?>,
             kids: <?= (int)$kids ?>,
             nights: <?= (int)$nights ?>,
             transactionId: '<?= esc($transactionId) ?>',
-            pricePerNight: <?= str_replace(',', '', $pricePerNight) ?>,
-            cleaningFee: <?= str_replace(',', '', $cleaningFee) ?>,
-            subtotal: <?= str_replace(',', '', $subtotal) ?>,
-            totalPrice: <?= str_replace(',', '', $totalPrice) ?>
+            pricePerNight: '<?= $pricePerNight ?>', // Already formatted with commas
+            cleaningFee: '<?= $cleaningFee ?>', // Already formatted
+            totalPrice: '<?= $totalPrice ?>' // Already formatted
         };
 
-        // Helper function to format currency
-        function formatCurrency(amount) {
-            return new Intl.NumberFormat('en-PH', {
-                style: 'decimal',
-                minimumFractionDigits: 2
-            }).format(amount);
-        }
-
-        // Populate booking details from PHP data
+        // Populate booking details (no formatting needed - PHP did it!)
         function populateBookingDetails() {
             if (!bookingData.checkIn || !bookingData.checkOut || bookingData.nights <= 0) {
                 alert("Booking details are missing. Redirecting back to the booking page.");
@@ -247,36 +240,24 @@
                 return;
             }
 
-            const checkInDate = new Date(bookingData.checkIn).toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric'
-            });
-
-            const checkOutDate = new Date(bookingData.checkOut).toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric'
-            });
-
-            // Populate all fields
+            // Use pre-formatted values from PHP
             document.getElementById("modalTransactionId").textContent = bookingData.transactionId;
-            document.getElementById("modalCheckIn").textContent = checkInDate;
-            document.getElementById("modalCheckOut").textContent = checkOutDate;
+            document.getElementById("modalCheckIn").textContent = bookingData.checkInFormatted;
+            document.getElementById("modalCheckOut").textContent = bookingData.checkOutFormatted;
             document.getElementById("modalNights").textContent = `${bookingData.nights} night${bookingData.nights > 1 ? 's' : ''}`;
             document.getElementById("modalGuests").textContent = `${bookingData.adults} Adult${bookingData.adults > 1 ? 's' : ''}, ${bookingData.kids} Kid${bookingData.kids > 1 ? 's' : ''}`;
-            document.getElementById("modalPricePerNight").textContent = formatCurrency(bookingData.pricePerNight);
-            document.getElementById("modalCleaningFee").textContent = formatCurrency(bookingData.cleaningFee);
-            document.getElementById("modalTotalPrice").textContent = formatCurrency(bookingData.totalPrice);
+            document.getElementById("modalPricePerNight").textContent = bookingData.pricePerNight;
+            document.getElementById("modalCleaningFee").textContent = bookingData.cleaningFee;
+            document.getElementById("modalTotalPrice").textContent = bookingData.totalPrice;
 
-            // Store booking data for submission
+            // Store booking data for API submission (use raw dates)
             document.getElementById("proceedToPayment").dataset.bookingData = JSON.stringify({
                 check_in: bookingData.checkIn,
                 check_out: bookingData.checkOut,
                 adults: bookingData.adults,
                 kids: bookingData.kids,
                 transaction_id: bookingData.transactionId,
-                total_amount: bookingData.totalPrice
+                total_amount: parseFloat(bookingData.totalPrice.replace(/,/g, ''))
             });
         }
 
@@ -299,40 +280,40 @@
             });
         });
 
-// Function to show QR code modal (GCash/Maya) with Done button
-function showQRModal(paymentMethod, callback) {
-    const modalHTML = `
-        <div id="qrModal" class="z-50 fixed inset-0 flex justify-center items-center bg-black bg-opacity-70" style="animation: fadeIn 0.3s;">
-            <div class="bg-white mx-4 p-8 rounded-2xl w-full max-w-md text-center" style="animation: slideUp 0.3s;">
-                <h3 class="mb-4 font-bold text-2xl" style="color: #2F5233;">Scan to Pay</h3>
-                <p class="mb-6 text-gray-600">Scan this QR code using your ${paymentMethod === 'gcash' ? 'GCash' : 'Maya'} app</p>
-               
-                <div class="bg-gray-100 mb-6 p-6 rounded-xl">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=DUMMY_${paymentMethod.toUpperCase()}_PAYMENT"
-                         alt="QR Code" class="mx-auto w-64 h-64">
-                </div>
-               
-                <div class="mb-4">
-                    <div class="inline-flex justify-center items-center mb-2 rounded-full w-20 h-20 font-bold text-white text-2xl" style="background-color: #73AF6F;">
-                        <span id="qrTimer">40</span>
+        // Function to show QR code modal (GCash/Maya) with Done button
+        function showQRModal(paymentMethod, callback) {
+            const modalHTML = `
+            <div id="qrModal" class="z-50 fixed inset-0 flex justify-center items-center bg-black bg-opacity-70" style="animation: fadeIn 0.3s;">
+                <div class="bg-white mx-4 p-8 rounded-2xl w-full max-w-md text-center" style="animation: slideUp 0.3s;">
+                    <h3 class="mb-4 font-bold text-2xl" style="color: #2F5233;">Scan to Pay</h3>
+                    <p class="mb-6 text-gray-600">Scan this QR code using your ${paymentMethod === 'gcash' ? 'GCash' : 'Maya'} app</p>
+                   
+                    <div class="bg-gray-100 mb-6 p-6 rounded-xl">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=DUMMY_${paymentMethod.toUpperCase()}_PAYMENT"
+                             alt="QR Code" class="mx-auto w-64 h-64">
                     </div>
-                    <p class="text-gray-500 text-sm">Seconds remaining</p>
+                   
+                    <div class="mb-4">
+                        <div class="inline-flex justify-center items-center mb-2 rounded-full w-20 h-20 font-bold text-white text-2xl" style="background-color: #73AF6F;">
+                            <span id="qrTimer">40</span>
+                        </div>
+                        <p class="text-gray-500 text-sm">Seconds remaining</p>
+                    </div>
+                   
+                    <button id="qrDoneButton" 
+                        class="bg-accent hover:bg-accent/90 shadow-lg px-8 py-3 rounded-lg w-full font-bold text-white text-lg hover:scale-105 transition-all"
+                        style="background-color: #73AF6F;">
+                        Done
+                    </button>
+                   
+                    <p class="mt-4 text-gray-400 text-xs">Or wait for automatic processing...</p>
                 </div>
-               
-                <button id="qrDoneButton" 
-                    class="bg-accent hover:bg-accent/90 shadow-lg px-8 py-3 rounded-lg w-full font-bold text-white text-lg hover:scale-105 transition-all"
-                    style="background-color: #73AF6F;">
-                    Done
-                </button>
-               
-                <p class="mt-4 text-gray-400 text-xs">Or wait for automatic processing...</p>
             </div>
-        </div>
-        <style>
-            @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-            @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        </style>
-            `;
+            <style>
+                @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+                @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+            </style>
+        `;
 
             document.body.insertAdjacentHTML('beforeend', modalHTML);
 
@@ -358,6 +339,7 @@ function showQRModal(paymentMethod, callback) {
                 callback();
             });
         }
+
         // Function to show Visa payment form
         function showVisaPaymentForm(callback) {
             alert('Redirecting to Credit/Debit Card payment form...\n\n(Frontend team will implement the actual form)');
