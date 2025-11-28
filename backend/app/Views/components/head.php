@@ -55,15 +55,15 @@
             font-family: 'Playfair Display', serif !important;
         }
 
-        /* Background for all pages */
+        /* Global Background (About Us requirement) */
         body {
             background-image: url('/assets/img/bookingbg.jpg');
             background-size: 205%;
             background-position: center;
-            background-attachment: scroll;
+            background-attachment: scroll; /* scroll instead of fixed */
         }
 
-        /* Login/Signup Backgrounds */
+        /* Login / Signup Backgrounds */
         .login-container,
         .signup-container {
             background-size: cover;

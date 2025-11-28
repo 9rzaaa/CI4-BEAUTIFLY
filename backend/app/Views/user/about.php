@@ -1,64 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Us - EASY&CO</title>
-
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
-
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#4B7447',
-                        secondary: '#7CA982',
-                        accent: '#D4A373',
-                        light: '#F4F1DE',
-                    },
-                }
-            }
-        }
-    </script>
-
-    <style>
-        body,
-        p,
-        a,
-        li,
-        span,
-        div,
-        input,
-        button {
-            font-family: 'Lato', sans-serif !important;
-        }
-
-        h1,
-        h2,
-        h3,
-        h4,
-        h5,
-        h6 {
-            font-family: 'Playfair Display', serif !important;
-        }
-
-        /* Make the background scroll with the content */
-        body {
-            background-image: url('/assets/img/bookingbg.jpg');
-            background-size: 205%;
-            background-position: center;
-            background-attachment: scroll;
-            /* change fixed -> scroll */
-        }
-    </style>
-
-
-</head>
+<?= view('components/head') ?>
 
 <body class="relative bg-white/70 min-h-screen">
 
