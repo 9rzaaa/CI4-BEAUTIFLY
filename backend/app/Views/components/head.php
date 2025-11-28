@@ -16,7 +16,6 @@
             theme: {
                 extend: {
                     colors: {
-                        /* Ocean System (from old head.php) */
                         'ocean': {
                             'dark': '#4A5F8F',
                             'DEFAULT': '#647FBC',
@@ -40,7 +39,7 @@
 
                         /* Current Color System (active design) */
                         primary: '#4B7447',
-                        secondary: '#7CA982',
+                        secondary: '#ffffffff',
                         accent: '#D4A373',
                         light: '#F4F1DE',
 
@@ -85,7 +84,7 @@
 
         /* Background Image for General Pages */
         body {
-            background-image: url('/assets/img/bookingbg.jpg');
+            background-image: url('/assets/img/booking.webp');
             background-size: 205%;
             background-position: center;
             background-attachment: scroll;
@@ -100,8 +99,8 @@
             position: relative;
         }
 
-        .login-container { background-image: url('/assets/img/loginbg.jpg'); }
-        .signup-container { background-image: url('/assets/img/signupbg.jpg'); }
+        .login-container { background-image: url('/assets/img/booking.webp'); }
+        .signup-container { background-image: url('/assets/img/booking.webp'); }
 
         .login-container::before,
         .signup-container::before {
