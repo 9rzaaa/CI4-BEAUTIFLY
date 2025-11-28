@@ -84,7 +84,7 @@
 
         /* Background Image for General Pages */
         body {
-            background-image: url('/assets/img/booking.webp');
+            background-image: url('/assets/img/bookingbg.jpg');
             background-size: 205%;
             background-position: center;
             background-attachment: scroll;
