@@ -236,7 +236,7 @@
         function populateBookingDetails() {
             if (!bookingData.checkIn || !bookingData.checkOut || bookingData.nights <= 0) {
                 alert("Booking details are missing. Redirecting back to the booking page.");
-                window.location.href = '/user/booking';
+                window.location.href = '/booking';
                 return;
             }
 

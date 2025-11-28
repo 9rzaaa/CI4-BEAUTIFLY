@@ -44,7 +44,7 @@ class BookingController extends BaseController
 
         // Validate required parameters
         if (!$checkIn || !$checkOut || !$adults) {
-            return redirect()->to('/user/booking')
+            return redirect()->to('/booking')
                 ->with('error', 'Invalid booking parameters. Please try again.');
         }
 
@@ -55,7 +55,7 @@ class BookingController extends BaseController
             ->getRowArray();
 
         if (!$property) {
-            return redirect()->to('/user/booking')
+            return redirect()->to('/booking')
                 ->with('error', 'Property not available.');
         }
 
