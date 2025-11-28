@@ -69,3 +69,10 @@ $routes->delete('api/bookings/(:num)', 'BookingController::delete/$1');
 
 $routes->post('/booking/create', 'BookingController::create');
 $routes->get('/booking/success', 'BookingController::success');
+
+// My Bookings Routes
+$routes->get('bookings', 'BookingController::myBookings', ['filter' => 'auth']); // View page
+$routes->get('api/bookings/user', 'BookingController::getUserBookings', ['filter' => 'auth']); // Get user bookings
+$routes->get('api/bookings/(:num)', 'BookingController::getBookingDetails/$1', ['filter' => 'auth']); // Get single booking
+$routes->post('api/bookings/(:num)/cancel', 'BookingController::cancelBooking/$1', ['filter' => 'auth']); // Cancel booking
+
