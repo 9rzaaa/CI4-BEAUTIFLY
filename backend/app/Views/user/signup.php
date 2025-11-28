@@ -88,7 +88,7 @@
                     <!-- Login Link -->
                     <p class="font-light text-secondary text-lg">
                         Already have an account?
-                        <a href="login.php" class="font-semibold text-secondary hover:text-accent underline transition-colors">
+                        <a href="login" class="font-semibold text-secondary hover:text-accent underline transition-colors">
                             Log in
                         </a>
                     </p>
@@ -98,7 +98,7 @@
                         type="submit"
                         id="submitBtn"
                         disabled
-                        class="bg-secondary hover:bg-primary px-8 py-3 border-2 border-secondary rounded-lg w-auto font-bold text-white text-base tracking-wide transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                        class="bg-secondary hover:bg-primary px-8 py-3 border-2 border-secondary rounded-lg w-auto font-bold text-green text-base tracking-wide transition-all disabled:opacity-50 disabled:cursor-not-allowed">
                         Sign Up
                     </button>
                 </form>
