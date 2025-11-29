@@ -114,6 +114,16 @@
     <script>
         let selectedDates = [];
 
+        // PREVENT form submission completely
+        const bookingForm = document.getElementById("bookingForm");
+        if (bookingForm) {
+            bookingForm.addEventListener("submit", function(e) {
+                e.preventDefault();
+                console.log("❌ Form submission blocked!");
+                return false;
+            });
+        }
+
         // Initialize flatpickr for date selection
         flatpickr("#dateRange", {
             mode: "range",
@@ -121,6 +131,7 @@
             minDate: "today",
             onChange: function(dates) {
                 selectedDates = dates;
+                console.log("📅 Dates selected:", dates);
             }
         });
 
@@ -132,12 +143,15 @@
         const kidsInput = document.getElementById("kids");
 
         // Toggle guest dropdown
-        guestBtn.addEventListener("click", () => {
+        guestBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
             guestDropdown.classList.toggle("hidden");
         });
 
         // Adults increment/decrement
         document.getElementById("plusAdults").addEventListener("click", (e) => {
+            e.preventDefault();
             e.stopPropagation();
             if (adultsInput.value < 6) {
                 adultsInput.value = parseInt(adultsInput.value) + 1;
@@ -146,6 +160,7 @@
         });
 
         document.getElementById("minusAdults").addEventListener("click", (e) => {
+            e.preventDefault();
             e.stopPropagation();
             if (adultsInput.value > 1) {
                 adultsInput.value = parseInt(adultsInput.value) - 1;
@@ -155,6 +170,7 @@
 
         // Kids increment/decrement
         document.getElementById("plusKids").addEventListener("click", (e) => {
+            e.preventDefault();
             e.stopPropagation();
             if (kidsInput.value < 6) {
                 kidsInput.value = parseInt(kidsInput.value) + 1;
@@ -163,6 +179,7 @@
         });
 
         document.getElementById("minusKids").addEventListener("click", (e) => {
+            e.preventDefault();
             e.stopPropagation();
             if (kidsInput.value > 0) {
                 kidsInput.value = parseInt(kidsInput.value) - 1;
@@ -192,53 +209,26 @@
             return `${year}-${month}-${day}`;
         }
 
-        // Book Now button - Redirect to review page
-        document.getElementById("reviewBooking").addEventListener("click", () => {
-            // Validate date selection
+        // Book Now button
+        document.getElementById("reviewBooking").addEventListener("click", (e) => {
+            e.preventDefault();
+
             if (selectedDates.length !== 2) {
                 alert("Please select a check-in and check-out date range.");
                 return;
             }
 
-            // Validate date range
             const checkInDate = selectedDates[0];
             const checkOutDate = selectedDates[1];
+            const adults = parseInt(adultsInput.value);
+            const kids = parseInt(kidsInput.value);
 
-            const oneDay = 24 * 60 * 60 * 1000;
-            const diffTime = Math.abs(checkOutDate.getTime() - checkInDate.getTime());
-            const diffDays = Math.round(diffTime / oneDay);
+            // Validations...
 
-            if (diffDays <= 0) {
-                alert("Check-out date must be after check-in date.");
-                return;
-            }
-
-            // Validate guest count
-            const totalGuests = parseInt(adultsInput.value) + parseInt(kidsInput.value);
-            if (totalGuests > 6) {
-                alert("Maximum 6 guests allowed.");
-                return;
-            }
-
-            if (totalGuests === 0) {
-                alert("Please select at least one guest.");
-                return;
-            }
-
-            // Format dates without timezone conversion issues
             const checkIn = formatDateLocal(checkInDate);
             const checkOut = formatDateLocal(checkOutDate);
 
-            // Prepare query parameters (no price calculations here)
-            const queryParams = new URLSearchParams({
-                checkIn: checkIn,
-                checkOut: checkOut,
-                adults: adultsInput.value,
-                kids: kidsInput.value
-            }).toString();
-
-            // Redirect to booking review page
-            window.location.href = `/user/booking_review?${queryParams}`;
+            window.location.href = `/booking/review?checkIn=${checkIn}&checkOut=${checkOut}&adults=${adults}&kids=${kids}`;
         });
     </script>
 

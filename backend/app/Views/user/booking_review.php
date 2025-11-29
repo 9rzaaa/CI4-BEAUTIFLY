@@ -204,37 +204,37 @@
 
                 </div>
 
-<!-- Credit Card Modal -->
-<div id="creditCardModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 relative transform scale-95 opacity-0 transition-all duration-300 ease-out">
-        <!-- Close X Button on top-left -->
-        <button id="closeCardModal" 
-                class="absolute top-4 left-4 text-gray-400 hover:text-gray-700 transition-all text-xl font-bold">&times;</button>
-        
-        <h3 class="text-2xl font-bold mb-2 text-primary-dark text-center">Credit/Debit Card Payment</h3>
-        <p class="text-sm mb-6 text-gray-500 text-center">Enter your card details to confirm the payment.</p>
+                <!-- Credit Card Modal -->
+                <div id="creditCardModal" class="hidden z-50 fixed inset-0 flex justify-center items-center bg-black/50">
+                    <div class="relative bg-white opacity-0 shadow-2xl p-8 rounded-2xl w-full max-w-md scale-95 transition-all duration-300 ease-out transform">
+                        <!-- Close X Button on top-left -->
+                        <button id="closeCardModal"
+                            class="top-4 left-4 absolute font-bold text-gray-400 hover:text-gray-700 text-xl transition-all">&times;</button>
 
-        <div class="space-y-4">
-            <input type="text" id="cardName" placeholder="Cardholder Name"
-                   class="w-full p-3 border-2 border-gray-200 rounded-xl shadow-sm focus:border-accent focus:ring-accent/50 transition" />
+                        <h3 class="mb-2 font-bold text-primary-dark text-2xl text-center">Credit/Debit Card Payment</h3>
+                        <p class="mb-6 text-gray-500 text-sm text-center">Enter your card details to confirm the payment.</p>
 
-            <input type="text" id="cardNumber" placeholder="Card Number"
-                   class="w-full p-3 border-2 border-gray-200 rounded-xl shadow-sm focus:border-accent focus:ring-accent/50 transition" />
+                        <div class="space-y-4">
+                            <input type="text" id="cardName" placeholder="Cardholder Name"
+                                class="shadow-sm p-3 border-2 border-gray-200 focus:border-accent rounded-xl focus:ring-accent/50 w-full transition" />
 
-            <div class="flex gap-4">
-                <input type="text" id="cardExpiry" placeholder="MM/YY"
-                       class="w-1/2 p-3 border-2 border-gray-200 rounded-xl shadow-sm focus:border-accent focus:ring-accent/50 transition" />
-                <input type="text" id="cardCVC" placeholder="CVC"
-                       class="w-1/2 p-3 border-2 border-gray-200 rounded-xl shadow-sm focus:border-accent focus:ring-accent/50 transition" />
-            </div>
-        </div>
+                            <input type="text" id="cardNumber" placeholder="Card Number"
+                                class="shadow-sm p-3 border-2 border-gray-200 focus:border-accent rounded-xl focus:ring-accent/50 w-full transition" />
 
-        <div class="mt-6 flex justify-center">
-            <button id="confirmCardPayment" 
-                    class="px-8 py-3 rounded-xl bg-accent text-white font-bold hover:bg-accent/90 transition-all shadow-lg">Confirm Payment</button>
-        </div>
-    </div>
-</div>
+                            <div class="flex gap-4">
+                                <input type="text" id="cardExpiry" placeholder="MM/YY"
+                                    class="shadow-sm p-3 border-2 border-gray-200 focus:border-accent rounded-xl focus:ring-accent/50 w-1/2 transition" />
+                                <input type="text" id="cardCVC" placeholder="CVC"
+                                    class="shadow-sm p-3 border-2 border-gray-200 focus:border-accent rounded-xl focus:ring-accent/50 w-1/2 transition" />
+                            </div>
+                        </div>
+
+                        <div class="flex justify-center mt-6">
+                            <button id="confirmCardPayment"
+                                class="bg-accent hover:bg-accent/90 shadow-lg px-8 py-3 rounded-xl font-bold text-white transition-all">Confirm Payment</button>
+                        </div>
+                    </div>
+                </div>
 
 
 
@@ -252,22 +252,22 @@
 
 
     <script>
-        // Get data passed from PHP controller (already formatted!)
+        // Get data passed from PHP controller
         const bookingData = {
-            checkIn: '<?= esc($checkIn) ?>', // Raw for API
-            checkOut: '<?= esc($checkOut) ?>', // Raw for API
-            checkInFormatted: '<?= esc($checkInFormatted) ?>', // Pre-formatted by PHP
-            checkOutFormatted: '<?= esc($checkOutFormatted) ?>', // Pre-formatted by PHP
+            checkIn: '<?= esc($checkIn) ?>',
+            checkOut: '<?= esc($checkOut) ?>',
+            checkInFormatted: '<?= esc($checkInFormatted) ?>',
+            checkOutFormatted: '<?= esc($checkOutFormatted) ?>',
             adults: <?= (int)$adults ?>,
             kids: <?= (int)$kids ?>,
             nights: <?= (int)$nights ?>,
             transactionId: '<?= esc($transactionId) ?>',
-            pricePerNight: '<?= $pricePerNight ?>', // Already formatted with commas
-            cleaningFee: '<?= $cleaningFee ?>', // Already formatted
-            totalPrice: '<?= $totalPrice ?>' // Already formatted
+            pricePerNight: '<?= $pricePerNight ?>',
+            cleaningFee: '<?= $cleaningFee ?>',
+            totalPrice: '<?= $totalPrice ?>'
         };
 
-        // Populate booking details (no formatting needed - PHP did it!)
+        // Populate booking details
         function populateBookingDetails() {
             if (!bookingData.checkIn || !bookingData.checkOut || bookingData.nights <= 0) {
                 alert("Booking details are missing. Redirecting back to the booking page.");
@@ -275,7 +275,6 @@
                 return;
             }
 
-            // Use pre-formatted values from PHP
             document.getElementById("modalTransactionId").textContent = bookingData.transactionId;
             document.getElementById("modalCheckIn").textContent = bookingData.checkInFormatted;
             document.getElementById("modalCheckOut").textContent = bookingData.checkOutFormatted;
@@ -284,19 +283,8 @@
             document.getElementById("modalPricePerNight").textContent = bookingData.pricePerNight;
             document.getElementById("modalCleaningFee").textContent = bookingData.cleaningFee;
             document.getElementById("modalTotalPrice").textContent = bookingData.totalPrice;
-
-            // Store booking data for API submission (use raw dates)
-            document.getElementById("proceedToPayment").dataset.bookingData = JSON.stringify({
-                check_in: bookingData.checkIn,
-                check_out: bookingData.checkOut,
-                adults: bookingData.adults,
-                kids: bookingData.kids,
-                transaction_id: bookingData.transactionId,
-                total_amount: parseFloat(bookingData.totalPrice.replace(/,/g, ''))
-            });
         }
 
-        // Initialize on page load
         populateBookingDetails();
 
         // Payment method selection
@@ -305,130 +293,231 @@
                 document.querySelectorAll('.payment-logo-option').forEach(opt => {
                     opt.classList.remove('selected');
                 });
-                const currentLabel = event.currentTarget;
-                currentLabel.classList.add('selected');
-
-                const radioInput = currentLabel.querySelector('input[type="radio"]');
-                if (radioInput) {
-                    radioInput.checked = true;
-                }
+                event.currentTarget.classList.add('selected');
+                const radioInput = event.currentTarget.querySelector('input[type="radio"]');
+                if (radioInput) radioInput.checked = true;
             });
         });
 
-        // Function to show QR code modal (GCash/Maya) with Done button
-        function showQRModal(paymentMethod, callback) {
-            const modalHTML = `
-            <div id="qrModal" class="z-50 fixed inset-0 flex justify-center items-center bg-black bg-opacity-70" style="animation: fadeIn 0.3s;">
-                <div class="bg-white mx-4 p-8 rounded-2xl w-full max-w-md text-center" style="animation: slideUp 0.3s;">
-                    <h3 class="mb-4 font-bold text-2xl" style="color: #2F5233;">Scan to Pay</h3>
-                    <p class="mb-6 text-gray-600">Scan this QR code using your ${paymentMethod === 'gcash' ? 'GCash' : 'Maya'} app</p>
-                   
-                    <div class="bg-gray-100 mb-6 p-6 rounded-xl">
-                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=DUMMY_${paymentMethod.toUpperCase()}_PAYMENT"
-                             alt="QR Code" class="mx-auto w-64 h-64">
-                    </div>
-                   
-                    <div class="mb-4">
-                        <div class="inline-flex justify-center items-center mb-2 rounded-full w-20 h-20 font-bold text-white text-2xl" style="background-color: #73AF6F;">
-                            <span id="qrTimer">40</span>
-                        </div>
-                        <p class="text-gray-500 text-sm">Seconds remaining</p>
-                    </div>
-                   
-                    <button id="qrDoneButton" 
-                        class="bg-accent hover:bg-accent/90 shadow-lg px-8 py-3 rounded-lg w-full font-bold text-white text-lg hover:scale-105 transition-all"
-                        style="background-color: #73AF6F;">
-                        Done
-                    </button>
-                   
-                    <p class="mt-4 text-gray-400 text-xs">Or wait for automatic processing...</p>
+        // Show QR code modal for GCash/Maya
+        function showQRModal(paymentMethod) {
+            return new Promise((resolve) => {
+                const modalHTML = `
+        <div id="qrModal" class="z-50 fixed inset-0 flex justify-center items-center bg-black bg-opacity-70" style="animation: fadeIn 0.3s;">
+            <div class="bg-white mx-4 p-8 rounded-2xl w-full max-w-md text-center" style="animation: slideUp 0.3s;">
+                <h3 class="mb-4 font-bold text-2xl" style="color: #2F5233;">Scan to Pay</h3>
+                <p class="mb-6 text-gray-600">Scan this QR code using your ${paymentMethod === 'gcash' ? 'GCash' : 'Maya'} app</p>
+               
+                <div class="bg-gray-100 mb-6 p-6 rounded-xl">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=DUMMY_${paymentMethod.toUpperCase()}_PAYMENT"
+                         alt="QR Code" class="mx-auto w-64 h-64">
                 </div>
+               
+                <div class="mb-4">
+                    <div class="inline-flex justify-center items-center mb-2 rounded-full w-20 h-20 font-bold text-white text-2xl" style="background-color: #73AF6F;">
+                        <span id="qrTimer">40</span>
+                    </div>
+                    <p class="text-gray-500 text-sm">Seconds remaining</p>
+                </div>
+               
+                <button id="qrDoneButton" 
+                    class="bg-accent hover:bg-accent/90 shadow-lg px-8 py-3 rounded-lg w-full font-bold text-white text-lg hover:scale-105 transition-all"
+                    style="background-color: #73AF6F;">
+                    I've Completed Payment
+                </button>
+               
+                <p class="mt-4 text-gray-400 text-xs">Payment will auto-verify in <span id="qrTimer2">40</span>s</p>
             </div>
-            <style>
-                @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-                @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-            </style>
+        </div>
+        <style>
+            @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+            @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        </style>
         `;
 
-            document.body.insertAdjacentHTML('beforeend', modalHTML);
+                document.body.insertAdjacentHTML('beforeend', modalHTML);
 
-            let timeLeft = 40;
-            const timerElement = document.getElementById('qrTimer');
-            const doneButton = document.getElementById('qrDoneButton');
+                let timeLeft = 40;
+                const timerElement = document.getElementById('qrTimer');
+                const timerElement2 = document.getElementById('qrTimer2');
+                const doneButton = document.getElementById('qrDoneButton');
 
-            const countdown = setInterval(() => {
-                timeLeft--;
-                timerElement.textContent = timeLeft;
+                const countdown = setInterval(() => {
+                    timeLeft--;
+                    timerElement.textContent = timeLeft;
+                    timerElement2.textContent = timeLeft;
 
-                if (timeLeft <= 0) {
+                    if (timeLeft <= 0) {
+                        clearInterval(countdown);
+                        document.getElementById('qrModal').remove();
+                        resolve(true);
+                    }
+                }, 1000);
+
+                doneButton.addEventListener('click', () => {
                     clearInterval(countdown);
                     document.getElementById('qrModal').remove();
-                    callback();
-                }
-            }, 1000);
-
-            // Add click handler for Done button
-            doneButton.addEventListener('click', () => {
-                clearInterval(countdown);
-                document.getElementById('qrModal').remove();
-                callback();
+                    resolve(true);
+                });
             });
         }
 
-        // Function to show Visa payment form
-        function showVisaPaymentForm(callback) {
-            alert('Redirecting to Credit/Debit Card payment form...\n\n(Frontend team will implement the actual form)');
+        // Show Credit Card payment form
+        function showCreditCardModal() {
+            return new Promise((resolve, reject) => {
+                const modalHTML = `
+        <div id="creditCardModal" class="z-50 fixed inset-0 flex justify-center items-center bg-black bg-opacity-70" style="animation: fadeIn 0.3s;">
+            <div class="bg-white mx-4 p-8 rounded-2xl w-full max-w-md" style="animation: slideUp 0.3s;">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-bold text-2xl" style="color: #2F5233;">Credit/Debit Card Payment</h3>
+                    <button id="closeCardModal" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+                </div>
+                
+                <form id="cardPaymentForm" class="space-y-4">
+                    <div>
+                        <label class="block mb-2 font-medium text-gray-700 text-sm">Cardholder Name</label>
+                        <input type="text" id="cardName" required
+                            class="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 w-full"
+                            placeholder="John Doe">
+                    </div>
+                    
+                    <div>
+                        <label class="block mb-2 font-medium text-gray-700 text-sm">Card Number</label>
+                        <input type="text" id="cardNumber" required maxlength="19"
+                            class="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 w-full"
+                            placeholder="1234 5678 9012 3456">
+                    </div>
+                    
+                    <div class="gap-4 grid grid-cols-2">
+                        <div>
+                            <label class="block mb-2 font-medium text-gray-700 text-sm">Expiry Date</label>
+                            <input type="text" id="cardExpiry" required maxlength="5"
+                                class="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 w-full"
+                                placeholder="MM/YY">
+                        </div>
+                        <div>
+                            <label class="block mb-2 font-medium text-gray-700 text-sm">CVC</label>
+                            <input type="text" id="cardCVC" required maxlength="4"
+                                class="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 w-full"
+                                placeholder="123">
+                        </div>
+                    </div>
+                    
+                    <button type="submit" id="confirmCardPayment"
+                        class="mt-6 px-8 py-3 rounded-lg w-full font-bold text-white text-lg hover:scale-105 transition-all"
+                        style="background-color: #73AF6F;">
+                        Pay ₱${bookingData.totalPrice}
+                    </button>
+                </form>
+            </div>
+        </div>
+        `;
 
-            setTimeout(() => {
-                const confirmed = confirm('Payment form submitted. Confirm payment?');
-                if (confirmed) {
-                    callback();
-                }
-            }, 3000);
+                document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+                // Format card number input
+                document.getElementById('cardNumber').addEventListener('input', (e) => {
+                    let value = e.target.value.replace(/\s/g, '');
+                    let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+                    e.target.value = formattedValue;
+                });
+
+                // Format expiry date
+                document.getElementById('cardExpiry').addEventListener('input', (e) => {
+                    let value = e.target.value.replace(/\D/g, '');
+                    if (value.length >= 2) {
+                        value = value.slice(0, 2) + '/' + value.slice(2, 4);
+                    }
+                    e.target.value = value;
+                });
+
+                // Only allow numbers in CVC
+                document.getElementById('cardCVC').addEventListener('input', (e) => {
+                    e.target.value = e.target.value.replace(/\D/g, '');
+                });
+
+                // Close modal
+                document.getElementById('closeCardModal').addEventListener('click', () => {
+                    document.getElementById('creditCardModal').remove();
+                    reject(new Error('Payment cancelled'));
+                });
+
+                // Handle form submission
+                document.getElementById('cardPaymentForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+
+                    const cardData = {
+                        name: document.getElementById('cardName').value.trim(),
+                        number: document.getElementById('cardNumber').value.replace(/\s/g, ''),
+                        expiry: document.getElementById('cardExpiry').value,
+                        cvc: document.getElementById('cardCVC').value
+                    };
+
+                    // Basic validation
+                    if (!cardData.name || cardData.number.length < 13 || !cardData.expiry.includes('/') || cardData.cvc.length < 3) {
+                        alert('Please fill all fields correctly.');
+                        return;
+                    }
+
+                    document.getElementById('creditCardModal').remove();
+                    resolve(cardData);
+                });
+            });
         }
 
-        // Main payment processing
+        // Main payment processing function
         document.getElementById('proceedToPayment').addEventListener('click', async (e) => {
             const btn = e.currentTarget;
-            const selectedPayment = document.querySelector('input[name="paymentMethod"]:checked').value;
-            let submissionData = JSON.parse(btn.dataset.bookingData);
+            const selectedPayment = document.querySelector('input[name="paymentMethod"]:checked');
 
-            const specialRequests = document.getElementById('specialRequests').value.trim();
-            submissionData.payment_method = selectedPayment;
-            submissionData.special_requests = specialRequests || null;
+            if (!selectedPayment) {
+                alert('Please select a payment method.');
+                return;
+            }
+
+            const paymentMethod = selectedPayment.value;
+            const specialRequests = document.getElementById('specialRequests')?.value.trim() || null;
+
+            // Prepare submission data
+            const submissionData = {
+                check_in: bookingData.checkIn,
+                check_out: bookingData.checkOut,
+                adults: bookingData.adults,
+                kids: bookingData.kids,
+                transaction_id: bookingData.transactionId,
+                total_amount: parseFloat(bookingData.totalPrice.replace(/,/g, '')),
+                payment_method: paymentMethod,
+                special_requests: specialRequests
+            };
 
             btn.disabled = true;
             btn.textContent = 'Processing...';
 
             try {
-                if (selectedPayment === 'gcash' || selectedPayment === 'paymaya') {
-                    showQRModal(selectedPayment, async () => {
-                        await createBooking(submissionData, btn);
-                    });
-                } else if (selectedPayment === 'visa') {
-                    showVisaPaymentForm(async () => {
-                        await createBooking(submissionData, btn);
-                    });
+                let paymentConfirmed = false;
+                let cardData = null;
+
+                // Handle different payment methods
+                if (paymentMethod === 'gcash' || paymentMethod === 'paymaya') {
+                    paymentConfirmed = await showQRModal(paymentMethod);
+                } else if (paymentMethod === 'visa') {
+                    cardData = await showCreditCardModal();
+                    paymentConfirmed = true;
+                    submissionData.card_details = cardData; // Include card data for backend validation
                 }
-            } catch (error) {
-                console.error('Error:', error);
-                alert(`Error: ${error.message}\n\nPlease try again or contact support.`);
-                btn.disabled = false;
-                btn.textContent = 'Proceed to Payment';
-            }
-        });
 
-        // Function to create booking via API
-        async function createBooking(bookingData, btn) {
-            try {
+                if (!paymentConfirmed) {
+                    throw new Error('Payment was not confirmed');
+                }
+
+                // Step 1: Create booking first (with pending status)
                 btn.textContent = 'Creating Booking...';
-
                 const bookingResponse = await fetch('/booking/create', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(bookingData)
+                    body: JSON.stringify(submissionData)
                 });
 
                 const bookingResult = await bookingResponse.json();
@@ -437,68 +526,41 @@
                     throw new Error(bookingResult.error || 'Booking creation failed');
                 }
 
-                window.location.href = `/booking/success?id=${bookingResult.booking_id}&transaction_id=${bookingResult.transaction_id}&total=${bookingResult.total_price}`;
+                const bookingId = bookingResult.booking_id;
+
+                // Step 2: Process payment
+                btn.textContent = 'Processing Payment...';
+                const paymentResponse = await fetch('/payment/process', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        booking_id: bookingId,
+                        payment_method: paymentMethod
+                    })
+                });
+
+                const paymentResult = await paymentResponse.json();
+
+                if (!paymentResponse.ok || !paymentResult.success) {
+                    // Payment failed - booking remains pending
+                    throw new Error(paymentResult.error || 'Payment processing failed');
+                }
+
+                // Success! Redirect to success page
+                window.location.href = `/booking/success?id=${bookingId}&transaction_id=${paymentResult.transaction_id}&total=${paymentResult.amount}`;
 
             } catch (error) {
+                console.error('Error:', error);
                 alert(`Error: ${error.message}\n\nPlease try again or contact support.`);
                 btn.disabled = false;
                 btn.textContent = 'Proceed to Payment';
             }
-        }
+        });
     </script>
 
-    <script>
-const creditCardModal = document.getElementById('creditCardModal');
-const closeCardModal = document.getElementById('closeCardModal');
-const confirmCardPayment = document.getElementById('confirmCardPayment');
-const proceedBtn = document.getElementById('proceedToPayment');
 
-function openModal() {
-    creditCardModal.classList.remove('hidden');
-    // Force reflow to enable transition
-    const modalContent = creditCardModal.querySelector('div');
-    requestAnimationFrame(() => {
-        modalContent.classList.remove('scale-95', 'opacity-0');
-        modalContent.classList.add('scale-100', 'opacity-100');
-    });
-}
-
-function closeModal() {
-    const modalContent = creditCardModal.querySelector('div');
-    modalContent.classList.add('scale-95', 'opacity-0');
-    modalContent.classList.remove('scale-100', 'opacity-100');
-    modalContent.addEventListener('transitionend', () => {
-        creditCardModal.classList.add('hidden');
-    }, { once: true });
-}
-
-// Show modal only if Visa/Credit Card is selected
-proceedBtn.addEventListener('click', (e) => {
-    const selectedPayment = document.querySelector('input[name="paymentMethod"]:checked').value;
-    if (selectedPayment === 'visa') openModal();
-});
-
-// Close modal when clicking X
-closeCardModal.addEventListener('click', closeModal);
-
-// Confirm payment
-confirmCardPayment.addEventListener('click', () => {
-    const cardName = document.getElementById('cardName').value.trim();
-    const cardNumber = document.getElementById('cardNumber').value.trim();
-    const cardExpiry = document.getElementById('cardExpiry').value.trim();
-    const cardCVC = document.getElementById('cardCVC').value.trim();
-
-    if (!cardName || !cardNumber || !cardExpiry || !cardCVC) {
-        alert('Please fill all credit card fields.');
-        return;
-    }
-
-    closeModal();
-    window.location.href = '/booking_success';
-});
-</script>
-
-    
     <?= view('components/footer') ?>
 
 </body>
