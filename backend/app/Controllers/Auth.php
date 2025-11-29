@@ -131,7 +131,7 @@ class Auth extends BaseController
         $inserted = $userModel->insert($data);
 
         if ($inserted) {
-            $session->setFlashdata('success', 'Account created successfully! You may now log in.');
+            $session->setFlashdata('success', 'Account created! Please log in.');
             return redirect()->to('/login');
         } else {
             $session->setFlashdata('error', 'Failed to create account. Please try again.');
