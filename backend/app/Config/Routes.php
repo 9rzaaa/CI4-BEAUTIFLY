@@ -84,7 +84,7 @@ $routes->get('booking/calculate-price', 'BookingController::calculatePrice');
 $routes->get('booking/check-login', 'BookingController::checkLogin');
 
 // Get booked dates
-$routes->get('booking/booked-dates', 'BookingController::getBookedDates');
+$routes->get('booking/get-booked-dates', 'BookingController::getBookedDates');
 
 // Get user's bookings list
 $routes->get('booking/user/list', 'BookingController::getUserBookings', ['filter' => 'auth']);
