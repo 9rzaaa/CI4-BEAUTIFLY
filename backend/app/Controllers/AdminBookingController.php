@@ -259,3 +259,39 @@ class AdminBookingController extends BaseController
             ]);
         }
     }
+
+
+    // Delete booking 
+    public function delete($id = null)
+    {
+        if (!$id) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Booking ID is required'
+            ]);
+        }
+
+        // Check if booking exists
+        $booking = $this->bookingModel->find($id);
+        if (!$booking) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Booking not found'
+            ]);
+        }
+
+        // Delete booking
+        $result = $this->bookingModel->delete($id);
+
+        if ($result) {
+            return $this->response->setJSON([
+                'success' => true,
+                'message' => 'Booking deleted successfully'
+            ]);
+        } else {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Failed to delete booking'
+            ]);
+        }
+    }
