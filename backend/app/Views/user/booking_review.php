@@ -181,28 +181,29 @@
                         </div>
                     </div>
 
-                    <div class="mt-8">
-                        <h4 class="mb-2 font-bold text-primary-dark text-xl">Select Payment Method</h4>
-                        <div id="payment-logos" class="gap-3 grid grid-cols-3">
-                            <label class="payment-logo-option selected" data-value="gcash">
-                                <input type="radio" name="paymentMethod" value="gcash" checked>
-                                <img src="https://upload.wikimedia.org/wikipedia/en/thumb/5/5a/GCash_logo.svg/1200px-GCash_logo.svg.png">
-                                <span class="font-semibold text-primary-dark text-xs">GCash (Recommended)</span>
-                            </label>
-                            <label class="payment-logo-option" data-value="paymaya">
-                                <input type="radio" name="paymentMethod" value="paymaya">
-                                <img src="https://www.maya.ph/assets/images/header/maya-logo-2023.svg">
-                                <span class="font-semibold text-primary-dark text-xs">Maya (PayMaya)</span>
-                            </label>
-                            <label class="payment-logo-option" data-value="visa">
-                                <input type="radio" name="paymentMethod" value="visa">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg">
-                                <span class="font-semibold text-primary-dark text-xs">Credit/Debit Card</span>
-                            </label>
-                        </div>
-                    </div>
+                <div class="mt-8"> 
+                    <h4 class="mb-2 font-bold text-primary-dark text-xl">Select Payment Method</h4>
+                    <div id="payment-logos" class="grid grid-cols-3 gap-3">
+                <label class="payment-logo-option selected" data-value="gcash">
+                    <input type="radio" name="paymentMethod" value="gcash" checked>
+                    <img src="/assets/img/gcash.png" alt="GCash Logo">
+                    <span class="text-xs font-semibold text-primary-dark">GCash</span>
+                </label>
 
+                <label class="payment-logo-option" data-value="paymaya">
+                    <input type="radio" name="paymentMethod" value="paymaya">
+                     <img src="/assets/img/paymaya.png" alt="Maya Logo">
+                    <span class="text-xs font-semibold text-primary-dark">Maya (PayMaya)</span>
+                </label>
+
+                        <label class="payment-logo-option" data-value="visa">
+                            <input type="radio" name="paymentMethod" value="visa">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg">
+                            <span class="text-xs font-semibold text-primary-dark">Credit/Debit Card</span>
+                        </label>
+                    </div>
                 </div>
+</div>
 
                 <!-- Credit Card Modal -->
                 <div id="creditCardModal" class="hidden z-50 fixed inset-0 flex justify-center items-center bg-black/50">
