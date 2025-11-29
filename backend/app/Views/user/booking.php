@@ -26,6 +26,36 @@
     <section class="z-10 relative bg-white shadow-2xl mx-auto -mt-20 p-8 lg:p-10 border-accent border-t-4 rounded-2xl max-w-4xl">
         <h2 class="mb-6 font-extrabold text-primary-dark text-3xl text-center">Book Now Your Perfect Escape</h2>
 
+        <!-- Server-side Flash Messages -->
+        <?php if (session()->getFlashdata('error')): ?>
+            <div class="bg-red-100 mb-4 px-4 py-3 border border-red-400 rounded text-red-700" role="alert">
+                <strong class="font-bold">Error!</strong>
+                <span class="block sm:inline"><?= session()->getFlashdata('error') ?></span>
+            </div>
+        <?php endif; ?>
+
+        <?php if (session()->getFlashdata('success')): ?>
+            <div class="bg-green-100 mb-4 px-4 py-3 border border-green-400 rounded text-green-700" role="alert">
+                <strong class="font-bold">Success!</strong>
+                <span class="block sm:inline"><?= session()->getFlashdata('success') ?></span>
+            </div>
+        <?php endif; ?>
+
+        <!-- Client-side Error Message (Hidden by default) -->
+        <div id="clientErrorMessage" class="hidden bg-red-100 mb-4 px-4 py-3 border border-red-400 rounded text-red-700" role="alert">
+            <div class="flex justify-between items-center">
+                <div>
+                    <strong class="font-bold">Error!</strong>
+                    <span class="block sm:inline" id="clientErrorText"></span>
+                </div>
+                <button onclick="hideError()" class="text-red-700 hover:text-red-900">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
         <form id="bookingForm" class="items-end gap-4 grid grid-cols-1 md:grid-cols-4">
 
             <!-- Date Picker -->
@@ -115,7 +145,24 @@
         let selectedDates = [];
         let bookedDates = [];
 
-        // Fetch booked dates from the server
+        // Error message handlers
+        function showError(message) {
+            const errorDiv = document.getElementById('clientErrorMessage');
+            const errorText = document.getElementById('clientErrorText');
+            errorText.textContent = message;
+            errorDiv.classList.remove('hidden');
+            errorDiv.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+            setTimeout(hideError, 5000);
+        }
+
+        function hideError() {
+            document.getElementById('clientErrorMessage').classList.add('hidden');
+        }
+
+        // Fetch and initialize calendar
         async function fetchBookedDates() {
             try {
                 const response = await fetch('/booking/get-booked-dates');
@@ -124,34 +171,41 @@
                 if (data.success) {
                     bookedDates = data.booked_dates;
                     console.log('📅 Booked dates loaded:', bookedDates);
-                    initializeFlatpickr();
                 } else {
                     console.error('Failed to load booked dates');
-                    initializeFlatpickr(); // Initialize anyway with empty booked dates
+                    showError('Unable to load booking calendar. Please refresh the page.');
                 }
             } catch (error) {
                 console.error('Error fetching booked dates:', error);
-                initializeFlatpickr(); // Initialize anyway with empty booked dates
+                showError('Unable to connect to the server. Please check your internet connection.');
+            } finally {
+                initializeFlatpickr();
             }
         }
 
-        // Initialize flatpickr with disabled dates
+        // Date helper - checks if date is in range
+        function isDateInRange(date, from, to) {
+            return date >= from && date <= to;
+        }
+
+        // Date formatter
+        function formatDateLocal(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        // Initialize flatpickr
         function initializeFlatpickr() {
             flatpickr("#dateRange", {
                 mode: "range",
                 dateFormat: "Y-m-d",
                 minDate: "today",
-                disable: bookedDates, // Disable booked date ranges
-                onChange: function(dates) {
-                    selectedDates = dates;
-                    console.log("📅 Dates selected:", dates);
-                },
-                onDayCreate: function(dObj, dStr, fp, dayElem) {
-                    // Add custom styling for booked dates
-                    const date = dayElem.dateObj;
-                    const dateStr = formatDateLocal(date);
-
-                    // Check if this date falls within any booked range
+                disable: bookedDates,
+                onChange: (dates) => selectedDates = dates,
+                onDayCreate: (dObj, dStr, fp, dayElem) => {
+                    const dateStr = formatDateLocal(dayElem.dateObj);
                     for (let range of bookedDates) {
                         if (isDateInRange(dateStr, range.from, range.to)) {
                             dayElem.classList.add('booked-date');
@@ -163,130 +217,114 @@
             });
         }
 
-        // Helper: Check if a date falls within a range
-        function isDateInRange(date, from, to) {
-            return date >= from && date <= to;
-        }
-
-        // Helper: Format date to Y-m-d
-        function formatDateLocal(date) {
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        }
-
-        // Load booked dates when page loads
-        fetchBookedDates();
-
-        // Guest dropdown elements
+        // Guest picker setup
         const guestBtn = document.getElementById("guestBtn");
         const guestDropdown = document.getElementById("guestDropdown");
         const guestSummary = document.getElementById("guestSummary");
         const adultsInput = document.getElementById("adults");
         const kidsInput = document.getElementById("kids");
 
-        // Toggle guest dropdown
+        // Toggle dropdown
         guestBtn.addEventListener("click", (e) => {
             e.preventDefault();
             e.stopPropagation();
             guestDropdown.classList.toggle("hidden");
         });
 
-        // Adults increment/decrement with smart total limit
-        document.getElementById("plusAdults").addEventListener("click", (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            const currentAdults = parseInt(adultsInput.value);
-            const currentKids = parseInt(kidsInput.value);
-            const totalGuests = currentAdults + currentKids;
-
-            if (totalGuests < 6) {
-                adultsInput.value = currentAdults + 1;
-                updateGuestSummary();
-            }
-        });
-
-        document.getElementById("minusAdults").addEventListener("click", (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            if (adultsInput.value > 1) {
-                adultsInput.value = parseInt(adultsInput.value) - 1;
-                updateGuestSummary();
-            }
-        });
-
-        // Kids increment/decrement with smart total limit
-        document.getElementById("plusKids").addEventListener("click", (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            const currentAdults = parseInt(adultsInput.value);
-            const currentKids = parseInt(kidsInput.value);
-            const totalGuests = currentAdults + currentKids;
-
-            if (totalGuests < 6) {
-                kidsInput.value = currentKids + 1;
-                updateGuestSummary();
-            }
-        });
-
-        document.getElementById("minusKids").addEventListener("click", (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            if (kidsInput.value > 0) {
-                kidsInput.value = parseInt(kidsInput.value) - 1;
-                updateGuestSummary();
-            }
-        });
-
-        // Update guest summary text
+        // Update guest summary
         function updateGuestSummary() {
             const adults = adultsInput.value;
             const kids = kidsInput.value;
             guestSummary.textContent = `${adults} Adult${adults > 1 ? 's' : ''}, ${kids} Kid${kids > 1 ? 's' : ''}`;
         }
 
+        // Guest counter logic
+        function adjustGuests(input, change, min = 0) {
+            const adults = parseInt(adultsInput.value);
+            const kids = parseInt(kidsInput.value);
+            const current = parseInt(input.value);
+            const newValue = current + change;
+
+            // Check minimum and total guest limit
+            if (newValue < min) return;
+            if (adults + kids + change > 6) return;
+
+            input.value = newValue;
+            updateGuestSummary();
+        }
+
+        document.getElementById("plusAdults").addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            adjustGuests(adultsInput, 1, 1);
+        });
+
+        document.getElementById("minusAdults").addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            adjustGuests(adultsInput, -1, 1);
+        });
+
+        document.getElementById("plusKids").addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            adjustGuests(kidsInput, 1);
+        });
+
+        document.getElementById("minusKids").addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            adjustGuests(kidsInput, -1);
+        });
+
         // Close dropdown when clicking outside
-        document.addEventListener("click", function(e) {
+        document.addEventListener("click", (e) => {
             if (!guestBtn.contains(e.target) && !guestDropdown.contains(e.target)) {
                 guestDropdown.classList.add("hidden");
             }
         });
 
-        // Book Now button - Max 6 total guests
+        // Book Now validation and submission
         document.getElementById("reviewBooking").addEventListener("click", (e) => {
             e.preventDefault();
+            hideError();
 
-            // Check if dates are selected
             if (selectedDates.length !== 2) {
-                alert("Please select a check-in and check-out date range.");
+                showError("Please select a check-in and check-out date range.");
                 return;
             }
 
-            const checkInDate = selectedDates[0];
-            const checkOutDate = selectedDates[1];
+            const [checkInDate, checkOutDate] = selectedDates;
             const adults = parseInt(adultsInput.value);
             const kids = parseInt(kidsInput.value);
-            const totalGuests = adults + kids;
+            const nights = Math.round((checkOutDate - checkInDate) / (24 * 60 * 60 * 1000));
 
-            // Validate at least 1 adult
+            // Validations
+            if (nights < 1) {
+                showError("Minimum stay is 1 night.");
+                return;
+            }
+            if (nights > 30) {
+                showError("Maximum stay is 30 nights. Please select a shorter duration.");
+                return;
+            }
             if (adults < 1) {
-                alert("At least 1 adult is required.");
+                showError("At least 1 adult is required.");
+                return;
+            }
+            if (adults + kids > 6) {
+                showError("Maximum 6 guests total allowed (adults + kids combined).");
                 return;
             }
 
-            // Validate total guests (max 6 total)
-            if (totalGuests > 6) {
-                alert("Maximum 6 guests total allowed (adults + kids combined).");
-                return;
-            }
-
-            // All validations passed - proceed to review
+            // Redirect to review page
             const checkIn = formatDateLocal(checkInDate);
             const checkOut = formatDateLocal(checkOutDate);
-
             window.location.href = `/booking/review?checkIn=${checkIn}&checkOut=${checkOut}&adults=${adults}&kids=${kids}`;
         });
+
+        // Initialize on page load
+        fetchBookedDates();
     </script>
 
 </body>
