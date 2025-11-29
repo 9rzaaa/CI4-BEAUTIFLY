@@ -183,5 +183,50 @@
             </div>
         </div>
     </div>
+
+       <script>
+        const baseUrl = '<?= base_url() ?>';
+        let currentPage = 1;
+        let totalPages = 1;
+        const perPage = 10;
+
+        // Load bookings on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadBookings();
+        });
+
+        // Load bookings with filters
+        function loadBookings(page = 1) {
+            currentPage = page;
+            const search = document.getElementById('searchInput').value;
+            const status = document.getElementById('statusFilter').value;
+            const dateFrom = document.getElementById('dateFrom').value;
+            const dateTo = document.getElementById('dateTo').value;
+
+            const params = new URLSearchParams({
+                page: page,
+                per_page: perPage,
+                search: search,
+                status: status,
+                date_from: dateFrom,
+                date_to: dateTo
+            });
+
+            fetch(`${baseUrl}/admin/bookings/list?${params}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        renderBookings(data.bookings);
+                        renderPagination(data.pagination);
+                    } else {
+                        showNotification('Error loading bookings', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('Error loading bookings', 'error');
+                });
+        }
+    </script>    
 </body>
 </html>
