@@ -121,3 +121,10 @@ $routes->get('user/booking-form', function () {
 $routes->get('booking_success', function () {
     return redirect()->to('/booking/success');
 });
+
+$routes->get('/profile', 'ProfileController::index');
+$routes->post('/profile/update', 'ProfileController::update');
+$routes->get('/profile/change-password', 'ProfileController::changePassword');
+$routes->post('/profile/update-password', 'ProfileController::updatePassword');
+$routes->get('/profile/delete-account', 'ProfileController::deleteAccount');
+$routes->post('/profile/delete-account', 'ProfileController::processDeleteAccount');
