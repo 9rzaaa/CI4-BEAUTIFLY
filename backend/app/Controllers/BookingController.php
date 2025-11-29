@@ -27,14 +27,10 @@ class BookingController extends BaseController
      */
     public function review()
     {
-        log_message('info', '==================== REVIEW METHOD STARTED ====================');
-
         // Check if user is logged in
         $userId = session()->get('user_id');
-        log_message('info', 'User ID from session: ' . ($userId ?? 'NULL'));
 
         if (!$userId) {
-            log_message('info', 'REDIRECT: User not logged in');
             session()->set('redirect_url', current_url());
             return redirect()->to('/login')
                 ->with('error', 'Please login to continue with your booking');
@@ -46,20 +42,13 @@ class BookingController extends BaseController
         $adults = $this->request->getGet('adults');
         $kids = $this->request->getGet('kids') ?? 0;
 
-        log_message('info', 'GET Parameters:');
-        log_message('info', '  checkIn: ' . ($checkIn ?? 'NULL'));
-        log_message('info', '  checkOut: ' . ($checkOut ?? 'NULL'));
-        log_message('info', '  adults: ' . ($adults ?? 'NULL'));
-        log_message('info', '  kids: ' . $kids);
-
         // Validate required parameters
         if (!$checkIn || !$checkOut || !$adults) {
-            log_message('info', 'REDIRECT: Missing required parameters');
             return redirect()->to('/booking')
                 ->with('error', 'Invalid booking parameters. Please try again.');
         }
 
-        // Validate dates before proceeding
+        // Validate booking data
         $validation = $this->validateBooking([
             'check_in' => $checkIn,
             'check_out' => $checkOut,
@@ -67,20 +56,13 @@ class BookingController extends BaseController
             'kids' => $kids
         ]);
 
-        log_message('info', 'Validation result: ' . json_encode($validation));
-
         if (!$validation['valid']) {
-            log_message('info', 'REDIRECT: Validation failed - ' . $validation['message']);
             return redirect()->to('/booking')
                 ->with('error', $validation['message']);
         }
 
         // Check for booking conflicts
-        $hasConflict = $this->checkBookingConflict($checkIn, $checkOut);
-        log_message('info', 'Booking conflict check: ' . ($hasConflict ? 'YES' : 'NO'));
-
-        if ($hasConflict) {
-            log_message('info', 'REDIRECT: Booking conflict detected');
+        if ($this->checkBookingConflict($checkIn, $checkOut)) {
             return redirect()->to('/booking')
                 ->with('error', 'Property is already booked for selected dates. Please choose different dates.');
         }
@@ -91,15 +73,10 @@ class BookingController extends BaseController
             ->get()
             ->getRowArray();
 
-        log_message('info', 'Property found: ' . ($property ? 'YES' : 'NO'));
-
         if (!$property) {
-            log_message('info', 'REDIRECT: Property not found');
             return redirect()->to('/booking')
                 ->with('error', 'Property not available.');
         }
-
-        log_message('info', 'SUCCESS: All checks passed, rendering view');
 
         // Calculate pricing from database
         $checkInDate = new \DateTime($checkIn);
@@ -136,59 +113,12 @@ class BookingController extends BaseController
             'propertyName' => $property['name'] ?? 'Garden Resort'
         ];
 
-        log_message('info', 'Rendering view: user/booking_review');
-        log_message('info', '==================== REVIEW METHOD ENDED ====================');
-
         return view('user/booking_review', $data);
     }
 
     /**
-     * Calculate price (AJAX endpoint)
-     */
-    public function calculatePrice()
-    {
-        $checkIn = $this->request->getGet('checkIn');
-        $checkOut = $this->request->getGet('checkOut');
-
-        if (!$checkIn || !$checkOut) {
-            return $this->response
-                ->setStatusCode(400)
-                ->setJSON(['error' => 'Check-in and check-out dates required']);
-        }
-
-        // Get property pricing from database
-        $property = $this->db->table('properties')
-            ->where('id', 1)
-            ->get()
-            ->getRowArray();
-
-        if (!$property) {
-            return $this->response
-                ->setStatusCode(404)
-                ->setJSON(['error' => 'Property not found']);
-        }
-
-        $checkInDate = new \DateTime($checkIn);
-        $checkOutDate = new \DateTime($checkOut);
-        $nights = $checkOutDate->diff($checkInDate)->days;
-
-        $pricePerNight = $property['price_per_night'];
-        $cleaningFee = $property['cleaning_fee'];
-        $subtotal = $nights * $pricePerNight;
-        $total = $subtotal + $cleaningFee;
-
-        return $this->response->setJSON([
-            'nights' => $nights,
-            'pricePerNight' => $pricePerNight,
-            'cleaningFee' => $cleaningFee,
-            'subtotal' => $subtotal,
-            'total' => $total
-        ]);
-    }
-
-    /**
      * Create a new booking (API)
-     * ⚠️ IMPORTANT: Creates booking with PENDING status
+     * Creates booking with PENDING status
      * Payment processing happens in PaymentController::processPayment()
      */
     public function create()
@@ -255,7 +185,6 @@ class BookingController extends BaseController
 
         try {
             // Insert booking with PENDING status
-            // Payment will be processed separately by PaymentController
             $bookingData = [
                 'user_id' => $userId,
                 'property_id' => 1,
@@ -267,8 +196,8 @@ class BookingController extends BaseController
                 'price_per_night' => $pricePerNight,
                 'cleaning_fee' => $cleaningFee,
                 'total_price' => $totalPrice,
-                'status' => 'pending', // ✅ Changed from 'confirmed' to 'pending'
-                'payment_status' => 'unpaid', // ✅ Will be updated by PaymentController
+                'status' => 'pending',
+                'payment_status' => 'unpaid',
                 'payment_method' => $paymentMethod,
                 'transaction_id' => $transactionId,
                 'special_requests' => $json['special_requests'] ?? null,
@@ -309,98 +238,6 @@ class BookingController extends BaseController
     }
 
     /**
-     * Update booking
-     */
-    public function update($id)
-    {
-        $json = $this->request->getJSON(true);
-
-        // Validate user is logged in
-        $userId = session()->get('user_id');
-        if (!$userId) {
-            return $this->response
-                ->setStatusCode(401)
-                ->setJSON(['error' => 'User not authenticated']);
-        }
-
-        // Get existing booking
-        $builder = $this->db->table('bookings');
-        $booking = $builder->where('id', $id)
-            ->where('user_id', $userId) // ✅ Ensure user owns the booking
-            ->get()
-            ->getRowArray();
-
-        if (!$booking) {
-            return $this->response
-                ->setStatusCode(404)
-                ->setJSON(['error' => 'Booking not found or access denied']);
-        }
-
-        // Don't allow updates to confirmed/paid bookings without admin approval
-        if ($booking['payment_status'] === 'paid') {
-            return $this->response
-                ->setStatusCode(403)
-                ->setJSON(['error' => 'Cannot modify paid bookings. Please contact support.']);
-        }
-
-        // Prepare update data
-        $updateData = ['updated_at' => date('Y-m-d H:i:s')];
-        $allowedFields = ['check_in', 'check_out', 'adults', 'kids', 'special_requests'];
-
-        foreach ($allowedFields as $field) {
-            if (isset($json[$field])) {
-                $updateData[$field] = $json[$field];
-            }
-        }
-
-        if (count($updateData) === 1) {
-            return $this->response
-                ->setStatusCode(400)
-                ->setJSON(['error' => 'No fields to update']);
-        }
-
-        // If dates changed, validate and check conflicts
-        if (isset($json['check_in']) || isset($json['check_out'])) {
-            $newCheckIn = $json['check_in'] ?? $booking['check_in'];
-            $newCheckOut = $json['check_out'] ?? $booking['check_out'];
-
-            $validation = $this->validateBooking([
-                'check_in' => $newCheckIn,
-                'check_out' => $newCheckOut,
-                'adults' => $json['adults'] ?? $booking['adults'],
-                'kids' => $json['kids'] ?? $booking['kids']
-            ]);
-
-            if (!$validation['valid']) {
-                return $this->response
-                    ->setStatusCode(400)
-                    ->setJSON(['error' => $validation['message']]);
-            }
-
-            // Check conflicts (excluding current booking)
-            if ($this->checkBookingConflictExcluding($newCheckIn, $newCheckOut, $id)) {
-                return $this->response
-                    ->setStatusCode(409)
-                    ->setJSON(['error' => 'Property is already booked for selected dates']);
-            }
-
-            // Recalculate price
-            $checkIn = new \DateTime($newCheckIn);
-            $checkOut = new \DateTime($newCheckOut);
-            $nights = $checkOut->diff($checkIn)->days;
-            $updateData['number_of_nights'] = $nights;
-            $updateData['total_price'] = ($nights * $booking['price_per_night']) + $booking['cleaning_fee'];
-        }
-
-        $builder->where('id', $id)->update($updateData);
-
-        return $this->response->setJSON([
-            'success' => true,
-            'message' => 'Booking updated successfully'
-        ]);
-    }
-
-    /**
      * Cancel booking
      */
     public function cancel($id)
@@ -432,74 +269,21 @@ class BookingController extends BaseController
                 ->setJSON(['success' => false, 'error' => 'Booking cannot be cancelled']);
         }
 
-        // Soft delete - update status to cancelled
+        // Update status to cancelled
         $builder->where('id', $id)->update([
             'status' => 'cancelled',
             'updated_at' => date('Y-m-d H:i:s')
         ]);
 
-        // If payment was made, trigger refund process
+        // If payment was made, log for refund process
         if ($booking['payment_status'] === 'paid') {
             log_message('info', "Booking #{$id} cancelled. Refund may be required.");
-            // You can call PaymentController::refundPayment() here if needed
         }
 
         return $this->response->setJSON([
             'success' => true,
             'message' => 'Booking cancelled successfully'
         ]);
-    }
-
-    /**
-     * Delete booking (for compatibility - redirects to cancel)
-     */
-    public function delete($id)
-    {
-        return $this->cancel($id);
-    }
-
-    /**
-     * Get booking details
-     */
-    public function getBooking($id)
-    {
-        $userId = session()->get('user_id');
-        if (!$userId) {
-            return $this->response
-                ->setStatusCode(401)
-                ->setJSON(['error' => 'User not authenticated']);
-        }
-
-        $builder = $this->db->table('bookings');
-        $booking = $builder->where('id', $id)
-            ->where('user_id', $userId)
-            ->get()
-            ->getRowArray();
-
-        if (!$booking) {
-            return $this->response
-                ->setStatusCode(404)
-                ->setJSON(['error' => 'Booking not found or access denied']);
-        }
-
-        return $this->response->setJSON(['success' => true, 'booking' => $booking]);
-    }
-
-    /**
-     * Get property details
-     */
-    public function getProperty($id = 1)
-    {
-        $builder = $this->db->table('properties');
-        $property = $builder->where('id', $id)->get()->getRowArray();
-
-        if (!$property) {
-            return $this->response
-                ->setStatusCode(404)
-                ->setJSON(['error' => 'Property not found']);
-        }
-
-        return $this->response->setJSON(['property' => $property]);
     }
 
     /**
@@ -615,21 +399,30 @@ class BookingController extends BaseController
             ];
         }
 
+        // Get property max guests from database
+        $property = $this->db->table('properties')
+            ->where('id', 1)
+            ->get()
+            ->getRowArray();
+
+        if (!$property) {
+            return [
+                'valid' => false,
+                'message' => 'Property not found'
+            ];
+        }
+
+        $maxGuests = $property['max_guests'] ?? 6;
+
         // Validate number of guests
         $adults = (int)$data['adults'];
         $kids = isset($data['kids']) ? (int)$data['kids'] : 0;
+        $totalGuests = $adults + $kids;
 
         if ($adults < 1) {
             return [
                 'valid' => false,
                 'message' => 'At least one adult is required'
-            ];
-        }
-
-        if ($adults > 6) {
-            return [
-                'valid' => false,
-                'message' => 'Maximum 6 adults allowed'
             ];
         }
 
@@ -640,17 +433,10 @@ class BookingController extends BaseController
             ];
         }
 
-        if ($kids > 6) {
+        if ($totalGuests > $maxGuests) {
             return [
                 'valid' => false,
-                'message' => 'Maximum 6 kids allowed'
-            ];
-        }
-
-        if (($adults + $kids) > 12) {
-            return [
-                'valid' => false,
-                'message' => 'Maximum 12 guests total'
+                'message' => "Maximum {$maxGuests} guests total allowed (adults + kids)"
             ];
         }
 
@@ -665,12 +451,9 @@ class BookingController extends BaseController
     {
         $builder = $this->db->table('bookings');
 
-        // Only check active bookings (not cancelled/rejected)
         $builder->where('property_id', 1);
         $builder->whereIn('status', ['pending', 'confirmed']);
 
-        // Date overlap logic:
-        // Conflict if: new_start < existing_end AND new_end > existing_start
         $builder->groupStart()
             ->where('check_in <', $checkOut)
             ->where('check_out >', $checkIn)
