@@ -12,7 +12,7 @@ $routes->get('/login', 'Users::login');     // Login page
 $routes->get('/signup', 'Users::signup');   // Signup/registration page
 $routes->get('/mb', 'Users::moodboard');    // Moodboard page
 $routes->get('/rm', 'Users::roadmap');      // Roadmap page
-$routes->get('/about', 'Users::about');     // About page (moved from inline function)
+$routes->get('/about', 'Users::about');     // About page
 
 // ---------- Authentication ----------
 $routes->post('auth/login', 'Auth::login');     // Handle login form submission
@@ -23,56 +23,98 @@ $routes->post('auth/signup', 'Auth::signup');   // Handle signup form submission
 $routes->get('admin/dashboard', function () {
     return view('admin/dashboard');            // Admin dashboard view
 });
+// ---------- Admin Booking Management ----------
+$routes->get('admin/bookings', 'AdminBookingController::index');                    // Display bookings management page
+$routes->get('admin/bookings/list', 'AdminBookingController::list');                // Get bookings list 
+$routes->get('admin/bookings/view/(:num)', 'AdminBookingController::view/$1');      // View single booking 
+$routes->post('admin/bookings/update', 'AdminBookingController::update');           // Update booking 
+$routes->delete('admin/bookings/delete/(:num)', 'AdminBookingController::delete/$1'); // Delete booking 
+$routes->get('admin/bookings/statistics', 'AdminBookingController::statistics');    // Get statistics 
+
+// ---------- Admin Booking Management ----------
+$routes->get('admin/bookings', 'AdminBookingController::index');                    // Display bookings management page
+$routes->get('admin/bookings/list', 'AdminBookingController::list');                // Get bookings list 
+$routes->get('admin/bookings/view/(:num)', 'AdminBookingController::view/$1');      // View single booking 
+$routes->post('admin/bookings/update', 'AdminBookingController::update');           // Update booking 
+$routes->delete('admin/bookings/delete/(:num)', 'AdminBookingController::delete/$1'); // Delete booking 
+$routes->get('admin/bookings/statistics', 'AdminBookingController::statistics');    // Get statistics 
 
 // ---------- Test / CRUD Pages ----------
 $routes->get('/test/user', 'CRUDTesting::showUsersPage');
-// Displays user list page (CRUD testing page)
-
-// open create form
 $routes->get('test/user_create', 'CRUDTesting::index');
-
-// process create (form submit)
 $routes->post('crud-testing/create', 'CRUDTesting::create');
-
-// View update page (GET)
 $routes->get('/test/update/(:num)', 'CRUDTesting::showUpdateForm/$1');
-
-// Process update (POST)
 $routes->post('/crud-testing/update/(:num)', 'CRUDTesting::processUpdate/$1');
-
-// Process delete (POST)
 $routes->post('/crud-testing/delete/(:num)', 'CRUDTesting::deleteUserData/$1');
 
-// ---------- BOOKING ROUTES ----------
-// Main booking page
+// ========================================
+// BOOKING ROUTES - USER FACING
+// ========================================
+
+// Main booking page (date selection)
 $routes->get('booking', 'BookingController::index');
 
 // Booking review page (requires login)
-$routes->get('user/booking_review', 'BookingController::review');
+$routes->get('booking/review', 'BookingController::review', ['filter' => 'auth']);
 
-// Check login status API
-$routes->get('api/bookings/check-login', 'BookingController::checkLogin');
+// Booking success page
+$routes->get('booking/success', 'BookingController::success', ['filter' => 'auth']);
 
-// Get booked dates API
-$routes->get('api/bookings/booked-dates', 'BookingController::getBookedDates');
+// My Bookings (booking history)
+$routes->get('bookings', 'BookingController::myBookings', ['filter' => 'auth']);
 
-// Booking history
-$routes->get('booking/history', 'BookingController::history');
+// View single booking details
+$routes->get('bookings/view/(:num)', 'BookingController::viewBooking/$1', ['filter' => 'auth']);
 
-// API endpoints
-$routes->get('api/bookings/property/(:num)', 'BookingController::getProperty/$1');
-$routes->post('api/bookings/create', 'BookingController::create');
-$routes->get('api/bookings', 'BookingController::list');
-$routes->get('api/bookings/(:num)', 'BookingController::show/$1');
-$routes->put('api/bookings/(:num)', 'BookingController::update/$1');
-$routes->delete('api/bookings/(:num)', 'BookingController::delete/$1');
+// ========================================
+// BOOKING API ROUTES
+// ========================================
 
-$routes->post('/booking/create', 'BookingController::create');
-$routes->get('/booking/success', 'BookingController::success');
+// Create new booking
+$routes->post('booking/create', 'BookingController::create', ['filter' => 'auth']);
 
-// My Bookings Routes
-$routes->get('bookings', 'BookingController::myBookings', ['filter' => 'auth']); // View page
-$routes->get('api/bookings/user', 'BookingController::getUserBookings', ['filter' => 'auth']); // Get user bookings
-$routes->get('api/bookings/(:num)', 'BookingController::getBookingDetails/$1', ['filter' => 'auth']); // Get single booking
-$routes->post('api/bookings/(:num)/cancel', 'BookingController::cancelBooking/$1', ['filter' => 'auth']); // Cancel booking
+// Cancel booking - FIXED ROUTE
+$routes->post('bookings/cancel/(:num)', 'BookingController::cancel/$1', ['filter' => 'auth']);
 
+// Get booked dates for calendar
+$routes->get('booking/get-booked-dates', 'BookingController::getBookedDates');
+
+// Calculate price (AJAX)
+$routes->get('booking/calculate-price', 'BookingController::calculatePrice');
+
+// Check login status
+$routes->get('booking/check-login', 'BookingController::checkLogin');
+
+// ========================================
+// PAYMENT ROUTES
+// ========================================
+
+// Process payment
+$routes->post('payment/process', 'PaymentController::processPayment', ['filter' => 'auth']);
+
+// Get payment details
+$routes->get('payment/details/(:num)', 'PaymentController::getPaymentDetails/$1', ['filter' => 'auth']);
+
+// Refund payment
+$routes->post('payment/refund/(:num)', 'PaymentController::refundPayment/$1', ['filter' => 'auth']);
+
+// ========================================
+// LEGACY/COMPATIBILITY ROUTES
+// ========================================
+
+// Old route redirects (for backward compatibility)
+$routes->get('user/booking_review', function () {
+    return redirect()->to('/booking/review');
+});
+
+$routes->get('user/booking-form', function () {
+    return redirect()->to('/booking');
+});
+
+$routes->get('booking_success', function () {
+    return redirect()->to('/booking/success');
+});
+
+$routes->get('booking/history', function () {
+    return redirect()->to('/bookings');
+});

@@ -84,7 +84,7 @@
 
         /* Background Image for General Pages */
         body {
-            background-image: url('/assets/img/booking.webp');
+            background-image: url('/assets/img/bookingbg.jpg');
             background-size: 205%;
             background-position: center;
             background-attachment: scroll;
@@ -99,15 +99,20 @@
             position: relative;
         }
 
-        .login-container { background-image: url('/assets/img/booking.webp'); }
-        .signup-container { background-image: url('/assets/img/booking.webp'); }
+        .login-container {
+            background-image: url('/assets/img/booking.webp');
+        }
+
+        .signup-container {
+            background-image: url('/assets/img/booking.webp');
+        }
 
         .login-container::before,
         .signup-container::before {
             content: '';
             position: absolute;
             inset: 0;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0, 0, 0, 0.5);
         }
 
         .login-content,
@@ -117,26 +122,64 @@
         }
 
         /* Scrollbar */
-        ::-webkit-scrollbar { width: 10px; }
-        ::-webkit-scrollbar-track { background: #F4F1DE; }
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #F4F1DE;
+        }
+
         ::-webkit-scrollbar-thumb {
             background: #4B7447;
             border-radius: 5px;
         }
-        ::-webkit-scrollbar-thumb:hover { background: #3F613C; }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3F613C;
+        }
 
         /* Smooth Scroll */
-        html { scroll-behavior: smooth; }
+        html {
+            scroll-behavior: smooth;
+        }
 
         /* Fade-in Animation */
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        .animate-fade-in { animation: fadeIn 0.6s ease-out; }
+
+        .animate-fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
 
         /* Image Loading */
-        img { transition: opacity 0.3s ease; }
-        img[data-src] { min-height: 200px; }
+        img {
+            transition: opacity 0.3s ease;
+        }
+
+        img[data-src] {
+            min-height: 200px;
+        }
+
+        /* Custom styling for booked dates */
+        .flatpickr-day.booked-date {
+            background-color: #4B7447 !important;
+            color: #7CA982 !important;
+            cursor: not-allowed !important;
+            text-decoration: line-through;
+        }
+
+        .flatpickr-day.booked-date:hover {
+            background-color: #A3C1A1 !important;
+        }
     </style>
 </head>
