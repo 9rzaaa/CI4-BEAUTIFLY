@@ -114,16 +114,6 @@
     <script>
         let selectedDates = [];
 
-        // PREVENT form submission completely
-        const bookingForm = document.getElementById("bookingForm");
-        if (bookingForm) {
-            bookingForm.addEventListener("submit", function(e) {
-                e.preventDefault();
-                console.log("❌ Form submission blocked!");
-                return false;
-            });
-        }
-
         // Initialize flatpickr for date selection
         flatpickr("#dateRange", {
             mode: "range",
@@ -209,10 +199,12 @@
             return `${year}-${month}-${day}`;
         }
 
-        // Book Now button
+
+        // Book Now button - Max 6 total guests
         document.getElementById("reviewBooking").addEventListener("click", (e) => {
             e.preventDefault();
 
+            // Check if dates are selected
             if (selectedDates.length !== 2) {
                 alert("Please select a check-in and check-out date range.");
                 return;
@@ -222,9 +214,21 @@
             const checkOutDate = selectedDates[1];
             const adults = parseInt(adultsInput.value);
             const kids = parseInt(kidsInput.value);
+            const totalGuests = adults + kids;
 
-            // Validations...
+            // Validate at least 1 adult
+            if (adults < 1) {
+                alert("At least 1 adult is required.");
+                return;
+            }
 
+            // Validate total guests (max 6 total)
+            if (totalGuests > 6) {
+                alert("Maximum 6 guests total allowed (adults + kids combined).");
+                return;
+            }
+
+            // All validations passed - proceed to review
             const checkIn = formatDateLocal(checkInDate);
             const checkOut = formatDateLocal(checkOutDate);
 
