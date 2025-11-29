@@ -347,6 +347,34 @@
            
             controls.innerHTML = html;
         }
+    
+        function applyFilters() {
+            loadBookings(1);
+        }
+
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('dateFrom').value = '';
+            document.getElementById('dateTo').value = '';
+            loadBookings(1);
+        }
+
+        function viewBooking(id) {
+            fetch(`${baseUrl}/admin/bookings/view/${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showBookingDetails(data.booking);
+                    } else {
+                        showNotification('Error loading booking details', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('Error loading booking details', 'error');
+                });
+        }
     </script>    
 </body>
 </html>
