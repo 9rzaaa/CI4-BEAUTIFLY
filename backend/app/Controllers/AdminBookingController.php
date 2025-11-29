@@ -76,3 +76,60 @@ class AdminBookingController extends BaseController
         ");
         $builder->join('users', 'users.id = bookings.user_id', 'left');
         $builder->join('properties', 'properties.id = bookings.property_id', 'left');
+
+         // Apply filters
+        if (!empty($search)) {
+            $builder->groupStart();
+            $builder->like('users.name', $search);
+            $builder->orLike('users.email', $search);
+            $builder->orLike('properties.name', $search);
+            $builder->orLike('bookings.id', $search);
+            $builder->groupEnd();
+        }
+
+        if (!empty($status)) {
+            $builder->where('bookings.status', $status);
+        }
+
+        if (!empty($dateFrom)) {
+            $builder->where('bookings.check_in >=', $dateFrom);
+        }
+
+        if (!empty($dateTo)) {
+            $builder->where('bookings.check_out <=', $dateTo);
+        }
+
+        // Get total count before pagination
+        $total = $builder->countAllResults(false);
+
+        // Apply pagination
+        $offset = ($page - 1) * $perPage;
+        $builder->orderBy('bookings.created_at', 'DESC');
+        $builder->limit($perPage, $offset);
+
+        $bookings = $builder->get()->getResultArray();
+
+        // Format data
+        foreach ($bookings as &$booking) {
+            $booking['checkin_date'] = $booking['check_in'];
+            $booking['checkout_date'] = $booking['check_out'];
+        }
+
+        // Calculate pagination
+        $totalPages = ceil($total / $perPage);
+        $from = $total > 0 ? $offset + 1 : 0;
+        $to = min($offset + $perPage, $total);
+
+        return $this->response->setJSON([
+            'success' => true,
+            'bookings' => $bookings,
+            'pagination' => [
+                'current_page' => $page,
+                'per_page' => $perPage,
+                'total' => $total,
+                'total_pages' => $totalPages,
+                'from' => $from,
+                'to' => $to
+            ]
+        ]);
+    }
