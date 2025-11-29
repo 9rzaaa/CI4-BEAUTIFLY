@@ -133,3 +133,48 @@ class AdminBookingController extends BaseController
             ]
         ]);
     }
+
+    // View single booking details
+    public function view($id = null)
+    {
+        if (!$id) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Booking ID is required'
+            ]);
+        }
+
+        $builder = $this->bookingModel->builder();
+        $builder->select('
+        bookings.*,
+        users.id as user_id,
+        CONCAT(users.first_name, " ", users.last_name) as user_name,
+        users.email as user_email,
+        properties.id as property_id,
+        properties.name as property_name,
+        properties.location as property_location,
+        (bookings.adults + bookings.kids) as guests
+        ');
+        $builder->join('users', 'users.id = bookings.user_id', 'left');
+        $builder->join('properties', 'properties.id = bookings.property_id', 'left');
+        $builder->where('bookings.id', $id);
+
+        $booking = $builder->get()->getRowArray();
+
+        if (!$booking) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Booking not found'
+            ]);
+        }
+
+        // Format dates for display
+        $booking['checkin_date'] = $booking['check_in'];
+        $booking['checkout_date'] = $booking['check_out'];
+        $booking['nights'] = $booking['number_of_nights'];
+
+        return $this->response->setJSON([
+            'success' => true,
+            'booking' => $booking
+        ]);
+    }
