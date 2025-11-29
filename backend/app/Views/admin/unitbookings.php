@@ -463,6 +463,87 @@
                     showNotification('Error loading booking', 'error');
                 });
         }
+         function populateEditForm(booking) {
+            document.getElementById('editBookingId').value = booking.id;
+            document.getElementById('editCheckinDate').value = booking.check_in;
+            document.getElementById('editCheckoutDate').value = booking.check_out;
+            document.getElementById('editAdults').value = booking.adults;
+            document.getElementById('editKids').value = booking.kids;
+            document.getElementById('editStatus').value = booking.status;
+            document.getElementById('editSpecialRequests').value = booking.special_requests || '';
+           
+            document.getElementById('editModal').classList.remove('hidden');
+        }
+
+
+        function closeEditModal() {
+            document.getElementById('editModal').classList.add('hidden');
+            document.getElementById('editBookingForm').reset();
+        }
+
+
+        document.getElementById('editBookingForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+           
+            const formData = {
+                id: document.getElementById('editBookingId').value,
+                check_in: document.getElementById('editCheckinDate').value,
+                check_out: document.getElementById('editCheckoutDate').value,
+                adults: document.getElementById('editAdults').value,
+                kids: document.getElementById('editKids').value,
+                status: document.getElementById('editStatus').value,
+                special_requests: document.getElementById('editSpecialRequests').value
+            };
+
+            fetch(`${baseUrl}/admin/bookings/update`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('Booking updated successfully', 'success');
+                    closeEditModal();
+                    loadBookings(currentPage);
+                } else {
+                    showNotification(data.message || 'Error updating booking', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Error updating booking', 'error');
+            });
+        });
+
+        function deleteBooking(id) {
+            if (!confirm('Are you sure you want to delete this booking? This action cannot be undone.')) {
+                return;
+            }
+            fetch(`${baseUrl}/admin/bookings/delete/${id}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('Booking deleted successfully', 'success');
+                    loadBookings(currentPage);
+                } else {
+                    showNotification(data.message || 'Error deleting booking', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Error deleting booking', 'error');
+            });
+        }
+
+        function showNotification(message, type = 'info') {
+            alert(message);
+        }
+
     </script>    
 </body>
 </html>
