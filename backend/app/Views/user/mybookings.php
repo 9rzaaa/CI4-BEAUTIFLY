@@ -285,7 +285,7 @@ $active = 'My Bookings';
 
         async function viewBookingDetails(bookingId) {
             try {
-                const response = await fetch(`${API_BASE}/api/bookings/${bookingId}`);
+                const response = await fetch(`${API_BASE}/api/bookings/details/${bookingId}`);
                 const data = await response.json();
 
 
