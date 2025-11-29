@@ -178,3 +178,84 @@ class AdminBookingController extends BaseController
             'booking' => $booking
         ]);
     }
+
+     // Update booking
+    public function update()
+    {
+        $json = $this->request->getJSON(true);
+
+        // Validation rules
+        $validation = \Config\Services::validation();
+        $validation->setRules([
+            'id' => 'required|numeric',
+            'check_in' => 'required|valid_date',
+            'check_out' => 'required|valid_date',
+            'adults' => 'required|numeric|greater_than[0]',
+            'kids' => 'required|numeric',
+            'status' => 'required|in_list[pending,confirmed,cancelled,completed,rejected]'
+        ]);
+
+
+        if (!$validation->run($json)) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => implode(', ', $validation->getErrors())
+            ]);
+        }
+
+
+        // Validate dates
+        $checkIn = strtotime($json['check_in']);
+        $checkOut = strtotime($json['check_out']);
+
+        if ($checkOut <= $checkIn) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Check-out date must be after check-in date'
+            ]);
+        }
+
+        // Check if booking exists
+        $booking = $this->bookingModel->find($json['id']);
+        if (!$booking) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Booking not found'
+            ]);
+        }
+
+        // Calculate number of nights
+        $numberOfNights = ceil(($checkOut - $checkIn) / (60 * 60 * 24));
+
+        // Prepare update data
+        $updateData = [
+            'check_in' => $json['check_in'],
+            'check_out' => $json['check_out'],
+            'adults' => $json['adults'],
+            'kids' => $json['kids'],
+            'number_of_nights' => $numberOfNights,
+            'status' => $json['status'],
+            'special_requests' => $json['special_requests'] ?? ''
+        ];
+
+        // Recalculate total price if nights changed
+        if ($numberOfNights != $booking['number_of_nights']) {
+            $updateData['total_price'] = ($booking['price_per_night'] * $numberOfNights) + $booking['cleaning_fee'];
+        }
+
+        // Update booking
+        $result = $this->bookingModel->update($json['id'], $updateData);
+
+
+        if ($result) {
+            return $this->response->setJSON([
+                'success' => true,
+                'message' => 'Booking updated successfully'
+            ]);
+        } else {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Failed to update booking'
+            ]);
+        }
+    }
