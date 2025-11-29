@@ -3,35 +3,24 @@ $active = 'My Bookings';
 ?>
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Bookings - EASY&CO</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#73AF6F',
-                        accent: '#4A5F8F',
-                    }
-                }
-            }
-        }
-    </script>
-</head>
+<?= view('components/head') ?>
+
 <body class="bg-gray-50">
     <?php echo view('components/header'); ?>
 
 
     <!-- Main Content -->
     <main class="container mx-auto px-4 py-8 max-w-7xl">
-        <!-- Page Header -->
-        <div class="mb-8">
-            <h1 class="text-4xl font-bold text-gray-800 mb-2">My Bookings</h1>
-            <p class="text-gray-600">View and manage your resort reservations</p>
-        </div>
+<!-- Page Header -->
+<div class="mb-8 text-center">
+    <h1 class="text-4xl font-bold text-green-700 mb-2 drop-shadow-[0_2px_2px_rgba(0,0,0,0.25)]">
+        My Bookings
+    </h1>
+
+    <p class="text-green-600 drop-shadow-[0_1px_1px_rgba(0,0,0,0.25)]">
+        View and manage your resort reservations
+    </p>
+</div>
 
 
         <!-- Stats Summary -->
@@ -55,26 +44,27 @@ $active = 'My Bookings';
         </div>
 
 
-        <!-- Filter Tabs -->
-        <div class="mb-6">
-            <div class="flex flex-wrap gap-3">
-                <button class="filter-tab active" data-filter="all">
-                    All Bookings (<?= $totalBookings ?>)
-                </button>
-                <button class="filter-tab" data-filter="pending">
-                    Pending (<?= $pendingCount ?>)
-                </button>
-                <button class="filter-tab" data-filter="upcoming">
-                    Upcoming (<?= $upcomingCount ?>)
-                </button>
-                <button class="filter-tab" data-filter="completed">
-                    Completed (<?= $completedCount ?>)
-                </button>
-                <button class="filter-tab" data-filter="cancelled">
-                    Cancelled (<?= $cancelledCount ?>)
-                </button>
-            </div>
-        </div>
+<!-- Filter Tabs -->
+<div class="mb-6">
+    <div class="flex flex-wrap gap-3 justify-center">
+        <button class="filter-tab active" data-filter="all">
+            All Bookings (<?= $totalBookings ?>)
+        </button>
+        <button class="filter-tab" data-filter="pending">
+            Pending (<?= $pendingCount ?>)
+        </button>
+        <button class="filter-tab" data-filter="upcoming">
+            Upcoming (<?= $upcomingCount ?>)
+        </button>
+        <button class="filter-tab" data-filter="completed">
+            Completed (<?= $completedCount ?>)
+        </button>
+        <button class="filter-tab" data-filter="cancelled">
+            Cancelled (<?= $cancelledCount ?>)
+        </button>
+    </div>
+</div>
+
 
 
         <!-- Bookings Container -->
@@ -145,7 +135,7 @@ $active = 'My Bookings';
                             </div>
                            
                             <div class="mt-4 flex gap-2">
-                                <a href="<?= base_url('bookings/view/' . $booking['id']) ?>" class="flex-1 bg-accent hover:bg-accent/90 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors text-center">
+                                <a href="<?= base_url('bookings/view/' . $booking['id']) ?>" class="flex-1 bg-primary hover:bg-accent/90 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors text-center">
                                     View Details
                                 </a>
                                 <?php if ($booking['can_cancel']): ?>
@@ -165,99 +155,195 @@ $active = 'My Bookings';
     <?php echo view('components/footer'); ?>
 
 
-    <style>
-        .filter-tab {
-            background-color: white;
-            color: #4B5563;
-            border: 2px solid #E5E7EB;
-            padding: 0.625rem 1.5rem;
-            border-radius: 0.5rem;
-            font-weight: 500;
-            transition: all 0.2s;
-            cursor: pointer;
+ <style>
+    /* FILTER TABS */
+    .filter-tab {
+        background-color: white;
+        color: #4F5D44; /* earthy gray-green */
+        border: 2px solid #DCEED1; /* light leaf */
+        padding: 0.625rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        transition: all 0.2s;
+        cursor: pointer;
+    }
+
+    .filter-tab:hover {
+        border-color: #6DA34D; /* primary green */
+        color: #2E5A32; /* darker garden green */
+    }
+
+    .filter-tab.active {
+        background-color: #6DA34D; /* garden green */
+        color: white;
+        border-color: #6DA34D;
+    }
+
+    /* STATUS BADGES */
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.375rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
+    }
+
+    /* Upcoming – soft leaf green */
+    .status-upcoming {
+        background-color: #DCEED1;
+        color: #2E5A32;
+    }
+
+    /* Completed – darker healthy green */
+    .status-completed {
+        background-color: #A3B18A;
+        color: #1F3F1C;
+    }
+
+    /* Cancelled – soft garden rose */
+    .status-cancelled {
+        background-color: #F3D8D0;
+        color: #8C3B2E;
+    }
+
+    /* Pending – natural wheat yellow */
+    .status-pending {
+        background-color: #FFF4CC;
+        color: #8C6239;
+    }
+
+    /* Confirmed – soft mint */
+    .status-confirmed {
+        background-color: #DCEED1;
+        color: #2E5A32;
+    }
+
+    /* BOOKING CARDS */
+    .booking-card {
+        background: white;
+        border-radius: 1rem;
+        box-shadow: 0 1px 3px 0 rgba(46, 90, 50, 0.15); /* natural green shadow */
+        transition: all 0.3s ease;
+        overflow: hidden;
+        border: 1px solid #DCEED1; /* soft garden border */
+    }
+
+    .booking-card:hover {
+        box-shadow: 0 10px 25px -5px rgba(46, 90, 50, 0.2);
+        transform: translateY(-2px);
+    }
+
+    /* BOOKING IMAGE */
+    .booking-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .booking-image-container {
+        width: 100%;
+        height: 200px;
+        overflow: hidden;
+        background: linear-gradient(to bottom right, #DCEED1, #A3B18A); /* garden gradient */
+    }
+</style>
+
+        <script>
+        const BASE_URL = '<?= base_url() ?>';
+        let currentFilter = 'all';
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add filter tab listeners
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    currentFilter = this.dataset.filter;
+                    filterBookings();
+                });
+            });
+        });
+
+        function filterBookings() {
+            const allCards = document.querySelectorAll('.booking-card');
+            
+            allCards.forEach(card => {
+                const status = card.dataset.status;
+                
+                if (currentFilter === 'all') {
+                    card.style.display = 'block';
+                } else if (currentFilter === status) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // Check if any cards are visible
+            const visibleCards = Array.from(allCards).filter(card => card.style.display !== 'none');
+            
+            if (visibleCards.length === 0 && currentFilter !== 'all') {
+                // Show a message if no bookings in this category
+                const grid = document.getElementById('bookingsGrid');
+                const message = document.createElement('div');
+                message.className = 'col-span-full text-center py-12 text-gray-500';
+                message.innerHTML = `
+                    <svg class="mx-auto h-16 w-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <p class="text-lg">No ${currentFilter} bookings</p>
+                `;
+                message.id = 'no-bookings-message';
+                
+                // Remove previous message if exists
+                const existingMessage = document.getElementById('no-bookings-message');
+                if (existingMessage) {
+                    existingMessage.remove();
+                }
+                
+                grid.appendChild(message);
+            } else {
+                // Remove the no bookings message if it exists
+                const message = document.getElementById('no-bookings-message');
+                if (message) {
+                    message.remove();
+                }
+            }
         }
-       
-        .filter-tab:hover {
-            border-color: #73AF6F;
-            color: #73AF6F;
+
+        async function confirmCancelBooking(bookingId) {
+            if (!confirm('Are you sure you want to cancel this booking?\n\nNote: Cancellation policies apply based on your booking terms.')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${BASE_URL}/bookings/cancel/${bookingId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (!data.success) {
+                    alert('Error: ' + (data.error || 'Failed to cancel booking'));
+                    return;
+                }
+
+                alert(data.message || 'Booking cancelled successfully!');
+                
+                // Reload the page to show updated status
+                window.location.reload();
+            } catch (error) {
+                console.error('Error cancelling booking:', error);
+                alert('Failed to cancel booking. Please try again.');
+            }
         }
-       
-        .filter-tab.active {
-            background-color: #73AF6F;
-            color: white;
-            border-color: #73AF6F;
-        }
-
-
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 0.375rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.025em;
-        }
-
-
-        .status-upcoming {
-            background-color: #DBEAFE;
-            color: #1E40AF;
-        }
-
-
-        .status-completed {
-            background-color: #D1FAE5;
-            color: #065F46;
-        }
-
-
-        .status-cancelled {
-            background-color: #FEE2E2;
-            color: #991B1B;
-        }
-
-
-        .status-pending {
-            background-color: #FEF3C7;
-            color: #92400E;
-        }
-
-
-        .status-confirmed {
-            background-color: #DBEAFE;
-            color: #1E40AF;
-        }
-
-
-        .booking-card {
-            background: white;
-            border-radius: 1rem;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-            overflow: hidden;
-        }
-
-
-        .booking-card:hover {
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-            transform: translateY(-2px);
-        }
-
-
-        .booking-image {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-
-
-        .booking-image-container {
-            width: 100%;
-            height: 200px;
-            overflow: hidden;
-        }
-    </style>
+    </script>
 </body>
 </html>
