@@ -203,6 +203,41 @@
                     </div>
 
                 </div>
+
+<!-- Credit Card Modal -->
+<div id="creditCardModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 relative transform scale-95 opacity-0 transition-all duration-300 ease-out">
+        <!-- Close X Button on top-left -->
+        <button id="closeCardModal" 
+                class="absolute top-4 left-4 text-gray-400 hover:text-gray-700 transition-all text-xl font-bold">&times;</button>
+        
+        <h3 class="text-2xl font-bold mb-2 text-primary-dark text-center">Credit/Debit Card Payment</h3>
+        <p class="text-sm mb-6 text-gray-500 text-center">Enter your card details to confirm the payment.</p>
+
+        <div class="space-y-4">
+            <input type="text" id="cardName" placeholder="Cardholder Name"
+                   class="w-full p-3 border-2 border-gray-200 rounded-xl shadow-sm focus:border-accent focus:ring-accent/50 transition" />
+
+            <input type="text" id="cardNumber" placeholder="Card Number"
+                   class="w-full p-3 border-2 border-gray-200 rounded-xl shadow-sm focus:border-accent focus:ring-accent/50 transition" />
+
+            <div class="flex gap-4">
+                <input type="text" id="cardExpiry" placeholder="MM/YY"
+                       class="w-1/2 p-3 border-2 border-gray-200 rounded-xl shadow-sm focus:border-accent focus:ring-accent/50 transition" />
+                <input type="text" id="cardCVC" placeholder="CVC"
+                       class="w-1/2 p-3 border-2 border-gray-200 rounded-xl shadow-sm focus:border-accent focus:ring-accent/50 transition" />
+            </div>
+        </div>
+
+        <div class="mt-6 flex justify-center">
+            <button id="confirmCardPayment" 
+                    class="px-8 py-3 rounded-xl bg-accent text-white font-bold hover:bg-accent/90 transition-all shadow-lg">Confirm Payment</button>
+        </div>
+    </div>
+</div>
+
+
+
             </div>
             <hr class="my-8 border-gray-300">
 
@@ -412,6 +447,58 @@
         }
     </script>
 
+    <script>
+const creditCardModal = document.getElementById('creditCardModal');
+const closeCardModal = document.getElementById('closeCardModal');
+const confirmCardPayment = document.getElementById('confirmCardPayment');
+const proceedBtn = document.getElementById('proceedToPayment');
+
+function openModal() {
+    creditCardModal.classList.remove('hidden');
+    // Force reflow to enable transition
+    const modalContent = creditCardModal.querySelector('div');
+    requestAnimationFrame(() => {
+        modalContent.classList.remove('scale-95', 'opacity-0');
+        modalContent.classList.add('scale-100', 'opacity-100');
+    });
+}
+
+function closeModal() {
+    const modalContent = creditCardModal.querySelector('div');
+    modalContent.classList.add('scale-95', 'opacity-0');
+    modalContent.classList.remove('scale-100', 'opacity-100');
+    modalContent.addEventListener('transitionend', () => {
+        creditCardModal.classList.add('hidden');
+    }, { once: true });
+}
+
+// Show modal only if Visa/Credit Card is selected
+proceedBtn.addEventListener('click', (e) => {
+    const selectedPayment = document.querySelector('input[name="paymentMethod"]:checked').value;
+    if (selectedPayment === 'visa') openModal();
+});
+
+// Close modal when clicking X
+closeCardModal.addEventListener('click', closeModal);
+
+// Confirm payment
+confirmCardPayment.addEventListener('click', () => {
+    const cardName = document.getElementById('cardName').value.trim();
+    const cardNumber = document.getElementById('cardNumber').value.trim();
+    const cardExpiry = document.getElementById('cardExpiry').value.trim();
+    const cardCVC = document.getElementById('cardCVC').value.trim();
+
+    if (!cardName || !cardNumber || !cardExpiry || !cardCVC) {
+        alert('Please fill all credit card fields.');
+        return;
+    }
+
+    closeModal();
+    window.location.href = '/booking_success';
+});
+</script>
+
+    
     <?= view('components/footer') ?>
 
 </body>

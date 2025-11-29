@@ -76,3 +76,8 @@ $routes->get('api/bookings/user', 'BookingController::getUserBookings', ['filter
 $routes->get('api/bookings/(:num)', 'BookingController::getBookingDetails/$1', ['filter' => 'auth']); // Get single booking
 $routes->post('api/bookings/(:num)/cancel', 'BookingController::cancelBooking/$1', ['filter' => 'auth']); // Cancel booking
 
+$routes->get('/user/booking-form', 'User::bookingForm');  // Booking form page
+$routes->get('/user/booking-confirmation', 'User::bookingConfirmation'); // Booking confirmation page
+$routes->get('/booking_success', 'User::bookingSuccess'); // Success page after payment
+
+
