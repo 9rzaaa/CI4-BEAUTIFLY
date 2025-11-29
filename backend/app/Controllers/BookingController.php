@@ -23,29 +23,66 @@ class BookingController extends BaseController
 
     /**
      * Show booking review page
-     * NOW CALCULATES PRICES FROM DATABASE (not from URL parameters)
+     * Calculates prices from database (not from URL parameters)
      */
     public function review()
     {
+        log_message('info', '==================== REVIEW METHOD STARTED ====================');
+
         // Check if user is logged in
         $userId = session()->get('user_id');
+        log_message('info', 'User ID from session: ' . ($userId ?? 'NULL'));
 
         if (!$userId) {
+            log_message('info', 'REDIRECT: User not logged in');
             session()->set('redirect_url', current_url());
             return redirect()->to('/login')
                 ->with('error', 'Please login to continue with your booking');
         }
 
-        // Get booking parameters from URL (SIMPLIFIED - only 4 params)
+        // Get booking parameters from URL
         $checkIn = $this->request->getGet('checkIn');
         $checkOut = $this->request->getGet('checkOut');
         $adults = $this->request->getGet('adults');
         $kids = $this->request->getGet('kids') ?? 0;
 
+        log_message('info', 'GET Parameters:');
+        log_message('info', '  checkIn: ' . ($checkIn ?? 'NULL'));
+        log_message('info', '  checkOut: ' . ($checkOut ?? 'NULL'));
+        log_message('info', '  adults: ' . ($adults ?? 'NULL'));
+        log_message('info', '  kids: ' . $kids);
+
         // Validate required parameters
         if (!$checkIn || !$checkOut || !$adults) {
+            log_message('info', 'REDIRECT: Missing required parameters');
             return redirect()->to('/booking')
                 ->with('error', 'Invalid booking parameters. Please try again.');
+        }
+
+        // Validate dates before proceeding
+        $validation = $this->validateBooking([
+            'check_in' => $checkIn,
+            'check_out' => $checkOut,
+            'adults' => $adults,
+            'kids' => $kids
+        ]);
+
+        log_message('info', 'Validation result: ' . json_encode($validation));
+
+        if (!$validation['valid']) {
+            log_message('info', 'REDIRECT: Validation failed - ' . $validation['message']);
+            return redirect()->to('/booking')
+                ->with('error', $validation['message']);
+        }
+
+        // Check for booking conflicts
+        $hasConflict = $this->checkBookingConflict($checkIn, $checkOut);
+        log_message('info', 'Booking conflict check: ' . ($hasConflict ? 'YES' : 'NO'));
+
+        if ($hasConflict) {
+            log_message('info', 'REDIRECT: Booking conflict detected');
+            return redirect()->to('/booking')
+                ->with('error', 'Property is already booked for selected dates. Please choose different dates.');
         }
 
         // Get property details from database
@@ -54,10 +91,15 @@ class BookingController extends BaseController
             ->get()
             ->getRowArray();
 
+        log_message('info', 'Property found: ' . ($property ? 'YES' : 'NO'));
+
         if (!$property) {
+            log_message('info', 'REDIRECT: Property not found');
             return redirect()->to('/booking')
                 ->with('error', 'Property not available.');
         }
+
+        log_message('info', 'SUCCESS: All checks passed, rendering view');
 
         // Calculate pricing from database
         $checkInDate = new \DateTime($checkIn);
@@ -72,16 +114,16 @@ class BookingController extends BaseController
         // Generate transaction ID server-side
         $transactionId = 'TXN-' . strtoupper(bin2hex(random_bytes(5)));
 
-        // Format dates for display (server-side to avoid timezone issues)
+        // Format dates for display
         $checkInFormatted = $checkInDate->format('M d, Y');
         $checkOutFormatted = $checkOutDate->format('M d, Y');
 
         // Pass data to view
         $data = [
-            'checkIn' => $checkIn, // Raw format for API
-            'checkOut' => $checkOut, // Raw format for API
-            'checkInFormatted' => $checkInFormatted, // Formatted for display
-            'checkOutFormatted' => $checkOutFormatted, // Formatted for display
+            'checkIn' => $checkIn,
+            'checkOut' => $checkOut,
+            'checkInFormatted' => $checkInFormatted,
+            'checkOutFormatted' => $checkOutFormatted,
             'adults' => $adults,
             'kids' => $kids,
             'nights' => $nights,
@@ -94,11 +136,14 @@ class BookingController extends BaseController
             'propertyName' => $property['name'] ?? 'Garden Resort'
         ];
 
+        log_message('info', 'Rendering view: user/booking_review');
+        log_message('info', '==================== REVIEW METHOD ENDED ====================');
+
         return view('user/booking_review', $data);
     }
 
     /**
-     * Calculate price (AJAX endpoint - optional if needed)
+     * Calculate price (AJAX endpoint)
      */
     public function calculatePrice()
     {
@@ -143,11 +188,21 @@ class BookingController extends BaseController
 
     /**
      * Create a new booking (API)
+     * ⚠️ IMPORTANT: Creates booking with PENDING status
+     * Payment processing happens in PaymentController::processPayment()
      */
     public function create()
     {
         // Get JSON input
         $json = $this->request->getJSON(true);
+
+        // Validate user is logged in
+        $userId = session()->get('user_id');
+        if (!$userId) {
+            return $this->response
+                ->setStatusCode(401)
+                ->setJSON(['success' => false, 'error' => 'User not authenticated']);
+        }
 
         // Validate input
         $validation = $this->validateBooking($json);
@@ -184,61 +239,73 @@ class BookingController extends BaseController
         $cleaningFee = $property['cleaning_fee'];
         $totalPrice = ($nights * $pricePerNight) + $cleaningFee;
 
-        // Generate transaction ID server-side
+        // Validate payment method
+        $paymentMethod = $json['payment_method'] ?? null;
+        if (!in_array($paymentMethod, ['gcash', 'paymaya', 'visa', 'credit_card'])) {
+            return $this->response
+                ->setStatusCode(400)
+                ->setJSON(['success' => false, 'error' => 'Invalid payment method']);
+        }
+
+        // Generate transaction ID server-side (if not provided)
         $transactionId = $json['transaction_id'] ?? 'TXN-' . strtoupper(bin2hex(random_bytes(5)));
 
-        // Determine payment status based on method
-        $paymentMethod = $json['payment_method'] ?? null;
-        $paymentStatus = 'unpaid'; // Default
+        // Begin database transaction
+        $this->db->transStart();
 
-        // Auto-mark as paid for GCash/Maya since QR was shown
-        if (in_array($paymentMethod, ['gcash', 'paymaya'])) {
-            $paymentStatus = 'paid';
+        try {
+            // Insert booking with PENDING status
+            // Payment will be processed separately by PaymentController
+            $bookingData = [
+                'user_id' => $userId,
+                'property_id' => 1,
+                'check_in' => $json['check_in'],
+                'check_out' => $json['check_out'],
+                'adults' => $json['adults'],
+                'kids' => $json['kids'] ?? 0,
+                'number_of_nights' => $nights,
+                'price_per_night' => $pricePerNight,
+                'cleaning_fee' => $cleaningFee,
+                'total_price' => $totalPrice,
+                'status' => 'pending', // ✅ Changed from 'confirmed' to 'pending'
+                'payment_status' => 'unpaid', // ✅ Will be updated by PaymentController
+                'payment_method' => $paymentMethod,
+                'transaction_id' => $transactionId,
+                'special_requests' => $json['special_requests'] ?? null,
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s'),
+            ];
+
+            $builder = $this->db->table('bookings');
+            $builder->insert($bookingData);
+            $bookingId = $this->db->insertID();
+
+            $this->db->transComplete();
+
+            if ($this->db->transStatus() === false) {
+                throw new \Exception('Failed to create booking');
+            }
+
+            log_message('info', "Booking #{$bookingId} created with pending status. Payment method: {$paymentMethod}");
+
+            return $this->response->setJSON([
+                'success' => true,
+                'booking_id' => $bookingId,
+                'total_price' => $totalPrice,
+                'price_per_night' => $pricePerNight,
+                'cleaning_fee' => $cleaningFee,
+                'nights' => $nights,
+                'transaction_id' => $transactionId,
+                'message' => 'Booking created successfully. Please proceed with payment.'
+            ]);
+        } catch (\Exception $e) {
+            $this->db->transRollback();
+            log_message('error', 'Booking creation failed: ' . $e->getMessage());
+
+            return $this->response
+                ->setStatusCode(500)
+                ->setJSON(['success' => false, 'error' => 'Failed to create booking. Please try again.']);
         }
-        // For Visa, mark as pending until confirmed by payment gateway
-        elseif ($paymentMethod === 'visa') {
-            $paymentStatus = 'pending';
-        }
-
-        // Insert booking
-        $data = [
-            'user_id' => session()->get('user_id') ?? 2,
-            'property_id' => 1,
-            'check_in' => $json['check_in'],
-            'check_out' => $json['check_out'],
-            'adults' => $json['adults'],
-            'kids' => $json['kids'] ?? 0,
-            'number_of_nights' => $nights,
-            'price_per_night' => $pricePerNight,
-            'cleaning_fee' => $cleaningFee,
-            'total_price' => $totalPrice,
-            'status' => 'confirmed',
-            'payment_status' => $paymentStatus,
-            'payment_method' => $paymentMethod,
-            'transaction_id' => $transactionId,
-            'special_requests' => $json['special_requests'] ?? null,
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s'),
-        ];
-
-        $builder = $this->db->table('bookings');
-        $builder->insert($data);
-        $bookingId = $this->db->insertID();
-
-        // Log payment transaction
-        $this->logPaymentTransaction($bookingId, $paymentMethod, $totalPrice, $paymentStatus);
-
-        return $this->response->setJSON([
-            'success' => true,
-            'booking_id' => $bookingId,
-            'total_price' => $totalPrice,
-            'price_per_night' => $pricePerNight,
-            'cleaning_fee' => $cleaningFee,
-            'nights' => $nights,
-            'transaction_id' => $transactionId,
-            'payment_status' => $paymentStatus,
-            'message' => 'Booking created successfully'
-        ]);
     }
 
     /**
@@ -248,19 +315,37 @@ class BookingController extends BaseController
     {
         $json = $this->request->getJSON(true);
 
+        // Validate user is logged in
+        $userId = session()->get('user_id');
+        if (!$userId) {
+            return $this->response
+                ->setStatusCode(401)
+                ->setJSON(['error' => 'User not authenticated']);
+        }
+
         // Get existing booking
         $builder = $this->db->table('bookings');
-        $booking = $builder->where('id', $id)->get()->getRowArray();
+        $booking = $builder->where('id', $id)
+            ->where('user_id', $userId) // ✅ Ensure user owns the booking
+            ->get()
+            ->getRowArray();
 
         if (!$booking) {
             return $this->response
                 ->setStatusCode(404)
-                ->setJSON(['error' => 'Booking not found']);
+                ->setJSON(['error' => 'Booking not found or access denied']);
+        }
+
+        // Don't allow updates to confirmed/paid bookings without admin approval
+        if ($booking['payment_status'] === 'paid') {
+            return $this->response
+                ->setStatusCode(403)
+                ->setJSON(['error' => 'Cannot modify paid bookings. Please contact support.']);
         }
 
         // Prepare update data
         $updateData = ['updated_at' => date('Y-m-d H:i:s')];
-        $allowedFields = ['check_in', 'check_out', 'adults', 'kids', 'status', 'special_requests'];
+        $allowedFields = ['check_in', 'check_out', 'adults', 'kids', 'special_requests'];
 
         foreach ($allowedFields as $field) {
             if (isset($json[$field])) {
@@ -316,17 +401,35 @@ class BookingController extends BaseController
     }
 
     /**
-     * Cancel/Delete booking
+     * Cancel booking
      */
-    public function delete($id)
+    public function cancel($id)
     {
+        // Validate user is logged in
+        $userId = session()->get('user_id');
+        if (!$userId) {
+            return $this->response
+                ->setStatusCode(401)
+                ->setJSON(['success' => false, 'error' => 'User not authenticated']);
+        }
+
         $builder = $this->db->table('bookings');
-        $booking = $builder->where('id', $id)->get()->getRowArray();
+        $booking = $builder->where('id', $id)
+            ->where('user_id', $userId)
+            ->get()
+            ->getRowArray();
 
         if (!$booking) {
             return $this->response
                 ->setStatusCode(404)
-                ->setJSON(['error' => 'Booking not found']);
+                ->setJSON(['success' => false, 'error' => 'Booking not found or access denied']);
+        }
+
+        // Check if booking can be cancelled
+        if (in_array($booking['status'], ['cancelled', 'completed'])) {
+            return $this->response
+                ->setStatusCode(400)
+                ->setJSON(['success' => false, 'error' => 'Booking cannot be cancelled']);
         }
 
         // Soft delete - update status to cancelled
@@ -335,10 +438,51 @@ class BookingController extends BaseController
             'updated_at' => date('Y-m-d H:i:s')
         ]);
 
+        // If payment was made, trigger refund process
+        if ($booking['payment_status'] === 'paid') {
+            log_message('info', "Booking #{$id} cancelled. Refund may be required.");
+            // You can call PaymentController::refundPayment() here if needed
+        }
+
         return $this->response->setJSON([
             'success' => true,
             'message' => 'Booking cancelled successfully'
         ]);
+    }
+
+    /**
+     * Delete booking (for compatibility - redirects to cancel)
+     */
+    public function delete($id)
+    {
+        return $this->cancel($id);
+    }
+
+    /**
+     * Get booking details
+     */
+    public function getBooking($id)
+    {
+        $userId = session()->get('user_id');
+        if (!$userId) {
+            return $this->response
+                ->setStatusCode(401)
+                ->setJSON(['error' => 'User not authenticated']);
+        }
+
+        $builder = $this->db->table('bookings');
+        $booking = $builder->where('id', $id)
+            ->where('user_id', $userId)
+            ->get()
+            ->getRowArray();
+
+        if (!$booking) {
+            return $this->response
+                ->setStatusCode(404)
+                ->setJSON(['error' => 'Booking not found or access denied']);
+        }
+
+        return $this->response->setJSON(['success' => true, 'booking' => $booking]);
     }
 
     /**
@@ -364,17 +508,27 @@ class BookingController extends BaseController
     public function success()
     {
         $bookingId = $this->request->getGet('id');
+        $userId = session()->get('user_id');
 
-        if (!$bookingId) {
-            return redirect()->to('/bookings')->with('error', 'Invalid booking');
+        if (!$bookingId || !$userId) {
+            return redirect()->to('/booking')->with('error', 'Invalid booking');
         }
 
         // Get booking details from database
         $builder = $this->db->table('bookings');
-        $booking = $builder->where('id', $bookingId)->get()->getRowArray();
+        $booking = $builder->where('id', $bookingId)
+            ->where('user_id', $userId)
+            ->get()
+            ->getRowArray();
 
         if (!$booking) {
-            return redirect()->to('/bookings')->with('error', 'Booking not found');
+            return redirect()->to('/booking')->with('error', 'Booking not found');
+        }
+
+        // Verify payment was successful
+        if ($booking['payment_status'] !== 'paid') {
+            return redirect()->to('/booking')
+                ->with('error', 'Payment not completed. Please try again.');
         }
 
         // Format dates
@@ -391,6 +545,8 @@ class BookingController extends BaseController
             'kids' => $booking['kids'],
             'total_price' => number_format($booking['total_price'], 2),
             'payment_method' => ucfirst($booking['payment_method']),
+            'payment_status' => ucfirst($booking['payment_status']),
+            'status' => ucfirst($booking['status']),
             'created_at' => date('M d, Y h:i A', strtotime($booking['created_at']))
         ];
 
@@ -442,8 +598,16 @@ class BookingController extends BaseController
             ];
         }
 
-        // Check maximum stay duration
+        // Check minimum stay (1 night)
         $nights = $checkOut->diff($checkIn)->days;
+        if ($nights < 1) {
+            return [
+                'valid' => false,
+                'message' => 'Minimum stay is 1 night'
+            ];
+        }
+
+        // Check maximum stay duration
         if ($nights > 30) {
             return [
                 'valid' => false,
@@ -483,10 +647,10 @@ class BookingController extends BaseController
             ];
         }
 
-        if (($adults + $kids) > 6) {
+        if (($adults + $kids) > 12) {
             return [
                 'valid' => false,
-                'message' => 'Maximum 6 guests total'
+                'message' => 'Maximum 12 guests total'
             ];
         }
 
@@ -500,15 +664,21 @@ class BookingController extends BaseController
     private function checkBookingConflict($checkIn, $checkOut)
     {
         $builder = $this->db->table('bookings');
+
+        // Only check active bookings (not cancelled/rejected)
         $builder->where('property_id', 1);
-        $builder->whereNotIn('status', ['cancelled', 'rejected']);
+        $builder->whereIn('status', ['pending', 'confirmed']);
+
+        // Date overlap logic:
+        // Conflict if: new_start < existing_end AND new_end > existing_start
         $builder->groupStart()
-            ->where("(check_in <= '$checkIn' AND check_out > '$checkIn')")
-            ->orWhere("(check_in < '$checkOut' AND check_out >= '$checkOut')")
-            ->orWhere("(check_in >= '$checkIn' AND check_out <= '$checkOut')")
+            ->where('check_in <', $checkOut)
+            ->where('check_out >', $checkIn)
             ->groupEnd();
 
-        return $builder->countAllResults() > 0;
+        $count = $builder->countAllResults();
+
+        return $count > 0;
     }
 
     /**
@@ -517,38 +687,18 @@ class BookingController extends BaseController
     private function checkBookingConflictExcluding($checkIn, $checkOut, $excludeId)
     {
         $builder = $this->db->table('bookings');
+
         $builder->where('property_id', 1);
         $builder->where('id !=', $excludeId);
-        $builder->whereNotIn('status', ['cancelled', 'rejected']);
+        $builder->whereIn('status', ['pending', 'confirmed']);
+
         $builder->groupStart()
-            ->where("(check_in <= '$checkIn' AND check_out > '$checkIn')")
-            ->orWhere("(check_in < '$checkOut' AND check_out >= '$checkOut')")
-            ->orWhere("(check_in >= '$checkIn' AND check_out <= '$checkOut')")
+            ->where('check_in <', $checkOut)
+            ->where('check_out >', $checkIn)
             ->groupEnd();
 
-        return $builder->countAllResults() > 0;
-    }
+        $count = $builder->countAllResults();
 
-    /**
-     * Log payment transaction (for records)
-     */
-    private function logPaymentTransaction($bookingId, $paymentMethod, $amount, $status)
-    {
-        try {
-            $paymentData = [
-                'booking_id' => $bookingId,
-                'payment_method' => $paymentMethod,
-                'amount' => $amount,
-                'status' => $status,
-                'transaction_date' => date('Y-m-d H:i:s'),
-                'created_at' => date('Y-m-d H:i:s'),
-            ];
-
-            // Uncomment this line if you have a payments table
-            $this->db->table('payments')->insert($paymentData);
-        } catch (\Exception $e) {
-            // Log error but don't fail the booking
-            log_message('error', 'Payment logging failed: ' . $e->getMessage());
-        }
+        return $count > 0;
     }
 }

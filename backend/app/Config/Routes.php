@@ -44,40 +44,73 @@ $routes->post('/crud-testing/update/(:num)', 'CRUDTesting::processUpdate/$1');
 $routes->post('/crud-testing/delete/(:num)', 'CRUDTesting::deleteUserData/$1');
 
 // ---------- BOOKING ROUTES ----------
-// Main booking page
+
+// Main booking page (date selection)
 $routes->get('booking', 'BookingController::index');
 
-// Booking review page (requires login)
-$routes->get('user/booking_review', 'BookingController::review');
+// ✅ Booking review page (requires login) - STANDARDIZED PATH
+$routes->get('booking/review', 'BookingController::review');
 
-// Check login status API
-$routes->get('api/bookings/check-login', 'BookingController::checkLogin');
+// Booking success page
+$routes->get('booking/success', 'BookingController::success');
 
-// Get booked dates API
-$routes->get('api/bookings/booked-dates', 'BookingController::getBookedDates');
-
-// Booking history
+// Booking history page
 $routes->get('booking/history', 'BookingController::history');
 
-// API endpoints
-$routes->get('api/bookings/property/(:num)', 'BookingController::getProperty/$1');
-$routes->post('api/bookings/create', 'BookingController::create');
-$routes->get('api/bookings', 'BookingController::list');
-$routes->get('api/bookings/(:num)', 'BookingController::show/$1');
-$routes->put('api/bookings/(:num)', 'BookingController::update/$1');
-$routes->delete('api/bookings/(:num)', 'BookingController::delete/$1');
+// My Bookings page
+$routes->get('bookings', 'BookingController::myBookings', ['filter' => 'auth']);
 
-$routes->post('/booking/create', 'BookingController::create');
-$routes->get('/booking/success', 'BookingController::success');
+// ---------- BOOKING API ROUTES ----------
 
-// My Bookings Routes
-$routes->get('bookings', 'BookingController::myBookings', ['filter' => 'auth']); // View page
-$routes->get('api/bookings/user', 'BookingController::getUserBookings', ['filter' => 'auth']); // Get user bookings
-$routes->get('api/bookings/(:num)', 'BookingController::getBookingDetails/$1', ['filter' => 'auth']); // Get single booking
-$routes->post('api/bookings/(:num)/cancel', 'BookingController::cancelBooking/$1', ['filter' => 'auth']); // Cancel booking
+// Create booking
+$routes->post('booking/create', 'BookingController::create');
 
-$routes->get('/user/booking-form', 'User::bookingForm');  // Booking form page
-$routes->get('/user/booking-confirmation', 'User::bookingConfirmation'); // Booking confirmation page
-$routes->get('/booking_success', 'User::bookingSuccess'); // Success page after payment
+// Get booking details
+$routes->get('booking/(:num)', 'BookingController::getBooking/$1', ['filter' => 'auth']);
 
+// Update booking
+$routes->put('booking/(:num)', 'BookingController::update/$1', ['filter' => 'auth']);
 
+// Cancel booking
+$routes->post('booking/(:num)/cancel', 'BookingController::cancel/$1', ['filter' => 'auth']);
+
+// Get property details
+$routes->get('booking/property/(:num)', 'BookingController::getProperty/$1');
+
+// Calculate price (AJAX)
+$routes->get('booking/calculate-price', 'BookingController::calculatePrice');
+
+// Check login status
+$routes->get('booking/check-login', 'BookingController::checkLogin');
+
+// Get booked dates
+$routes->get('booking/booked-dates', 'BookingController::getBookedDates');
+
+// Get user's bookings list
+$routes->get('booking/user/list', 'BookingController::getUserBookings', ['filter' => 'auth']);
+
+// ---------- PAYMENT ROUTES ----------
+
+// Process payment
+$routes->post('payment/process', 'PaymentController::processPayment');
+
+// Get payment details
+$routes->get('payment/details/(:num)', 'PaymentController::getPaymentDetails/$1');
+
+// Refund payment
+$routes->post('payment/refund/(:num)', 'PaymentController::refundPayment/$1');
+
+// ---------- LEGACY/COMPATIBILITY ROUTES (if needed) ----------
+
+// Old route redirects (optional - for backward compatibility)
+$routes->get('user/booking_review', function () {
+    return redirect()->to('/booking/review');
+});
+
+$routes->get('user/booking-form', function () {
+    return redirect()->to('/booking');
+});
+
+$routes->get('booking_success', function () {
+    return redirect()->to('/booking/success');
+});
