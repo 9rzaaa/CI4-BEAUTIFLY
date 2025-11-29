@@ -295,3 +295,42 @@ class AdminBookingController extends BaseController
             ]);
         }
     }
+      // Get booking statistics 
+
+    public function statistics()
+    {
+        $builder = $this->bookingModel->builder();
+
+        // Total bookings
+        $totalBookings = $builder->countAllResults();
+
+        // Bookings by status
+        $builder = $this->bookingModel->builder();
+        $builder->select('status, COUNT(*) as count');
+        $builder->groupBy('status');
+        $byStatus = $builder->get()->getResultArray();
+
+        // Total revenue (completed bookings)
+        $builder = $this->bookingModel->builder();
+        $builder->selectSum('total_price');
+        $builder->where('status', 'completed');
+        $revenue = $builder->get()->getRowArray();
+        $totalRevenue = $revenue['total_price'] ?? 0;
+
+        // This month's bookings
+        $builder = $this->bookingModel->builder();
+        $builder->where('MONTH(created_at)', date('m'));
+        $builder->where('YEAR(created_at)', date('Y'));
+        $thisMonth = $builder->countAllResults();
+
+        return $this->response->setJSON([
+            'success' => true,
+            'statistics' => [
+                'total_bookings' => $totalBookings,
+                'by_status' => $byStatus,
+                'total_revenue' => $totalRevenue,
+                'this_month' => $thisMonth
+            ]
+        ]);
+    }
+}
