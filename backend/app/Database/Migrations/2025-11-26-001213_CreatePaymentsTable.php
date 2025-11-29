@@ -32,7 +32,7 @@ class CreatePaymentsTable extends Migration
             ],
             'payment_method' => [
                 'type'       => 'ENUM',
-                'constraint' => ['credit_card', 'debit_card', 'gcash', 'paymaya', 'bank_transfer', 'cash'],
+                'constraint' => ['credit_card', 'debit_card', 'gcash', 'paymaya', 'bank_transfer', 'qrph'],
                 'default'    => 'credit_card',
             ],
             'amount' => [

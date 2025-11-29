@@ -181,63 +181,30 @@
                         </div>
                     </div>
 
-                <div class="mt-8"> 
-                    <h4 class="mb-2 font-bold text-primary-dark text-xl">Select Payment Method</h4>
-                    <div id="payment-logos" class="grid grid-cols-3 gap-3">
-                <label class="payment-logo-option selected" data-value="gcash">
-                    <input type="radio" name="paymentMethod" value="gcash" checked>
-                    <img src="/assets/img/gcash.png" alt="GCash Logo">
-                    <span class="text-xs font-semibold text-primary-dark">GCash</span>
-                </label>
+                    <div class="mt-8">
+                        <h4 class="mb-2 font-bold text-primary-dark text-xl">Select Payment Method</h4>
+                        <div id="payment-logos" class="gap-3 grid grid-cols-3">
+                            <label class="payment-logo-option selected" data-value="gcash">
+                                <input type="radio" name="paymentMethod" value="gcash" checked>
+                                <img src="/assets/img/gcash.png" alt="GCash Logo">
+                                <span class="font-semibold text-primary-dark text-xs">GCash (Recommended)</span>
+                            </label>
 
-                <label class="payment-logo-option" data-value="paymaya">
-                    <input type="radio" name="paymentMethod" value="paymaya">
-                     <img src="/assets/img/paymaya.png" alt="Maya Logo">
-                    <span class="text-xs font-semibold text-primary-dark">Maya (PayMaya)</span>
-                </label>
+                            <label class="payment-logo-option" data-value="paymaya">
+                                <input type="radio" name="paymentMethod" value="paymaya">
+                                <img src="/assets/img/paymaya.png" alt="Maya Logo">
+                                <span class="font-semibold text-primary-dark text-xs">Maya (PayMaya)</span>
+                            </label>
 
-                        <label class="payment-logo-option" data-value="visa">
-                            <input type="radio" name="paymentMethod" value="visa">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg">
-                            <span class="text-xs font-semibold text-primary-dark">Credit/Debit Card</span>
-                        </label>
-                    </div>
-                </div>
-</div>
-
-                <!-- Credit Card Modal -->
-                <div id="creditCardModal" class="hidden z-50 fixed inset-0 flex justify-center items-center bg-black/50">
-                    <div class="relative bg-white opacity-0 shadow-2xl p-8 rounded-2xl w-full max-w-md scale-95 transition-all duration-300 ease-out transform">
-                        <!-- Close X Button on top-left -->
-                        <button id="closeCardModal"
-                            class="top-4 left-4 absolute font-bold text-gray-400 hover:text-gray-700 text-xl transition-all">&times;</button>
-
-                        <h3 class="mb-2 font-bold text-primary-dark text-2xl text-center">Credit/Debit Card Payment</h3>
-                        <p class="mb-6 text-gray-500 text-sm text-center">Enter your card details to confirm the payment.</p>
-
-                        <div class="space-y-4">
-                            <input type="text" id="cardName" placeholder="Cardholder Name"
-                                class="shadow-sm p-3 border-2 border-gray-200 focus:border-accent rounded-xl focus:ring-accent/50 w-full transition" />
-
-                            <input type="text" id="cardNumber" placeholder="Card Number"
-                                class="shadow-sm p-3 border-2 border-gray-200 focus:border-accent rounded-xl focus:ring-accent/50 w-full transition" />
-
-                            <div class="flex gap-4">
-                                <input type="text" id="cardExpiry" placeholder="MM/YY"
-                                    class="shadow-sm p-3 border-2 border-gray-200 focus:border-accent rounded-xl focus:ring-accent/50 w-1/2 transition" />
-                                <input type="text" id="cardCVC" placeholder="CVC"
-                                    class="shadow-sm p-3 border-2 border-gray-200 focus:border-accent rounded-xl focus:ring-accent/50 w-1/2 transition" />
-                            </div>
-                        </div>
-
-                        <div class="flex justify-center mt-6">
-                            <button id="confirmCardPayment"
-                                class="bg-accent hover:bg-accent/90 shadow-lg px-8 py-3 rounded-xl font-bold text-white transition-all">Confirm Payment</button>
+                            <label class="payment-logo-option" data-value="qrph">
+                                <input type="radio" name="paymentMethod" value="qrph">
+                                <img src="/assets/img/qrph.png" alt="QR Ph Logo">
+                                <span class="font-semibold text-primary-dark text-xs">QR Ph</span>
+                            </label>
                         </div>
                     </div>
+
                 </div>
-
-
 
             </div>
             <hr class="my-8 border-gray-300">
@@ -300,14 +267,16 @@
             });
         });
 
-        // Show QR code modal for GCash/Maya
+        // Show QR code modal for GCash/Maya/QrPh
         function showQRModal(paymentMethod) {
-            return new Promise((resolve) => {
+            return new Promise((resolve, reject) => {
                 const modalHTML = `
         <div id="qrModal" class="z-50 fixed inset-0 flex justify-center items-center bg-black bg-opacity-70" style="animation: fadeIn 0.3s;">
-            <div class="bg-white mx-4 p-8 rounded-2xl w-full max-w-md text-center" style="animation: slideUp 0.3s;">
+            <div class="relative bg-white mx-4 p-8 rounded-2xl w-full max-w-md text-center" style="animation: slideUp 0.3s;">
+                <button id="closeQrModal" class="top-4 right-4 absolute font-bold text-gray-400 hover:text-gray-700 text-3xl leading-none transition-colors" title="Cancel Payment">&times;</button>
+                
                 <h3 class="mb-4 font-bold text-2xl" style="color: #2F5233;">Scan to Pay</h3>
-                <p class="mb-6 text-gray-600">Scan this QR code using your ${paymentMethod === 'gcash' ? 'GCash' : 'Maya'} app</p>
+                <p class="mb-6 text-gray-600">Scan this QR code using your ${paymentMethod === 'gcash' ? 'GCash' : paymentMethod === 'paymaya' ? 'Maya' : 'QR Ph'} app</p>
                
                 <div class="bg-gray-100 mb-6 p-6 rounded-xl">
                     <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=DUMMY_${paymentMethod.toUpperCase()}_PAYMENT"
@@ -342,6 +311,7 @@
                 const timerElement = document.getElementById('qrTimer');
                 const timerElement2 = document.getElementById('qrTimer2');
                 const doneButton = document.getElementById('qrDoneButton');
+                const closeButton = document.getElementById('closeQrModal');
 
                 const countdown = setInterval(() => {
                     timeLeft--;
@@ -355,113 +325,18 @@
                     }
                 }, 1000);
 
+                // Close/Cancel button
+                closeButton.addEventListener('click', () => {
+                    clearInterval(countdown);
+                    document.getElementById('qrModal').remove();
+                    reject(new Error('Payment cancelled by user'));
+                });
+
+                // Complete payment button
                 doneButton.addEventListener('click', () => {
                     clearInterval(countdown);
                     document.getElementById('qrModal').remove();
                     resolve(true);
-                });
-            });
-        }
-
-        // Show Credit Card payment form
-        function showCreditCardModal() {
-            return new Promise((resolve, reject) => {
-                const modalHTML = `
-        <div id="creditCardModal" class="z-50 fixed inset-0 flex justify-center items-center bg-black bg-opacity-70" style="animation: fadeIn 0.3s;">
-            <div class="bg-white mx-4 p-8 rounded-2xl w-full max-w-md" style="animation: slideUp 0.3s;">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="font-bold text-2xl" style="color: #2F5233;">Credit/Debit Card Payment</h3>
-                    <button id="closeCardModal" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
-                </div>
-                
-                <form id="cardPaymentForm" class="space-y-4">
-                    <div>
-                        <label class="block mb-2 font-medium text-gray-700 text-sm">Cardholder Name</label>
-                        <input type="text" id="cardName" required
-                            class="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 w-full"
-                            placeholder="John Doe">
-                    </div>
-                    
-                    <div>
-                        <label class="block mb-2 font-medium text-gray-700 text-sm">Card Number</label>
-                        <input type="text" id="cardNumber" required maxlength="19"
-                            class="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 w-full"
-                            placeholder="1234 5678 9012 3456">
-                    </div>
-                    
-                    <div class="gap-4 grid grid-cols-2">
-                        <div>
-                            <label class="block mb-2 font-medium text-gray-700 text-sm">Expiry Date</label>
-                            <input type="text" id="cardExpiry" required maxlength="5"
-                                class="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 w-full"
-                                placeholder="MM/YY">
-                        </div>
-                        <div>
-                            <label class="block mb-2 font-medium text-gray-700 text-sm">CVC</label>
-                            <input type="text" id="cardCVC" required maxlength="4"
-                                class="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 w-full"
-                                placeholder="123">
-                        </div>
-                    </div>
-                    
-                    <button type="submit" id="confirmCardPayment"
-                        class="mt-6 px-8 py-3 rounded-lg w-full font-bold text-white text-lg hover:scale-105 transition-all"
-                        style="background-color: #73AF6F;">
-                        Pay ₱${bookingData.totalPrice}
-                    </button>
-                </form>
-            </div>
-        </div>
-        `;
-
-                document.body.insertAdjacentHTML('beforeend', modalHTML);
-
-                // Format card number input
-                document.getElementById('cardNumber').addEventListener('input', (e) => {
-                    let value = e.target.value.replace(/\s/g, '');
-                    let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
-                    e.target.value = formattedValue;
-                });
-
-                // Format expiry date
-                document.getElementById('cardExpiry').addEventListener('input', (e) => {
-                    let value = e.target.value.replace(/\D/g, '');
-                    if (value.length >= 2) {
-                        value = value.slice(0, 2) + '/' + value.slice(2, 4);
-                    }
-                    e.target.value = value;
-                });
-
-                // Only allow numbers in CVC
-                document.getElementById('cardCVC').addEventListener('input', (e) => {
-                    e.target.value = e.target.value.replace(/\D/g, '');
-                });
-
-                // Close modal
-                document.getElementById('closeCardModal').addEventListener('click', () => {
-                    document.getElementById('creditCardModal').remove();
-                    reject(new Error('Payment cancelled'));
-                });
-
-                // Handle form submission
-                document.getElementById('cardPaymentForm').addEventListener('submit', (e) => {
-                    e.preventDefault();
-
-                    const cardData = {
-                        name: document.getElementById('cardName').value.trim(),
-                        number: document.getElementById('cardNumber').value.replace(/\s/g, ''),
-                        expiry: document.getElementById('cardExpiry').value,
-                        cvc: document.getElementById('cardCVC').value
-                    };
-
-                    // Basic validation
-                    if (!cardData.name || cardData.number.length < 13 || !cardData.expiry.includes('/') || cardData.cvc.length < 3) {
-                        alert('Please fill all fields correctly.');
-                        return;
-                    }
-
-                    document.getElementById('creditCardModal').remove();
-                    resolve(cardData);
                 });
             });
         }
@@ -496,15 +371,10 @@
 
             try {
                 let paymentConfirmed = false;
-                let cardData = null;
 
-                // Handle different payment methods
-                if (paymentMethod === 'gcash' || paymentMethod === 'paymaya') {
+                // Handle all payment methods with QR modal
+                if (paymentMethod === 'gcash' || paymentMethod === 'paymaya' || paymentMethod === 'qrph') {
                     paymentConfirmed = await showQRModal(paymentMethod);
-                } else if (paymentMethod === 'visa') {
-                    cardData = await showCreditCardModal();
-                    paymentConfirmed = true;
-                    submissionData.card_details = cardData; // Include card data for backend validation
                 }
 
                 if (!paymentConfirmed) {
@@ -554,13 +424,20 @@
 
             } catch (error) {
                 console.error('Error:', error);
-                alert(`Error: ${error.message}\n\nPlease try again or contact support.`);
-                btn.disabled = false;
-                btn.textContent = 'Proceed to Payment';
+
+                // Check if user cancelled
+                if (error.message === 'Payment cancelled by user') {
+                    // Just re-enable the button, don't show error alert
+                    btn.disabled = false;
+                    btn.textContent = 'Proceed to Payment';
+                } else {
+                    alert(`Error: ${error.message}\n\nPlease try again or contact support.`);
+                    btn.disabled = false;
+                    btn.textContent = 'Proceed to Payment';
+                }
             }
         });
     </script>
-
 
     <?= view('components/footer') ?>
 

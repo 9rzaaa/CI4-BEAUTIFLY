@@ -19,7 +19,7 @@ class PaymentController extends BaseController
         $json = $this->request->getJSON(true);
 
         $bookingId = $json['booking_id'] ?? null;
-        $paymentMethod = $json['payment_method'] ?? 'credit_card';
+        $paymentMethod = $json['payment_method'] ?? 'gcash';
 
         // Validate input
         if (!$bookingId) {
@@ -28,7 +28,7 @@ class PaymentController extends BaseController
                 ->setJSON(['success' => false, 'error' => 'Booking ID is required']);
         }
 
-        if (!in_array($paymentMethod, ['gcash', 'paymaya', 'visa', 'credit_card'])) {
+        if (!in_array($paymentMethod, ['gcash', 'paymaya', 'qrph'])) {
             return $this->response
                 ->setStatusCode(400)
                 ->setJSON(['success' => false, 'error' => 'Invalid payment method']);
@@ -307,8 +307,7 @@ class PaymentController extends BaseController
         $prefix = [
             'gcash' => 'GC',
             'paymaya' => 'PM',
-            'visa' => 'VS',
-            'credit_card' => 'CC'
+            'qrph' => 'QR'
         ];
 
         return ($prefix[$paymentMethod] ?? 'TXN') . time() . rand(1000, 9999);
@@ -332,8 +331,7 @@ class PaymentController extends BaseController
         $gateways = [
             'gcash' => 'GCash Payment Gateway',
             'paymaya' => 'Maya Payment Gateway',
-            'visa' => 'Visa/Mastercard Gateway',
-            'credit_card' => 'Credit Card Gateway'
+            'qrph' => 'QR Ph Payment Gateway'
         ];
 
         return $gateways[$method] ?? 'Payment Gateway';
@@ -347,8 +345,7 @@ class PaymentController extends BaseController
         $messages = [
             'gcash' => 'GCash payment was declined. Please check your account balance and try again.',
             'paymaya' => 'Maya payment failed. Please verify your account and try again.',
-            'visa' => 'Card payment declined. Please check your card details and try again.',
-            'credit_card' => 'Card payment declined. Please verify your card information.'
+            'qrph' => 'QR Ph payment was declined. Please check your QR Ph account and try again.'
         ];
 
         return $messages[$method] ?? 'Payment was declined. Please try again or use a different payment method.';

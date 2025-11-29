@@ -171,7 +171,7 @@ class BookingController extends BaseController
 
         // Validate payment method
         $paymentMethod = $json['payment_method'] ?? null;
-        if (!in_array($paymentMethod, ['gcash', 'paymaya', 'visa', 'credit_card'])) {
+        if (!in_array($paymentMethod, ['gcash', 'paymaya', 'qrph'])) {
             return $this->response
                 ->setStatusCode(400)
                 ->setJSON(['success' => false, 'error' => 'Invalid payment method']);
@@ -245,23 +245,23 @@ class BookingController extends BaseController
     {
         // Check if user is logged in
         $userId = session()->get('user_id');
-        
+
         if (!$userId) {
             return redirect()->to('/login')->with('error', 'Please login to view your bookings');
         }
-        
+
         // Get property details (single property)
         $property = $this->db->table('properties')->where('id', 1)->get()->getRowArray();
         $propertyTitle = $property['title'] ?? 'Garden Resort';
         $propertyCity = $property['city'] ?? '';
-        
+
         // Fetch all bookings for the current user
         $builder = $this->db->table('bookings');
         $bookings = $builder->where('user_id', $userId)
             ->orderBy('created_at', 'DESC')
             ->get()
             ->getResultArray();
-        
+
         // Group bookings by status
         $groupedBookings = [
             'pending' => [],
@@ -269,33 +269,33 @@ class BookingController extends BaseController
             'completed' => [],
             'cancelled' => []
         ];
-        
+
         $currentDate = date('Y-m-d');
-        
+
         // Process each booking
         foreach ($bookings as &$booking) {
             // Add property information
             $booking['property_title'] = $propertyTitle;
             $booking['property_city'] = $propertyCity;
-            
+
             // Format dates for display
             $booking['check_in_formatted'] = date('M d, Y', strtotime($booking['check_in']));
             $booking['check_out_formatted'] = date('M d, Y', strtotime($booking['check_out']));
             $booking['created_at_formatted'] = date('M d, Y h:i A', strtotime($booking['created_at']));
-            
+
             // Format prices
             $booking['total_price_formatted'] = '₱' . number_format($booking['total_price'], 2);
-            
+
             // Format status for display
             $booking['status_badge'] = ucfirst($booking['status']);
             $booking['payment_status_badge'] = ucfirst($booking['payment_status']);
-            
+
             // Determine if booking can be cancelled
             $booking['can_cancel'] = (
-                !in_array($booking['status'], ['cancelled', 'completed']) && 
+                !in_array($booking['status'], ['cancelled', 'completed']) &&
                 $booking['check_in'] >= $currentDate
             );
-            
+
             // Categorize bookings
             if ($booking['status'] === 'cancelled') {
                 $groupedBookings['cancelled'][] = $booking;
@@ -309,7 +309,7 @@ class BookingController extends BaseController
                 $groupedBookings['upcoming'][] = $booking;
             }
         }
-        
+
         // Prepare data for view
         $data = [
             'title' => 'My Bookings',
@@ -321,7 +321,7 @@ class BookingController extends BaseController
             'completedCount' => count($groupedBookings['completed']),
             'cancelledCount' => count($groupedBookings['cancelled'])
         ];
-        
+
         return view('user/mybookings', $data);
     }
 
@@ -332,25 +332,25 @@ class BookingController extends BaseController
     public function viewBooking($bookingId)
     {
         $userId = session()->get('user_id');
-        
+
         if (!$userId) {
             return redirect()->to('/login')->with('error', 'Please login to view booking details');
         }
-        
+
         // Fetch booking details
         $builder = $this->db->table('bookings');
         $booking = $builder->where('id', $bookingId)
             ->where('user_id', $userId)
             ->get()
             ->getRowArray();
-        
+
         if (!$booking) {
             return redirect()->to('/bookings')->with('error', 'Booking not found');
         }
-        
+
         // Get property details
         $property = $this->db->table('properties')->where('id', $booking['property_id'])->get()->getRowArray();
-        
+
         // Add property information to booking
         $booking['property_title'] = $property['title'] ?? 'Garden Resort';
         $booking['property_address'] = $property['address'] ?? '';
@@ -358,35 +358,35 @@ class BookingController extends BaseController
         $booking['property_description'] = $property['description'] ?? '';
         $booking['property_type'] = $property['property_type'] ?? '';
         $booking['amenities'] = $property['amenities'] ?? '';
-        
+
         // Format dates for display
         $booking['check_in_formatted'] = date('l, F d, Y', strtotime($booking['check_in']));
         $booking['check_out_formatted'] = date('l, F d, Y', strtotime($booking['check_out']));
         $booking['created_at_formatted'] = date('F d, Y h:i A', strtotime($booking['created_at']));
-        
+
         // Format prices
         $subtotal = $booking['number_of_nights'] * $booking['price_per_night'];
         $booking['total_price_formatted'] = '₱' . number_format($booking['total_price'], 2);
         $booking['price_per_night_formatted'] = '₱' . number_format($booking['price_per_night'], 2);
         $booking['cleaning_fee_formatted'] = '₱' . number_format($booking['cleaning_fee'], 2);
         $booking['subtotal_formatted'] = '₱' . number_format($subtotal, 2);
-        
+
         // Format status badges
         $booking['status_badge'] = ucfirst($booking['status']);
         $booking['payment_status_badge'] = ucfirst($booking['payment_status']);
-        
+
         // Determine if booking can be cancelled
         $currentDate = date('Y-m-d');
         $booking['can_cancel'] = (
-            !in_array($booking['status'], ['cancelled', 'completed']) && 
+            !in_array($booking['status'], ['cancelled', 'completed']) &&
             $booking['check_in'] >= $currentDate
         );
-        
+
         $data = [
             'title' => 'Booking Details',
             'booking' => $booking
         ];
-        
+
         return view('user/booking_details', $data);
     }
 
