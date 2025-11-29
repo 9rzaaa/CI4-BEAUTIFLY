@@ -23,6 +23,13 @@ $routes->post('auth/signup', 'Auth::signup');   // Handle signup form submission
 $routes->get('admin/dashboard', function () {
     return view('admin/dashboard');            // Admin dashboard view
 });
+// ---------- Admin Booking Management ----------
+$routes->get('admin/bookings', 'AdminBookingController::index');                    // Display bookings management page
+$routes->get('admin/bookings/list', 'AdminBookingController::list');                // Get bookings list 
+$routes->get('admin/bookings/view/(:num)', 'AdminBookingController::view/$1');      // View single booking 
+$routes->post('admin/bookings/update', 'AdminBookingController::update');           // Update booking 
+$routes->delete('admin/bookings/delete/(:num)', 'AdminBookingController::delete/$1'); // Delete booking 
+$routes->get('admin/bookings/statistics', 'AdminBookingController::statistics');    // Get statistics 
 
 // ---------- Admin Booking Management ----------
 $routes->get('admin/bookings', 'AdminBookingController::index');                    // Display bookings management page
