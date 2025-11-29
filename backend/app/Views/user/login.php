@@ -52,7 +52,7 @@
 
                     <button
                         type="submit"
-                        class="bg-secondary hover:bg-primary px-8 py-3 border-2 border-secondary rounded-lg w-auto font-bold text-white text-base tracking-wide transition-all">
+                        class="bg-secondary hover:bg-primary px-8 py-3 border-2 border-secondary rounded-lg w-auto font-bold text-green text-base tracking-wide transition-all">
                         Log In
                     </button>
                 </form>

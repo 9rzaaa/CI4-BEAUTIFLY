@@ -31,4 +31,9 @@ class Users extends BaseController
     {
         return view('user/roadmap');
     }
+
+    public function about()
+    {
+        return view('user/about');
+    }
 }

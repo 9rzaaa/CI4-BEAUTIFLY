@@ -12,6 +12,7 @@ $routes->get('/login', 'Users::login');     // Login page
 $routes->get('/signup', 'Users::signup');   // Signup/registration page
 $routes->get('/mb', 'Users::moodboard');    // Moodboard page
 $routes->get('/rm', 'Users::roadmap');      // Roadmap page
+$routes->get('/about', 'Users::about');     // About page (moved from inline function)
 
 // ---------- Authentication ----------
 $routes->post('auth/login', 'Auth::login');     // Handle login form submission
@@ -42,35 +43,38 @@ $routes->post('/crud-testing/update/(:num)', 'CRUDTesting::processUpdate/$1');
 // Process delete (POST)
 $routes->post('/crud-testing/delete/(:num)', 'CRUDTesting::deleteUserData/$1');
 
-// Booking
-$routes->get('booking', function () {
-    return view('user/booking'); // loads app/Views/booking.php
-});
-
-$routes->get('/about', function () {
-    return view('user/about');
-});
-
-// BOOKING ROUTES
-// Show booking page
+// ---------- BOOKING ROUTES ----------
+// Main booking page
 $routes->get('booking', 'BookingController::index');
 
-// API endpoints for bookings
-$routes->get('/api/bookings/property/(:num)', 'BookingController::getProperty/$1');
+// Booking review page (requires login)
+$routes->get('user/booking_review', 'BookingController::review');
+
+// Check login status API
+$routes->get('api/bookings/check-login', 'BookingController::checkLogin');
+
+// Get booked dates API
+$routes->get('api/bookings/booked-dates', 'BookingController::getBookedDates');
+
+// Booking history
+$routes->get('booking/history', 'BookingController::history');
+
+// API endpoints
+$routes->get('api/bookings/property/(:num)', 'BookingController::getProperty/$1');
 $routes->post('api/bookings/create', 'BookingController::create');
 $routes->get('api/bookings', 'BookingController::list');
 $routes->get('api/bookings/(:num)', 'BookingController::show/$1');
 $routes->put('api/bookings/(:num)', 'BookingController::update/$1');
 $routes->delete('api/bookings/(:num)', 'BookingController::delete/$1');
 
-// PAYMENT ROUTES
-$routes->post('api/payment/process', 'PaymentController::processPayment');
-$routes->get('api/payment/(:num)', 'PaymentController::getPaymentDetails/$1');
-$routes->post('api/payment/refund/(:num)', 'PaymentController::refundPayment/$1');
+$routes->post('/booking/create', 'BookingController::create');
+$routes->get('/booking/success', 'BookingController::success');
 
-$routes->get('booking/history', 'BookingController::history');
-
-$routes->get('user/booking_review', 'BookingController::review');
+// My Bookings Routes
+$routes->get('bookings', 'BookingController::myBookings', ['filter' => 'auth']); // View page
+$routes->get('api/bookings/user', 'BookingController::getUserBookings', ['filter' => 'auth']); // Get user bookings
+$routes->get('api/bookings/(:num)', 'BookingController::getBookingDetails/$1', ['filter' => 'auth']); // Get single booking
+$routes->post('api/bookings/(:num)/cancel', 'BookingController::cancelBooking/$1', ['filter' => 'auth']); // Cancel booking
 
 $routes->get('/user/booking-form', 'User::bookingForm');  // Booking form page
 $routes->get('/user/booking-confirmation', 'User::bookingConfirmation'); // Booking confirmation page
