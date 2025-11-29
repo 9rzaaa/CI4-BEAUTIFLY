@@ -12,7 +12,7 @@ $routes->get('/login', 'Users::login');     // Login page
 $routes->get('/signup', 'Users::signup');   // Signup/registration page
 $routes->get('/mb', 'Users::moodboard');    // Moodboard page
 $routes->get('/rm', 'Users::roadmap');      // Roadmap page
-$routes->get('/about', 'Users::about');     // About page (moved from inline function)
+$routes->get('/about', 'Users::about');     // About page
 
 // ---------- Authentication ----------
 $routes->post('auth/login', 'Auth::login');     // Handle login form submission
@@ -31,58 +31,53 @@ $routes->post('admin/bookings/update', 'AdminBookingController::update');       
 $routes->delete('admin/bookings/delete/(:num)', 'AdminBookingController::delete/$1'); // Delete booking 
 $routes->get('admin/bookings/statistics', 'AdminBookingController::statistics');    // Get statistics 
 
+// ---------- Admin Booking Management ----------
+$routes->get('admin/bookings', 'AdminBookingController::index');                    // Display bookings management page
+$routes->get('admin/bookings/list', 'AdminBookingController::list');                // Get bookings list 
+$routes->get('admin/bookings/view/(:num)', 'AdminBookingController::view/$1');      // View single booking 
+$routes->post('admin/bookings/update', 'AdminBookingController::update');           // Update booking 
+$routes->delete('admin/bookings/delete/(:num)', 'AdminBookingController::delete/$1'); // Delete booking 
+$routes->get('admin/bookings/statistics', 'AdminBookingController::statistics');    // Get statistics 
+
 // ---------- Test / CRUD Pages ----------
 $routes->get('/test/user', 'CRUDTesting::showUsersPage');
-// Displays user list page (CRUD testing page)
-
-// open create form
 $routes->get('test/user_create', 'CRUDTesting::index');
-
-// process create (form submit)
 $routes->post('crud-testing/create', 'CRUDTesting::create');
-
-// View update page (GET)
 $routes->get('/test/update/(:num)', 'CRUDTesting::showUpdateForm/$1');
-
-// Process update (POST)
 $routes->post('/crud-testing/update/(:num)', 'CRUDTesting::processUpdate/$1');
-
-// Process delete (POST)
 $routes->post('/crud-testing/delete/(:num)', 'CRUDTesting::deleteUserData/$1');
 
-// ---------- BOOKING ROUTES ----------
+// ========================================
+// BOOKING ROUTES - USER FACING
+// ========================================
 
 // Main booking page (date selection)
 $routes->get('booking', 'BookingController::index');
 
-// ✅ Booking review page (requires login) - STANDARDIZED PATH
-$routes->get('booking/review', 'BookingController::review');
+// Booking review page (requires login)
+$routes->get('booking/review', 'BookingController::review', ['filter' => 'auth']);
 
 // Booking success page
-$routes->get('booking/success', 'BookingController::success');
+$routes->get('booking/success', 'BookingController::success', ['filter' => 'auth']);
 
-// Booking history page
-$routes->get('booking/history', 'BookingController::history');
-
-// My Bookings page
+// My Bookings (booking history)
 $routes->get('bookings', 'BookingController::myBookings', ['filter' => 'auth']);
 
-// ---------- BOOKING API ROUTES ----------
+// View single booking details
+$routes->get('bookings/view/(:num)', 'BookingController::viewBooking/$1', ['filter' => 'auth']);
 
-// Create booking
-$routes->post('booking/create', 'BookingController::create');
+// ========================================
+// BOOKING API ROUTES
+// ========================================
 
-// Get booking details
-$routes->get('booking/(:num)', 'BookingController::getBooking/$1', ['filter' => 'auth']);
+// Create new booking
+$routes->post('booking/create', 'BookingController::create', ['filter' => 'auth']);
 
-// Update booking
-$routes->put('booking/(:num)', 'BookingController::update/$1', ['filter' => 'auth']);
+// Cancel booking - FIXED ROUTE
+$routes->post('bookings/cancel/(:num)', 'BookingController::cancel/$1', ['filter' => 'auth']);
 
-// Cancel booking
-$routes->post('booking/(:num)/cancel', 'BookingController::cancel/$1', ['filter' => 'auth']);
-
-// Get property details
-$routes->get('booking/property/(:num)', 'BookingController::getProperty/$1');
+// Get booked dates for calendar
+$routes->get('booking/get-booked-dates', 'BookingController::getBookedDates');
 
 // Calculate price (AJAX)
 $routes->get('booking/calculate-price', 'BookingController::calculatePrice');
@@ -90,26 +85,24 @@ $routes->get('booking/calculate-price', 'BookingController::calculatePrice');
 // Check login status
 $routes->get('booking/check-login', 'BookingController::checkLogin');
 
-// Get booked dates
-$routes->get('booking/get-booked-dates', 'BookingController::getBookedDates');
-
-// Get user's bookings list
-$routes->get('booking/user/list', 'BookingController::getUserBookings', ['filter' => 'auth']);
-
-// ---------- PAYMENT ROUTES ----------
+// ========================================
+// PAYMENT ROUTES
+// ========================================
 
 // Process payment
-$routes->post('payment/process', 'PaymentController::processPayment');
+$routes->post('payment/process', 'PaymentController::processPayment', ['filter' => 'auth']);
 
 // Get payment details
-$routes->get('payment/details/(:num)', 'PaymentController::getPaymentDetails/$1');
+$routes->get('payment/details/(:num)', 'PaymentController::getPaymentDetails/$1', ['filter' => 'auth']);
 
 // Refund payment
-$routes->post('payment/refund/(:num)', 'PaymentController::refundPayment/$1');
+$routes->post('payment/refund/(:num)', 'PaymentController::refundPayment/$1', ['filter' => 'auth']);
 
-// ---------- LEGACY/COMPATIBILITY ROUTES (if needed) ----------
+// ========================================
+// LEGACY/COMPATIBILITY ROUTES
+// ========================================
 
-// Old route redirects (optional - for backward compatibility)
+// Old route redirects (for backward compatibility)
 $routes->get('user/booking_review', function () {
     return redirect()->to('/booking/review');
 });
@@ -122,9 +115,6 @@ $routes->get('booking_success', function () {
     return redirect()->to('/booking/success');
 });
 
-$routes->get('/profile', 'ProfileController::index');
-$routes->post('/profile/update', 'ProfileController::update');
-$routes->get('/profile/change-password', 'ProfileController::changePassword');
-$routes->post('/profile/update-password', 'ProfileController::updatePassword');
-$routes->get('/profile/delete-account', 'ProfileController::deleteAccount');
-$routes->post('/profile/delete-account', 'ProfileController::processDeleteAccount');
+$routes->get('booking/history', function () {
+    return redirect()->to('/bookings');
+});
