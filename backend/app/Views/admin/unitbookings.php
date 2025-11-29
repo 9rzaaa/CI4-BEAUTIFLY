@@ -375,6 +375,94 @@
                     showNotification('Error loading booking details', 'error');
                 });
         }
+         function showBookingDetails(booking) {
+            const content = document.getElementById('bookingDetailsContent');
+            content.innerHTML = `
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-semibold text-gray-700 mb-2">Booking Information</h4>
+                        <div class="space-y-2 text-sm">
+                            <p><span class="font-medium">Booking ID:</span> #${booking.id}</p>
+                            <p><span class="font-medium">Status:</span> ${getStatusBadge(booking.status)}</p>
+                            <p><span class="font-medium">Payment Status:</span> ${booking.payment_status || 'N/A'}</p>
+                            <p><span class="font-medium">Created:</span> ${booking.created_at}</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-700 mb-2">Guest Information</h4>
+                        <div class="space-y-2 text-sm">
+                            <p><span class="font-medium">Name:</span> ${booking.user_name || 'N/A'}</p>
+                            <p><span class="font-medium">Email:</span> ${booking.user_email || 'N/A'}</p>
+                            <p><span class="font-medium">Phone:</span> ${booking.user_phone || 'N/A'}</p>
+                        </div>
+                    </div>
+                </div>
+               
+                <div class="border-t pt-4">
+                    <h4 class="font-semibold text-gray-700 mb-2">Property Details</h4>
+                    <div class="space-y-2 text-sm">
+                        <p><span class="font-medium">Property:</span> ${booking.property_name || 'N/A'}</p>
+                        <p><span class="font-medium">Location:</span> ${booking.property_location || 'N/A'}</p>
+                    </div>
+                </div>
+               
+                <div class="border-t pt-4">
+                    <h4 class="font-semibold text-gray-700 mb-2">Stay Details</h4>
+                    <div class="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <p><span class="font-medium">Check-in:</span> ${booking.check_in}</p>
+                            <p><span class="font-medium">Check-out:</span> ${booking.check_out}</p>
+                        </div>
+                        <div>
+                            <p><span class="font-medium">Adults:</span> ${booking.adults}</p>
+                            <p><span class="font-medium">Kids:</span> ${booking.kids}</p>
+                            <p><span class="font-medium">Nights:</span> ${booking.number_of_nights}</p>
+                        </div>
+                    </div>
+                </div>
+               
+                <div class="border-t pt-4">
+                    <h4 class="font-semibold text-gray-700 mb-2">Payment</h4>
+                    <div class="space-y-2 text-sm">
+                        <p><span class="font-medium">Price per Night:</span> $${parseFloat(booking.price_per_night).toFixed(2)}</p>
+                        <p><span class="font-medium">Cleaning Fee:</span> $${parseFloat(booking.cleaning_fee).toFixed(2)}</p>
+                        <p><span class="font-medium">Total Amount:</span> $${parseFloat(booking.total_price).toFixed(2)}</p>
+                        <p><span class="font-medium">Payment Method:</span> ${booking.payment_method || 'N/A'}</p>
+                        ${booking.transaction_id ? `<p><span class="font-medium">Transaction ID:</span> ${booking.transaction_id}</p>` : ''}
+                    </div>
+                </div>
+               
+                ${booking.special_requests ? `
+                <div class="border-t pt-4">
+                    <h4 class="font-semibold text-gray-700 mb-2">Special Requests</h4>
+                    <p class="text-sm text-gray-600">${booking.special_requests}</p>
+                </div>
+                ` : ''}
+            `;
+           
+            document.getElementById('viewModal').classList.remove('hidden');
+        }
+
+        function closeViewModal() {
+            document.getElementById('viewModal').classList.add('hidden');
+        }
+
+
+        function editBooking(id) {
+            fetch(`${baseUrl}/admin/bookings/view/${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        populateEditForm(data.booking);
+                    } else {
+                        showNotification('Error loading booking', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('Error loading booking', 'error');
+                });
+        }
     </script>    
 </body>
 </html>
