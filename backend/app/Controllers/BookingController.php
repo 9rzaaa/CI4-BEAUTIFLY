@@ -484,4 +484,46 @@ class BookingController extends BaseController
 
         return $count > 0;
     }
+
+    /**
+     * Get booked dates for calendar (API endpoint)
+     * Returns date ranges that should be disabled in the date picker
+     */
+    public function getBookedDates()
+    {
+        try {
+            $builder = $this->db->table('bookings');
+
+            // Get all active bookings (pending and confirmed)
+            $bookings = $builder->where('property_id', 1)
+                ->whereIn('status', ['pending', 'confirmed'])
+                ->select('check_in, check_out')
+                ->get()
+                ->getResultArray();
+
+            // Format dates for flatpickr
+            $bookedDates = [];
+            foreach ($bookings as $booking) {
+                $bookedDates[] = [
+                    'from' => $booking['check_in'],
+                    'to' => $booking['check_out']
+                ];
+            }
+
+            return $this->response->setJSON([
+                'success' => true,
+                'booked_dates' => $bookedDates
+            ]);
+        } catch (\Exception $e) {
+            log_message('error', 'Failed to fetch booked dates: ' . $e->getMessage());
+
+            return $this->response
+                ->setStatusCode(500)
+                ->setJSON([
+                    'success' => false,
+                    'error' => 'Failed to load booked dates',
+                    'booked_dates' => []
+                ]);
+        }
+    }
 }

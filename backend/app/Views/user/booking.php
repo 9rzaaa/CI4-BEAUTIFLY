@@ -113,17 +113,71 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
         let selectedDates = [];
+        let bookedDates = [];
 
-        // Initialize flatpickr for date selection
-        flatpickr("#dateRange", {
-            mode: "range",
-            dateFormat: "Y-m-d",
-            minDate: "today",
-            onChange: function(dates) {
-                selectedDates = dates;
-                console.log("📅 Dates selected:", dates);
+        // Fetch booked dates from the server
+        async function fetchBookedDates() {
+            try {
+                const response = await fetch('/booking/get-booked-dates');
+                const data = await response.json();
+
+                if (data.success) {
+                    bookedDates = data.booked_dates;
+                    console.log('📅 Booked dates loaded:', bookedDates);
+                    initializeFlatpickr();
+                } else {
+                    console.error('Failed to load booked dates');
+                    initializeFlatpickr(); // Initialize anyway with empty booked dates
+                }
+            } catch (error) {
+                console.error('Error fetching booked dates:', error);
+                initializeFlatpickr(); // Initialize anyway with empty booked dates
             }
-        });
+        }
+
+        // Initialize flatpickr with disabled dates
+        function initializeFlatpickr() {
+            flatpickr("#dateRange", {
+                mode: "range",
+                dateFormat: "Y-m-d",
+                minDate: "today",
+                disable: bookedDates, // Disable booked date ranges
+                onChange: function(dates) {
+                    selectedDates = dates;
+                    console.log("📅 Dates selected:", dates);
+                },
+                onDayCreate: function(dObj, dStr, fp, dayElem) {
+                    // Add custom styling for booked dates
+                    const date = dayElem.dateObj;
+                    const dateStr = formatDateLocal(date);
+
+                    // Check if this date falls within any booked range
+                    for (let range of bookedDates) {
+                        if (isDateInRange(dateStr, range.from, range.to)) {
+                            dayElem.classList.add('booked-date');
+                            dayElem.title = 'Already booked';
+                            break;
+                        }
+                    }
+                }
+            });
+        }
+
+        // Helper: Check if a date falls within a range
+        function isDateInRange(date, from, to) {
+            return date >= from && date <= to;
+        }
+
+        // Helper: Format date to Y-m-d
+        function formatDateLocal(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        // Load booked dates when page loads
+        fetchBookedDates();
 
         // Guest dropdown elements
         const guestBtn = document.getElementById("guestBtn");
@@ -139,12 +193,16 @@
             guestDropdown.classList.toggle("hidden");
         });
 
-        // Adults increment/decrement
+        // Adults increment/decrement with smart total limit
         document.getElementById("plusAdults").addEventListener("click", (e) => {
             e.preventDefault();
             e.stopPropagation();
-            if (adultsInput.value < 6) {
-                adultsInput.value = parseInt(adultsInput.value) + 1;
+            const currentAdults = parseInt(adultsInput.value);
+            const currentKids = parseInt(kidsInput.value);
+            const totalGuests = currentAdults + currentKids;
+
+            if (totalGuests < 6) {
+                adultsInput.value = currentAdults + 1;
                 updateGuestSummary();
             }
         });
@@ -158,12 +216,16 @@
             }
         });
 
-        // Kids increment/decrement
+        // Kids increment/decrement with smart total limit
         document.getElementById("plusKids").addEventListener("click", (e) => {
             e.preventDefault();
             e.stopPropagation();
-            if (kidsInput.value < 6) {
-                kidsInput.value = parseInt(kidsInput.value) + 1;
+            const currentAdults = parseInt(adultsInput.value);
+            const currentKids = parseInt(kidsInput.value);
+            const totalGuests = currentAdults + currentKids;
+
+            if (totalGuests < 6) {
+                kidsInput.value = currentKids + 1;
                 updateGuestSummary();
             }
         });
@@ -190,15 +252,6 @@
                 guestDropdown.classList.add("hidden");
             }
         });
-
-        // Helper function to format date without timezone issues
-        function formatDateLocal(date) {
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        }
-
 
         // Book Now button - Max 6 total guests
         document.getElementById("reviewBooking").addEventListener("click", (e) => {
