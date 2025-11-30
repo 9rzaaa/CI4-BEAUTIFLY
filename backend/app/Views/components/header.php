@@ -11,12 +11,20 @@ $email = $user['email'] ?? '';
 $isAdmin = ($user['type'] ?? '') === 'admin';
 ?>
 
-<header class="bg-[#73AF6F] sticky top-0 z-50">
+<header class="top-0 z-50 sticky bg-[#73AF6F]">
     <div class="flex justify-between items-center mx-auto py-4 pr-6 pl-2 max-w-7xl">
         <!-- Logo Section -->
-        <a href="/" class="flex items-center space-x-4">
-            <img src="/assets/logo/logo.png" alt="EASY&CO Logo" class="w-auto h-16">
-        </a>
+        <?php if ($isAdmin): ?>
+            <!-- Static logo for admin (not clickable) -->
+            <div class="flex items-center space-x-4">
+                <img src="/assets/logo/logo.png" alt="EASY&CO Logo" class="w-auto h-16">
+            </div>
+        <?php else: ?>
+            <!-- Clickable logo for non-admin users -->
+            <a href="/" class="flex items-center space-x-4">
+                <img src="/assets/logo/logo.png" alt="EASY&CO Logo" class="w-auto h-16">
+            </a>
+        <?php endif; ?>
 
         <!-- Desktop Navigation -->
         <nav class="hidden md:flex items-center space-x-12">
@@ -48,7 +56,7 @@ $isAdmin = ($user['type'] ?? '') === 'admin';
 
                     <!-- Dropdown Menu (Garden Theme Applied) -->
                     <div class="invisible group-hover:visible right-0 z-50 absolute opacity-0 group-hover:opacity-100 shadow-2xl backdrop-blur-xl mt-2 border border-white/10 rounded-xl w-56 overflow-hidden transition-all translate-y-2 group-hover:translate-y-0 duration-300 transform"
-                        style="background-color: #4B7447;">  <!-- Garden dark green -->
+                        style="background-color: #4B7447;"> <!-- Garden dark green -->
 
                         <!-- User Info -->
                         <div class="bg-gradient-to-br from-[#73AF6F] to-[#4c8a49] px-3 py-2.5 border-white/10 border-b">
@@ -169,4 +177,3 @@ $isAdmin = ($user['type'] ?? '') === 'admin';
         }
     </script>
 </header>
-
