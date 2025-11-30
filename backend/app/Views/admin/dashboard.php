@@ -1,8 +1,10 @@
+dashbord
+
 <!DOCTYPE html>
 <html lang="en">
 <?php include APPPATH . 'views/components/head.php'; ?>
 
-<body class="bg-gray-50">
+<body class="bg-[var(--garden-light)]">
     <?php include APPPATH . 'views/components/header.php'; ?>
 
     <div class="flex min-h-screen">
@@ -12,8 +14,10 @@
         <!-- Main Content -->
         <main class="flex-1 ml-64 p-8">
             <div class="mb-8">
-                <h1 class="mb-2 font-bold text-gray-800 text-3xl">Dashboard Overview</h1>
-                <p class="text-gray-600">Welcome back! Here's what's happening with your properties.</p>
+                <h1 class="mb-2 font-bold text-[var(--garden-dark)] text-3xl">Dashboard Overview</h1>
+                <p class="text-[var(--garden-dark)]/70">
+                    Welcome back! Here's what's happening with your properties.
+                </p>
             </div>
 
             <!-- Stats Cards -->
@@ -23,5 +27,4 @@
     </div>
 
 </body>
-
 </html>
