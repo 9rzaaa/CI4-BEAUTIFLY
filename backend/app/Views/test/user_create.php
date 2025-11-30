@@ -79,7 +79,7 @@
     <div class="flex justify-center gap-3 pt-4">
         <button
             type="submit"
-            class="bg-mint-dark hover:bg-mint shadow-lg px-8 py-3 rounded-lg font-bold text-white transition-colors duration-200">
+            class="bg-primary hover:bg-mint shadow-lg px-8 py-3 rounded-lg font-bold text-white transition-colors duration-200">
             Create User
         </button>
         <button
