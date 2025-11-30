@@ -18,7 +18,7 @@ $active = 'My Bookings';
     </h1>
 
     <p class="text-green-600 drop-shadow-[0_1px_1px_rgba(0,0,0,0.25)]">
-        View and manage your resort reservations
+        View and manage your EASY&CO reservations
     </p>
 </div>
 
