@@ -1,47 +1,41 @@
 <?php
 
-
 namespace App\Controllers;
-
 
 use App\Controllers\BaseController;
 use App\Models\BookingModel;
 use CodeIgniter\HTTP\ResponseInterface;
 
-
 class AdminBookingController extends BaseController
 {
     protected $bookingModel;
 
-
     public function __construct()
-{
-    $this->bookingModel = new BookingModel();
-   
-    // Check if user is admin
-    $session = session();
-    $user = $session->get('user');
-   
-    if (!$user || strtolower($user['type'] ?? '') !== 'admin') {
-        // Store the attempted URL for redirect after login
-        $session->set('redirect_url', current_url());
-        // Redirect to login with error message
-        return redirect()->to('/login')->with('error', 'Please login as admin to access this page.')->send();
-        exit;
+    {
+        $this->bookingModel = new BookingModel();
+
+        // Check if user is admin
+        $session = session();
+        $user = $session->get('user');
+
+        if (!$user || strtolower($user['type'] ?? '') !== 'admin') {
+            $session->set('redirect_url', current_url());
+            return redirect()->to('/login')->with('error', 'Please login as admin to access this page.')->send();
+            exit;
+        }
     }
-}
+
     // Display bookings management page
     public function index()
     {
         $data = [
             'title' => 'Booking Management'
         ];
-       
+
         return view('admin/unitbookings', $data);
     }
 
-
-    // Get bookings list with filters and pagination (
+    // Get bookings list with filters and pagination
     public function list()
     {
         $page = (int)$this->request->getGet('page') ?: 1;
@@ -51,9 +45,8 @@ class AdminBookingController extends BaseController
         $dateFrom = $this->request->getGet('date_from');
         $dateTo = $this->request->getGet('date_to');
 
-
         $builder = $this->bookingModel->builder();
-       
+
         // Join with users and properties tables
         $builder->select("
             bookings.id,
@@ -72,17 +65,22 @@ class AdminBookingController extends BaseController
             bookings.created_at,
             users.id as user_id,
             CONCAT(users.first_name, ' ', users.last_name) as user_name,
-            users.email as user_email
+            users.email as user_email,
+            properties.id as property_id,
+            properties.title as property_name,
+            CONCAT(properties.city, ', ', properties.address) as property_location
         ");
         $builder->join('users', 'users.id = bookings.user_id', 'left');
         $builder->join('properties', 'properties.id = bookings.property_id', 'left');
 
-         // Apply filters
+        // Apply filters
         if (!empty($search)) {
             $builder->groupStart();
-            $builder->like('users.name', $search);
+            $builder->like('CONCAT(users.first_name, " ", users.last_name)', $search);
             $builder->orLike('users.email', $search);
-            $builder->orLike('properties.name', $search);
+            $builder->orLike('properties.title', $search);
+            $builder->orLike('properties.city', $search);
+            $builder->orLike('properties.address', $search);
             $builder->orLike('bookings.id', $search);
             $builder->groupEnd();
         }
@@ -109,10 +107,18 @@ class AdminBookingController extends BaseController
 
         $bookings = $builder->get()->getResultArray();
 
-        // Format data
+        // Format data - MOVED FROM VIEW
         foreach ($bookings as &$booking) {
-            $booking['checkin_date'] = $booking['check_in'];
-            $booking['checkout_date'] = $booking['check_out'];
+            // Calculate total guests
+            $booking['guests'] = $booking['adults'] + $booking['kids'];
+
+            // Format prices
+            $booking['total_price_formatted'] = number_format($booking['total_price'], 2);
+            $booking['price_per_night_formatted'] = number_format($booking['price_per_night'], 2);
+            $booking['cleaning_fee_formatted'] = number_format($booking['cleaning_fee'], 2);
+
+            // Generate status badge HTML
+            $booking['status_badge'] = $this->getStatusBadge($booking['status']);
         }
 
         // Calculate pagination
@@ -134,6 +140,20 @@ class AdminBookingController extends BaseController
         ]);
     }
 
+    // MOVED FROM VIEW: Generate status badge HTML
+    private function getStatusBadge($status)
+    {
+        $badges = [
+            'pending' => '<span class="inline-flex bg-yellow-100 px-2 py-1 rounded-full font-semibold text-yellow-800 text-xs leading-5">Pending</span>',
+            'confirmed' => '<span class="inline-flex bg-green-100 px-2 py-1 rounded-full font-semibold text-green-800 text-xs leading-5">Confirmed</span>',
+            'cancelled' => '<span class="inline-flex bg-red-100 px-2 py-1 rounded-full font-semibold text-red-800 text-xs leading-5">Cancelled</span>',
+            'completed' => '<span class="inline-flex bg-blue-100 px-2 py-1 rounded-full font-semibold text-blue-800 text-xs leading-5">Completed</span>',
+            'rejected' => '<span class="inline-flex bg-gray-100 px-2 py-1 rounded-full font-semibold text-gray-800 text-xs leading-5">Rejected</span>'
+        ];
+
+        return $badges[$status] ?? '<span class="inline-flex bg-gray-100 px-2 py-1 rounded-full font-semibold text-gray-800 text-xs leading-5">' . ucfirst($status) . '</span>';
+    }
+
     // View single booking details
     public function view($id = null)
     {
@@ -146,14 +166,13 @@ class AdminBookingController extends BaseController
 
         $builder = $this->bookingModel->builder();
         $builder->select('
-        bookings.*,
-        users.id as user_id,
-        CONCAT(users.first_name, " ", users.last_name) as user_name,
-        users.email as user_email,
-        properties.id as property_id,
-        properties.name as property_name,
-        properties.location as property_location,
-        (bookings.adults + bookings.kids) as guests
+            bookings.*,
+            users.id as user_id,
+            CONCAT(users.first_name, " ", users.last_name) as user_name,
+            users.email as user_email,
+            properties.id as property_id,
+            properties.title as property_name,
+            CONCAT(properties.city, ", ", properties.address) as property_location
         ');
         $builder->join('users', 'users.id = bookings.user_id', 'left');
         $builder->join('properties', 'properties.id = bookings.property_id', 'left');
@@ -168,10 +187,12 @@ class AdminBookingController extends BaseController
             ]);
         }
 
-        // Format dates for display
-        $booking['checkin_date'] = $booking['check_in'];
-        $booking['checkout_date'] = $booking['check_out'];
-        $booking['nights'] = $booking['number_of_nights'];
+        // Format data - MOVED FROM VIEW
+        $booking['guests'] = $booking['adults'] + $booking['kids'];
+        $booking['status_badge'] = $this->getStatusBadge($booking['status']);
+        $booking['total_price_formatted'] = number_format($booking['total_price'], 2);
+        $booking['price_per_night_formatted'] = number_format($booking['price_per_night'], 2);
+        $booking['cleaning_fee_formatted'] = number_format($booking['cleaning_fee'], 2);
 
         return $this->response->setJSON([
             'success' => true,
@@ -179,7 +200,7 @@ class AdminBookingController extends BaseController
         ]);
     }
 
-     // Update booking
+    // Update booking
     public function update()
     {
         $json = $this->request->getJSON(true);
@@ -195,14 +216,12 @@ class AdminBookingController extends BaseController
             'status' => 'required|in_list[pending,confirmed,cancelled,completed,rejected]'
         ]);
 
-
         if (!$validation->run($json)) {
             return $this->response->setJSON([
                 'success' => false,
                 'message' => implode(', ', $validation->getErrors())
             ]);
         }
-
 
         // Validate dates
         $checkIn = strtotime($json['check_in']);
@@ -246,7 +265,6 @@ class AdminBookingController extends BaseController
         // Update booking
         $result = $this->bookingModel->update($json['id'], $updateData);
 
-
         if ($result) {
             return $this->response->setJSON([
                 'success' => true,
@@ -259,7 +277,6 @@ class AdminBookingController extends BaseController
             ]);
         }
     }
-
 
     // Delete booking 
     public function delete($id = null)
@@ -295,8 +312,8 @@ class AdminBookingController extends BaseController
             ]);
         }
     }
-      // Get booking statistics 
 
+    // Get booking statistics 
     public function statistics()
     {
         $builder = $this->bookingModel->builder();
@@ -328,7 +345,7 @@ class AdminBookingController extends BaseController
             'statistics' => [
                 'total_bookings' => $totalBookings,
                 'by_status' => $byStatus,
-                'total_revenue' => $totalRevenue,
+                'total_revenue' => number_format($totalRevenue, 2),
                 'this_month' => $thisMonth
             ]
         ]);
