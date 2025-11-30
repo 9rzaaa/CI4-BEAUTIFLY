@@ -1,0 +1,219 @@
+   <script>
+        // Get data passed from PHP controller
+        const bookingData = {
+            checkIn: '<?= esc($checkIn) ?>',
+            checkOut: '<?= esc($checkOut) ?>',
+            checkInFormatted: '<?= esc($checkInFormatted) ?>',
+            checkOutFormatted: '<?= esc($checkOutFormatted) ?>',
+            adults: <?= (int)$adults ?>,
+            kids: <?= (int)$kids ?>,
+            nights: <?= (int)$nights ?>,
+            transactionId: '<?= esc($transactionId) ?>',
+            pricePerNight: '<?= $pricePerNight ?>',
+            cleaningFee: '<?= $cleaningFee ?>',
+            totalPrice: '<?= $totalPrice ?>'
+        };
+
+        // Populate booking details
+        function populateBookingDetails() {
+            if (!bookingData.checkIn || !bookingData.checkOut || bookingData.nights <= 0) {
+                alert("Booking details are missing. Redirecting back to the booking page.");
+                window.location.href = '/booking';
+                return;
+            }
+
+            document.getElementById("modalTransactionId").textContent = bookingData.transactionId;
+            document.getElementById("modalCheckIn").textContent = bookingData.checkInFormatted;
+            document.getElementById("modalCheckOut").textContent = bookingData.checkOutFormatted;
+            document.getElementById("modalNights").textContent = `${bookingData.nights} night${bookingData.nights > 1 ? 's' : ''}`;
+            document.getElementById("modalGuests").textContent = `${bookingData.adults} Adult${bookingData.adults > 1 ? 's' : ''}, ${bookingData.kids} Kid${bookingData.kids > 1 ? 's' : ''}`;
+            document.getElementById("modalPricePerNight").textContent = bookingData.pricePerNight;
+            document.getElementById("modalCleaningFee").textContent = bookingData.cleaningFee;
+            document.getElementById("modalTotalPrice").textContent = bookingData.totalPrice;
+        }
+
+        populateBookingDetails();
+
+        // Payment method selection
+        document.querySelectorAll('.payment-logo-option').forEach(label => {
+            label.addEventListener('click', (event) => {
+                document.querySelectorAll('.payment-logo-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                event.currentTarget.classList.add('selected');
+                const radioInput = event.currentTarget.querySelector('input[type="radio"]');
+                if (radioInput) radioInput.checked = true;
+            });
+        });
+
+        // Show QR code modal for GCash/Maya/QrPh
+        function showQRModal(paymentMethod) {
+            return new Promise((resolve, reject) => {
+                const modalHTML = `
+        <div id="qrModal" class="z-50 fixed inset-0 flex justify-center items-center bg-black bg-opacity-70" style="animation: fadeIn 0.3s;">
+            <div class="relative bg-white mx-4 p-8 rounded-2xl w-full max-w-md text-center" style="animation: slideUp 0.3s;">
+                <button id="closeQrModal" class="top-4 right-4 absolute font-bold text-gray-400 hover:text-gray-700 text-3xl leading-none transition-colors" title="Cancel Payment">&times;</button>
+                
+                <h3 class="mb-4 font-bold text-2xl" style="color: #2F5233;">Scan to Pay</h3>
+                <p class="mb-6 text-gray-600">Scan this QR code using your ${paymentMethod === 'gcash' ? 'GCash' : paymentMethod === 'paymaya' ? 'Maya' : 'QR Ph'} app</p>
+               
+                <div class="bg-gray-100 mb-6 p-6 rounded-xl">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=DUMMY_${paymentMethod.toUpperCase()}_PAYMENT"
+                         alt="QR Code" class="mx-auto w-64 h-64">
+                </div>
+               
+                <div class="mb-4">
+                    <div class="inline-flex justify-center items-center mb-2 rounded-full w-20 h-20 font-bold text-white text-2xl" style="background-color: #73AF6F;">
+                        <span id="qrTimer">40</span>
+                    </div>
+                    <p class="text-gray-500 text-sm">Seconds remaining</p>
+                </div>
+               
+                <button id="qrDoneButton" 
+                    class="bg-accent hover:bg-accent/90 shadow-lg px-8 py-3 rounded-lg w-full font-bold text-white text-lg hover:scale-105 transition-all"
+                    style="background-color: #73AF6F;">
+                    I've Completed Payment
+                </button>
+               
+                <p class="mt-4 text-gray-400 text-xs">Payment will auto-verify in <span id="qrTimer2">40</span>s</p>
+            </div>
+        </div>
+        <style>
+            @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+            @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        </style>
+        `;
+
+                document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+                let timeLeft = 40;
+                const timerElement = document.getElementById('qrTimer');
+                const timerElement2 = document.getElementById('qrTimer2');
+                const doneButton = document.getElementById('qrDoneButton');
+                const closeButton = document.getElementById('closeQrModal');
+
+                const countdown = setInterval(() => {
+                    timeLeft--;
+                    timerElement.textContent = timeLeft;
+                    timerElement2.textContent = timeLeft;
+
+                    if (timeLeft <= 0) {
+                        clearInterval(countdown);
+                        document.getElementById('qrModal').remove();
+                        resolve(true);
+                    }
+                }, 1000);
+
+                // Close/Cancel button
+                closeButton.addEventListener('click', () => {
+                    clearInterval(countdown);
+                    document.getElementById('qrModal').remove();
+                    reject(new Error('Payment cancelled by user'));
+                });
+
+                // Complete payment button
+                doneButton.addEventListener('click', () => {
+                    clearInterval(countdown);
+                    document.getElementById('qrModal').remove();
+                    resolve(true);
+                });
+            });
+        }
+
+        // Main payment processing function
+        document.getElementById('proceedToPayment').addEventListener('click', async (e) => {
+            const btn = e.currentTarget;
+            const selectedPayment = document.querySelector('input[name="paymentMethod"]:checked');
+
+            if (!selectedPayment) {
+                alert('Please select a payment method.');
+                return;
+            }
+
+            const paymentMethod = selectedPayment.value;
+            const specialRequests = document.getElementById('specialRequests')?.value.trim() || null;
+
+            // Prepare submission data
+            const submissionData = {
+                check_in: bookingData.checkIn,
+                check_out: bookingData.checkOut,
+                adults: bookingData.adults,
+                kids: bookingData.kids,
+                transaction_id: bookingData.transactionId,
+                total_amount: parseFloat(bookingData.totalPrice.replace(/,/g, '')),
+                payment_method: paymentMethod,
+                special_requests: specialRequests
+            };
+
+            btn.disabled = true;
+            btn.textContent = 'Processing...';
+
+            try {
+                let paymentConfirmed = false;
+
+                // Handle all payment methods with QR modal
+                if (paymentMethod === 'gcash' || paymentMethod === 'paymaya' || paymentMethod === 'qrph') {
+                    paymentConfirmed = await showQRModal(paymentMethod);
+                }
+
+                if (!paymentConfirmed) {
+                    throw new Error('Payment was not confirmed');
+                }
+
+                // Step 1: Create booking first (with pending status)
+                btn.textContent = 'Creating Booking...';
+                const bookingResponse = await fetch('/booking/create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(submissionData)
+                });
+
+                const bookingResult = await bookingResponse.json();
+
+                if (!bookingResponse.ok || !bookingResult.success) {
+                    throw new Error(bookingResult.error || 'Booking creation failed');
+                }
+
+                const bookingId = bookingResult.booking_id;
+
+                // Step 2: Process payment
+                btn.textContent = 'Processing Payment...';
+                const paymentResponse = await fetch('/payment/process', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        booking_id: bookingId,
+                        payment_method: paymentMethod
+                    })
+                });
+
+                const paymentResult = await paymentResponse.json();
+
+                if (!paymentResponse.ok || !paymentResult.success) {
+                    // Payment failed - booking remains pending
+                    throw new Error(paymentResult.error || 'Payment processing failed');
+                }
+
+                // Success! Redirect to success page
+                window.location.href = `/booking/success?id=${bookingId}&transaction_id=${paymentResult.transaction_id}&total=${paymentResult.amount}`;
+
+            } catch (error) {
+                console.error('Error:', error);
+
+                // Check if user cancelled
+                if (error.message === 'Payment cancelled by user') {
+                    // Just re-enable the button, don't show error alert
+                    btn.disabled = false;
+                    btn.textContent = 'Proceed to Payment';
+                } else {
+                    alert(`Error: ${error.message}\n\nPlease try again or contact support.`);
+                    btn.disabled = false;
+                    btn.textContent = 'Proceed to Payment';
+                }
+            }
+        });
+    </script>
