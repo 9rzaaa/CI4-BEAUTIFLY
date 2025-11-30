@@ -1,7 +1,7 @@
 <?= view('components/head', ['title' => 'My Profile']) ?>
 <?= view('components/header') ?>
 
-<section class="max-w-3xl mx-auto mt-10 px-4">
+<section class="max-w-3xl mx-auto mt-10 px-4 pb-16"> 
     <div class="bg-white p-6 rounded-xl shadow-lg border border-[var(--garden-green)]">
 
         <h2 class="text-2xl font-bold text-[var(--garden-dark)] mb-6">
@@ -71,7 +71,7 @@
             </div>
 
             <div class="text-right pt-4">
-                <button class="bg-[var(--garden-green)] text-white px-6 py-2 rounded hover:bg-[var(--garden-dark)] transition">
+                <button class="bg-green-600 text-white px-6 py-2 rounded shadow-md hover:bg-green-700 transition">
                     Save Changes
                 </button>
             </div>
