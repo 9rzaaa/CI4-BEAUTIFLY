@@ -1,5 +1,3 @@
-dashbord
-
 <!DOCTYPE html>
 <html lang="en">
 <?php include APPPATH . 'views/components/head.php'; ?>
