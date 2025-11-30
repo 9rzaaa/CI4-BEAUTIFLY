@@ -16,12 +16,7 @@ $active = 'My Bookings';
     <h1 class="text-4xl font-bold text-green-700 mb-2 drop-shadow-[0_2px_2px_rgba(0,0,0,0.25)]">
         My Bookings
     </h1>
-
-    <p class="text-green-600 drop-shadow-[0_1px_1px_rgba(0,0,0,0.25)]">
-        View and manage your EASY&CO reservations
-    </p>
 </div>
-
 
         <!-- Stats Summary -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
