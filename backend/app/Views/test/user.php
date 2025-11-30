@@ -236,11 +236,13 @@
                             type="submit"
                             class="bg-lime-600 hover:bg-lime-700 shadow-lg px-8 py-3 rounded-lg font-bold text-white transition-colors duration-200"> Update User
                         </button>
-                        <button
-                            type="button"
-                            onclick="closeEditModal()"
-                            class="bg-lime-700 hover:bg-lime-800 px-8 py-3 rounded-lg font-bold text-white transition-colors duration-200"> Cancel
-                        </button>
+<button
+    type="button"
+    onclick="closeEditModal()"
+    class="bg-gray-500 hover:bg-gray-700 px-8 py-3 rounded-lg font-bold text-white transition-colors duration-200">
+    Cancel
+</button>
+
                     </div>
                 </form>
             </div>
