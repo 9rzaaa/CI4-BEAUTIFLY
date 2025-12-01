@@ -65,7 +65,7 @@
     <!-- Call to Action Section -->
     <?= view('components/cta', [
         'heading' => "WE CAN'T WAIT TO SEE YOU.",
-        'sub' => "123 Main Street, City Center, Metro Manila",
+        'sub' => "123 Aurora boulevard, Quezon City",
         'map_href' => "#map",
         'map_label' => "SEE ON MAP",
         'primary' => ['href' => '#book', 'label' => 'BOOK NOW'],
