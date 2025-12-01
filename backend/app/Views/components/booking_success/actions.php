@@ -7,11 +7,11 @@
         Print Confirmation
     </button>
 
-    <a href="/user/my-bookings" class="flex justify-center items-center bg-accent hover:bg-accent/90 shadow-lg px-8 py-3 rounded-lg font-bold text-white hover:scale-105 transition-all">
-        <svg class="mr-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-        </svg>
-        View My Bookings
+<a href="/bookings" class="flex justify-center items-center bg-accent hover:bg-accent/90 shadow-lg px-8 py-3 rounded-lg font-bold text-white hover:scale-105 transition-all">
+    <svg class="mr-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+    </svg>
+    View My Bookings
     </a>
 
     <a href="/" class="flex justify-center items-center bg-gray-200 hover:bg-gray-300 shadow-lg px-8 py-3 rounded-lg font-bold text-gray-700 hover:scale-105 transition-all">
