@@ -5,7 +5,7 @@
 
 <div align="center">
   <a href="https://github.com/zyx-0314/">
-    <img src="assets/logo/logo.png" alt="Nyebe" width="130" height="100">
+    <img src="assets/logo/logo.png" alt="Easy&Co Logo" width="130" height="100">
   </a>
 
   <h3 align="center">AD - EASY&CO</h3>
