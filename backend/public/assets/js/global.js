@@ -94,7 +94,7 @@
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                box-shadow: 0 4px 15px rgba(145, 173, 200, 0.4);
+                box-shadow: 0 4px 15px rgba(150, 108, 39, 0.84);
                 opacity: 0;
                 visibility: hidden;
                 transform: scale(0.8);
@@ -110,7 +110,7 @@
             
             #scrollToTop:hover {
                 transform: scale(1.1);
-                box-shadow: 0 6px 20px rgba(100, 130, 160, 0.6);
+                box-shadow: 0 6px 20px rgba(236, 165, 14, 0.6);
             }
             
             #scrollToTop:active {
