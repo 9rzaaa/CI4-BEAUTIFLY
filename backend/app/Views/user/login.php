@@ -19,20 +19,30 @@
             <div class="space-y-8 text-center">
                 <h2 class="font-bold text-secondary text-5xl md:text-6xl">Log In</h2>
 
-                <form class="space-y-6">
-                    <!-- Email/Username Input -->
+                <form action="<?= base_url('auth/login') ?>" method="post" class="space-y-6">
+                    <?= csrf_field() ?>
+
+                    <?php if (session()->getFlashdata('errors')): ?>
+                        <div class="bg-red-100 p-4 rounded-md text-red-700 text-sm text-left">
+                            <?php foreach (session()->getFlashdata('errors') as $error): ?>
+                                <p><?= esc($error) ?></p>
+                            <?php endforeach ?>
+                        </div>
+                    <?php endif; ?>
+
                     <input
-                        type="text"
+                        type="email"
+                        name="email"
                         placeholder="Email or Username"
+                        value="<?= old('email') ?>"
                         class="bg-transparent placeholder-opacity-70 focus:ring-opacity-50 px-6 py-4 border-2 border-secondary rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary w-full font-light text-secondary text-lg placeholder-secondary">
 
-                    <!-- Password Input -->
                     <input
                         type="password"
+                        name="password"
                         placeholder="Password"
                         class="bg-transparent placeholder-opacity-70 focus:ring-opacity-50 px-6 py-4 border-2 border-secondary rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary w-full font-light text-secondary text-lg placeholder-secondary">
 
-                    <!-- Sign Up Link -->
                     <p class="font-light text-secondary text-lg">
                         Don't have an account?
                         <a href="/signup" class="font-semibold text-secondary hover:text-accent underline transition-colors">
@@ -40,13 +50,13 @@
                         </a>
                     </p>
 
-                    <!-- Login Button -->
                     <button
                         type="submit"
-                        class="bg-secondary hover:bg-primary px-8 py-3 border-2 border-secondary rounded-lg w-auto font-bold text-white text-base tracking-wide transition-all">
+                        class="bg-secondary hover:bg-primary px-8 py-3 border-2 border-secondary rounded-lg w-auto font-bold text-green text-base tracking-wide transition-all">
                         Log In
                     </button>
                 </form>
+
             </div>
         </div>
     </section>
