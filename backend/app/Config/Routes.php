@@ -24,9 +24,7 @@ $routes->get('profile', 'ProfileController::index', ['filter' => 'auth']);      
 $routes->post('profile/update', 'ProfileController::update', ['filter' => 'auth']); // Update profile
 
 // ---------- Admin Pages ----------
-$routes->get('admin/dashboard', function () {
-    return view('admin/dashboard');            // Admin dashboard view
-});
+$routes->get('/admin/dashboard', 'AdminController::dashboard');
 
 // ---------- Admin Booking Management ----------
 $routes->get('admin/bookings', 'AdminBookingController::index');                    // Display bookings management page

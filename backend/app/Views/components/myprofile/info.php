@@ -1,0 +1,28 @@
+<!-- PROFILE INFO FORM -->
+<form action="/profile/update" method="post" class="space-y-4">
+
+    <div>
+        <label class="text-sm font-semibold text-[var(--garden-brown)]">First Name</label>
+        <input type="text" name="first_name" value="<?= esc($user['first_name']) ?>"
+               class="w-full p-3 border rounded focus:ring-2 focus:ring-[var(--garden-green)]" required>
+    </div>
+
+    <div>
+        <label class="text-sm font-semibold text-[var(--garden-brown)]">Middle Name (optional)</label>
+        <input type="text" name="middle_name" value="<?= esc($user['middle_name']) ?>"
+               class="w-full p-3 border rounded focus:ring-2 focus:ring-[var(--garden-green)]">
+    </div>
+
+    <div>
+        <label class="text-sm font-semibold text-[var(--garden-brown)]">Last Name</label>
+        <input type="text" name="last_name" value="<?= esc($user['last_name']) ?>"
+               class="w-full p-3 border rounded focus:ring-2 focus:ring-[var(--garden-green)]" required>
+    </div>
+
+    <div>
+        <label class="text-sm font-semibold text-[var(--garden-brown)]">Email</label>
+        <input type="email" name="email" value="<?= esc($user['email']) ?>"
+               class="w-full p-3 border rounded bg-gray-100 cursor-not-allowed" readonly>
+    </div>
+
+    <hr class="my-6">
