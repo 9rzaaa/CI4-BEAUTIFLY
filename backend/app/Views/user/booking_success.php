@@ -1,7 +1,6 @@
 
 <?= view('components/booking_success/style') ?>
 
-<?= view('components/head') ?>
 <?= view('components/header') ?>
 
 <?= view('components/booking_success/card') ?>
