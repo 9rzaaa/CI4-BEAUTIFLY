@@ -6,8 +6,8 @@
     <?php include APPPATH . 'views/components/header.php'; ?>
 
     <div class="flex min-h-screen">
-        <!-- Sidebar -->
-        <?php include APPPATH . 'views/components/admin/sidebar.php'; ?>
+        <!-- Sidebar - Updated to use view() with active parameter -->
+        <?= view('components/admin/sidebar', ['active' => 'dashboard']) ?>
 
         <!-- Main Content -->
         <main class="flex-1 ml-64 p-8">
@@ -25,4 +25,5 @@
     </div>
 
 </body>
+
 </html>
