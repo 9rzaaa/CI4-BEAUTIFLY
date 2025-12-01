@@ -5,22 +5,20 @@
 
 <div align="center">
   <a href="https://github.com/zyx-0314/">
-    <img src="./assets/img/nyebe_white.png" alt="Nyebe" width="130" height="100">
+    <img src="./assets/img/logo/logo.png" alt="Nyebe" width="130" height="100">
   </a>
-<!-- * Title Section -->
+
   <h3 align="center">AD - EASY&CO</h3>
 </div>
 
-<!-- * Description Section -->
 <div align="center">
-    A simple online condo booking platform built with CodeIgniter 4. This project demonstrates a minimal Airbnb-style setup with condo listings, booking, and admin management.
+    A simple online booking platform built with CodeIgniter 4.  
+    This project demonstrates a minimal setup with bookings and admin management.
 </div>
 
 <br/>
 
 ![](https://visit-counter.vercel.app/counter.png?page=zyx-0314/ci4-template)
-
-<!-- ! Make sure it was similar to your github -->
 
 ---
 
@@ -33,20 +31,12 @@
     <li>
       <a href="#overview">Overview</a>
       <ol>
-        <li>
-          <a href="#key-components">Key Components</a>
-        </li>
-        <li>
-          <a href="#technology">Technology</a>
-        </li>
+        <li><a href="#key-components">Key Components</a></li>
+        <li><a href="#technology">Technology</a></li>
       </ol>
     </li>
-    <li>
-      <a href="#rules-practices-and-principles">Rules, Practices and Principles</a>
-    </li>
-    <li>
-      <a href="#resources">Resources</a>
-    </li>
+    <li><a href="#rules-practices-and-principles">Rules, Practices and Principles</a></li>
+    <li><a href="#resources">Resources</a></li>
   </ol>
 </details>
 
@@ -54,47 +44,39 @@
 
 ## Overview
 
-This repository provides a minimal CodeIgniter 4 project layout tailored to a small Airbnb-style condo booking platform.
+This repository provides a minimal CodeIgniter 4 project layout tailored for a small booking platform.  
 It includes conventions for file organization, commit practices, and sample modules to help you iterate quickly.
 
-* **Purpose**: A clean starter template for a simple condo booking site (listings → booking → admin).  
-* **Audience**: Students, hobbyists, and developers building small booking platforms with CI4.
+- **Purpose**: A clean starter template for a simple site (booking → admin).  
+- **Audience**: Students, hobbyists, and developers building small CI4-based platforms.
+
 ### Key Components
 
 These are **sample modules** included (or suggested) for learning how to add features:
 
-| Component                      | Purpose                                            | Notes                                              |
-| ------------------------------ | -------------------------------------------------- | -------------------------------------------------- |
-| **Auth (Sample)**              | Basic login/logout and role check (admin/guest).   | Uses CI4 sessions + MySQL `users` table.           |
-| **Condo Listings**             | Show available condos, details, amenities, images. | Condo model, images, description, price per night. |
-| **Booking System**             | Select dates, confirm booking, view order summary. | Handles reservations and availability.             |
-| **Admin Panel**                | CRUD for condos, bookings, users.                  | Role-protected routes (admin only).                |
-| **Gallery / Media**            | Display condo images, amenities, and highlights.   | Optional carousel or lightbox.                     |
-| **Promotions / Special Deals** | Showcase seasonal offers or discounts.             | Optional scheduler or admin entry.                 |
-
-
- <!-- ! Start simple. Use these modules as **learning samples**; extend or replace them based on your project’s needs. -->
+| Component          | Purpose                                             | Notes                                        |
+| ------------------ | --------------------------------------------------- | -------------------------------------------- |
+| **Auth (Sample)**  | Basic login/logout and role check (admin/guest).    | Uses CI4 sessions + MySQL `users` table.     |
+| **Booking System** | Select dates, confirm booking, view summary.        | Handles reservations and availability.       |
+| **Admin Panel**    | CRUD for bookings and users.                        | Role-protected routes (admin only).          |
 
 ### Technology
 
 #### Language
 
-![HTML](https://img.shields.io/badge/HTML-E34F26?style=for-the-badge\&logo=html5\&logoColor=white)
-![CSS](https://img.shields.io/badge/CSS-1572B6?style=for-the-badge\&logo=css3\&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge\&logo=javascript\&logoColor=white)
-![PHP](https://img.shields.io/badge/PHP-777BB4?style=for-the-badge\&logo=php\&logoColor=white)
+![HTML](https://img.shields.io/badge/HTML-E34F26?style=for-the-badge&logo=html5&logoColor=white)
+![CSS](https://img.shields.io/badge/CSS-1572B6?style=for-the-badge&logo=css3&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=white)
+![PHP](https://img.shields.io/badge/PHP-777BB4?style=for-the-badge&logo=php&logoColor=white)
 
 #### Framework/Library
 
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge\&logo=tailwindcss\&logoColor=white)
-![CodeIgniter](https://img.shields.io/badge/CodeIgniter-EF4223?style=for-the-badge\&logo=codeigniter\&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
+![CodeIgniter](https://img.shields.io/badge/CodeIgniter-EF4223?style=for-the-badge&logo=codeigniter&logoColor=white)
 
 #### Databases
 
-![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge\&logo=mysql\&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-336791?style=for-the-badge\&logo=postgresql\&logoColor=white)
-![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge\&logo=mongodb\&logoColor=white)
-![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge\&logo=firebase\&logoColor=black)
+![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
 
 <!-- ! Keep only the used technology -->
 
