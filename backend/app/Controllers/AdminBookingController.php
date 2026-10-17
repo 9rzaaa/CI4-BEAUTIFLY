@@ -64,11 +64,13 @@ class AdminBookingController extends BaseController
             bookings.special_requests,
             bookings.created_at,
             users.id as user_id,
-            CONCAT(users.first_name, ' ', users.last_name) as user_name,
+            users.first_name,
+            users.last_name,
             users.email as user_email,
             properties.id as property_id,
             properties.title as property_name,
-            CONCAT(properties.city, ', ', properties.address) as property_location
+            properties.city,
+            properties.address
         ");
         $builder->join('users', 'users.id = bookings.user_id', 'left');
         $builder->join('properties', 'properties.id = bookings.property_id', 'left');
@@ -76,7 +78,8 @@ class AdminBookingController extends BaseController
         // Apply filters
         if (!empty($search)) {
             $builder->groupStart();
-            $builder->like('CONCAT(users.first_name, " ", users.last_name)', $search);
+            $builder->like('users.first_name', $search);
+            $builder->orLike('users.last_name', $search);
             $builder->orLike('users.email', $search);
             $builder->orLike('properties.title', $search);
             $builder->orLike('properties.city', $search);
@@ -109,6 +112,9 @@ class AdminBookingController extends BaseController
 
         // Format data - MOVED FROM VIEW
         foreach ($bookings as &$booking) {
+            $booking['user_name'] = trim(($booking['first_name'] ?? '') . ' ' . ($booking['last_name'] ?? '')) ?: 'Guest';
+            $booking['property_location'] = trim(($booking['city'] ?? '') . (!empty($booking['address']) ? ', ' . $booking['address'] : ''));
+
             // Calculate total guests
             $booking['guests'] = $booking['adults'] + $booking['kids'];
 
@@ -168,11 +174,13 @@ class AdminBookingController extends BaseController
         $builder->select('
             bookings.*,
             users.id as user_id,
-            CONCAT(users.first_name, " ", users.last_name) as user_name,
+            users.first_name,
+            users.last_name,
             users.email as user_email,
             properties.id as property_id,
             properties.title as property_name,
-            CONCAT(properties.city, ", ", properties.address) as property_location
+            properties.city,
+            properties.address
         ');
         $builder->join('users', 'users.id = bookings.user_id', 'left');
         $builder->join('properties', 'properties.id = bookings.property_id', 'left');
@@ -188,6 +196,8 @@ class AdminBookingController extends BaseController
         }
 
         // Format data - MOVED FROM VIEW
+        $booking['user_name'] = trim(($booking['first_name'] ?? '') . ' ' . ($booking['last_name'] ?? '')) ?: 'Guest';
+        $booking['property_location'] = trim(($booking['city'] ?? '') . (!empty($booking['address']) ? ', ' . $booking['address'] : ''));
         $booking['guests'] = $booking['adults'] + $booking['kids'];
         $booking['status_badge'] = $this->getStatusBadge($booking['status']);
         $booking['total_price_formatted'] = number_format($booking['total_price'], 2);
@@ -336,8 +346,7 @@ class AdminBookingController extends BaseController
 
         // This month's bookings
         $builder = $this->bookingModel->builder();
-        $builder->where('MONTH(created_at)', date('m'));
-        $builder->where('YEAR(created_at)', date('Y'));
+        $builder->like('created_at', date('Y-m'), 'after');
         $thisMonth = $builder->countAllResults();
 
         return $this->response->setJSON([

@@ -198,6 +198,48 @@ class Database extends Config
         // we don't overwrite live data on accident.
         if (ENVIRONMENT === 'testing') {
             $this->defaultGroup = 'tests';
+            return;
+        }
+
+        $mysqlUrl = getenv('MYSQL_URL') ?: getenv('MYSQLPUBLIC_URL') ?: getenv('DATABASE_URL');
+        if (!empty($mysqlUrl) && str_starts_with($mysqlUrl, 'mysql://')) {
+            $parts = parse_url($mysqlUrl);
+            if ($parts !== false) {
+                $this->default['DBDriver'] = 'MySQLi';
+                $this->default['hostname'] = $parts['host'] ?? $this->default['hostname'];
+                $this->default['port']     = isset($parts['port']) ? (int) $parts['port'] : 3306;
+                $this->default['username'] = isset($parts['user']) ? urldecode($parts['user']) : $this->default['username'];
+                $this->default['password'] = isset($parts['pass']) ? urldecode($parts['pass']) : $this->default['password'];
+                $this->default['database'] = isset($parts['path']) ? ltrim($parts['path'], '/') : $this->default['database'];
+                return;
+            }
+        }
+
+        $envHost = getenv('database.default.hostname') ?: getenv('MYSQLHOST') ?: getenv('MYSQL_HOST') ?: getenv('DB_HOST');
+        $envUser = getenv('database.default.username') ?: getenv('MYSQLUSER') ?: getenv('MYSQL_USER') ?: getenv('DB_USERNAME');
+        $envPass = getenv('database.default.password') ?: getenv('MYSQLPASSWORD') ?: getenv('MYSQL_PASSWORD') ?: getenv('DB_PASSWORD');
+        $envName = getenv('database.default.database') ?: getenv('MYSQLDATABASE') ?: getenv('MYSQL_DATABASE') ?: getenv('DB_DATABASE');
+        $envPort = getenv('database.default.port')     ?: getenv('MYSQLPORT')     ?: getenv('MYSQL_PORT')     ?: getenv('DB_PORT');
+
+        if (!empty($envHost)) {
+            $this->default['DBDriver'] = getenv('database.default.DBDriver') ?: 'MySQLi';
+            $this->default['hostname'] = $envHost;
+            if ($envUser !== false && $envUser !== '') $this->default['username'] = $envUser;
+            if ($envPass !== false)                    $this->default['password'] = $envPass;
+            if ($envName !== false && $envName !== '') $this->default['database'] = $envName;
+            if ($envPort !== false && $envPort !== '') $this->default['port']     = (int) $envPort;
+            return;
+        }
+
+        // If default hostname is still 'mysql' (Docker Compose) but 'mysql' host is not resolvable
+        // (e.g. deployed on Railway without a separate MySQL service), use persistent SQLite3 database.
+        if ($this->default['hostname'] === 'mysql' && gethostbyname('mysql') === 'mysql') {
+            $this->default['DBDriver']    = 'SQLite3';
+            $this->default['database']    = WRITEPATH . 'easyco.db';
+            $this->default['hostname']    = '';
+            $this->default['username']    = '';
+            $this->default['password']    = '';
+            $this->default['foreignKeys'] = true;
         }
     }
 }

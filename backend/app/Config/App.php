@@ -18,6 +18,25 @@ class App extends BaseConfig
      */
     public string $baseURL = 'http://localhost:8090/';
 
+    public function __construct()
+    {
+        parent::__construct();
+
+        $envBase = getenv('app.baseURL') ?: getenv('BASE_URL');
+        if (!empty($envBase)) {
+            $this->baseURL = rtrim($envBase, '/') . '/';
+        } elseif (!empty($_SERVER['HTTP_HOST'])) {
+            $proto = $_SERVER['HTTP_X_FORWARDED_PROTO']
+                ?? ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http');
+            if (str_contains($_SERVER['HTTP_HOST'], 'railway.app')) {
+                $proto = 'https';
+            }
+            $this->baseURL = $proto . '://' . $_SERVER['HTTP_HOST'] . '/';
+        } elseif (!empty(getenv('RAILWAY_PUBLIC_DOMAIN'))) {
+            $this->baseURL = 'https://' . getenv('RAILWAY_PUBLIC_DOMAIN') . '/';
+        }
+    }
+
     /**
      * Allowed Hostnames in the Site URL other than the hostname in the baseURL.
      * If you want to accept multiple Hostnames, set this.
@@ -40,7 +59,7 @@ class App extends BaseConfig
      * something else. If you have configured your web server to remove this file
      * from your site URIs, set this variable to an empty string.
      */
-    public string $indexPage = 'index.php';
+    public string $indexPage = '';
 
     /**
      * --------------------------------------------------------------------------

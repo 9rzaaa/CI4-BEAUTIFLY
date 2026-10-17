@@ -47,11 +47,13 @@ class AdminController extends BaseController
         $totalEarnings = $earningsQuery->get()->getRowArray()['total_price'] ?? 0;
 
         // Calculate last month's earnings for comparison
+        $lastMonthPrefix = date('Y-m', strtotime('-1 month'));
+        $currentMonthPrefix = date('Y-m');
+
         $lastMonthEarnings = $this->bookingModel->builder();
         $lastMonthEarnings->selectSum('total_price');
         $lastMonthEarnings->where('status', 'completed');
-        $lastMonthEarnings->where('MONTH(created_at)', date('m', strtotime('-1 month')));
-        $lastMonthEarnings->where('YEAR(created_at)', date('Y', strtotime('-1 month')));
+        $lastMonthEarnings->like('created_at', $lastMonthPrefix, 'after');
         $lastMonthEarningsValue = $lastMonthEarnings->get()->getRowArray()['total_price'] ?? 0;
 
         // Calculate earnings growth percentage
@@ -60,8 +62,7 @@ class AdminController extends BaseController
             $currentMonthEarnings = $this->bookingModel->builder();
             $currentMonthEarnings->selectSum('total_price');
             $currentMonthEarnings->where('status', 'completed');
-            $currentMonthEarnings->where('MONTH(created_at)', date('m'));
-            $currentMonthEarnings->where('YEAR(created_at)', date('Y'));
+            $currentMonthEarnings->like('created_at', $currentMonthPrefix, 'after');
             $currentMonthEarningsValue = $currentMonthEarnings->get()->getRowArray()['total_price'] ?? 0;
 
             $earningsGrowth = (($currentMonthEarningsValue - $lastMonthEarningsValue) / $lastMonthEarningsValue) * 100;
@@ -81,19 +82,16 @@ class AdminController extends BaseController
 
         // Calculate new users this month
         $newUsersThisMonth = $this->usersModel->builder();
-        $newUsersThisMonth->where('MONTH(created_at)', date('m'));
-        $newUsersThisMonth->where('YEAR(created_at)', date('Y'));
+        $newUsersThisMonth->like('created_at', $currentMonthPrefix, 'after');
         $newUsersCount = $newUsersThisMonth->countAllResults();
 
         // 4. MONTHLY GROWTH - Booking growth percentage
         $currentMonthBookings = $this->bookingModel->builder();
-        $currentMonthBookings->where('MONTH(created_at)', date('m'));
-        $currentMonthBookings->where('YEAR(created_at)', date('Y'));
+        $currentMonthBookings->like('created_at', $currentMonthPrefix, 'after');
         $currentMonthBookingsCount = $currentMonthBookings->countAllResults();
 
         $lastMonthBookings = $this->bookingModel->builder();
-        $lastMonthBookings->where('MONTH(created_at)', date('m', strtotime('-1 month')));
-        $lastMonthBookings->where('YEAR(created_at)', date('Y', strtotime('-1 month')));
+        $lastMonthBookings->like('created_at', $lastMonthPrefix, 'after');
         $lastMonthBookingsCount = $lastMonthBookings->countAllResults();
 
         $monthlyGrowth = 0;

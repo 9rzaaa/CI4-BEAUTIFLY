@@ -11,46 +11,46 @@
     <!-- Header -->
     <?= view('components/header', ['active' => 'Home']) ?>
 
-<!-- Hero Section -->
-<section class="relative text-white text-center h-screen flex items-center">
-    
-    <!-- Background Image -->
-    <div class="absolute inset-0 w-full h-full">
-        <img src="/assets/img/landingbg.webp" 
-             class="w-full h-full object-cover" 
-             alt="Luxury Condo Background">
-    </div>
+    <!-- Hero Section -->
+    <section class="relative flex items-center h-screen text-white text-center">
 
-    <!-- Dark Overlay -->
-    <div class="absolute inset-0 bg-black/50"></div>
+        <!-- Background Image -->
+        <div class="absolute inset-0 w-full h-full">
+            <img src="/assets/img/landingbg.webp"
+                class="w-full h-full object-cover"
+                alt="Luxury Condo Background">
+        </div>
 
-    <!-- Content -->
-    <div class="relative mx-auto px-6 max-w-7xl">
-        <h2 class="mb-6 font-bold text-white text-6xl md:text-7xl leading-tight tracking-tight">
-            LUXURY CONDO
-        </h2>
-        <h3 class="mb-16 font-bold text-white text-6xl md:text-7xl leading-tight tracking-tight">
-            ACCOMMODATION
-        </h3>
+        <!-- Dark Overlay -->
+        <div class="absolute inset-0 bg-black/50"></div>
 
-        <?php
-        $session = session();
-        $user = $session->get('user');
-        $firstName = $user['first_name'] ?? '';
-        ?>
+        <!-- Content -->
+        <div class="relative mx-auto px-6 max-w-7xl">
+            <h2 class="mb-6 font-bold text-white text-6xl md:text-7xl leading-tight tracking-tight">
+                LUXURY CONDO
+            </h2>
+            <h3 class="mb-16 font-bold text-white text-6xl md:text-7xl leading-tight tracking-tight">
+                ACCOMMODATION
+            </h3>
 
-        <p class="mb-16 text-white text-2xl font-light tracking-wide">
-            <?php if (!empty($firstName)): ?>
-                Welcome back, <?= esc($firstName) ?>! Relax and unwind at EASY&CO
-            <?php else: ?>
-                Relax and unwind at EASY&CO
-            <?php endif; ?>
-        </p>
+            <?php
+            $session = session();
+            $user = $session->get('user');
+            $firstName = $user['first_name'] ?? '';
+            ?>
 
-        <!-- CTA Button -->
-        <?= view('components/buttons/button_primary', ['href' => '/booking', 'label' => 'BOOK NOW']) ?>
-    </div>
-</section>
+            <p class="mb-16 font-light text-white text-2xl tracking-wide">
+                <?php if (!empty($firstName)): ?>
+                    Welcome back, <?= esc($firstName) ?>! Relax and unwind at EASY&CO
+                <?php else: ?>
+                    Relax and unwind at EASY&CO
+                <?php endif; ?>
+            </p>
+
+            <!-- CTA Button -->
+            <?= view('components/buttons/button_primary', ['href' => '/booking', 'label' => 'BOOK NOW']) ?>
+        </div>
+    </section>
 
 
     <!-- About Section -->
@@ -82,4 +82,5 @@
     <?= view('components/footer') ?>
 
 </body>
+
 </html>

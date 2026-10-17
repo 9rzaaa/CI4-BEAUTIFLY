@@ -8,7 +8,9 @@ class DatabaseSeeder extends Seeder
 {
     public function run()
     {
-        $this->call('App\\Database\\Seeds\\ClearDatabaseSeeder');
+        if ($this->db->table('users')->countAllResults() > 0) {
+            return;
+        }
 
         $this->call('App\\Database\\Seeds\\UsersSeeder');
 
