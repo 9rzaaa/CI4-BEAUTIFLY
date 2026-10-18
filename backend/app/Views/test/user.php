@@ -2,10 +2,10 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<?php include APPPATH . 'views/components/head.php'; ?>
+<?php include APPPATH . 'Views/components/head.php'; ?>
 
 <body class="bg-green-50">
-    <?php include APPPATH . 'views/components/header.php'; ?>
+    <?php include APPPATH . 'Views/components/header.php'; ?>
 
     <div class="flex min-h-screen">
         <!-- Sidebar - Now consolidated -->

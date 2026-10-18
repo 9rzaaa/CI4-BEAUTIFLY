@@ -69,7 +69,7 @@ function renderFormButtons($submitText, $cancelFunction)
         <?= renderModalHeader('Create New User', 'closeModal()') ?>
 
         <div class="p-8">
-            <?php include APPPATH . 'views/test/user_create.php'; ?>
+            <?php include APPPATH . 'Views/test/user_create.php'; ?>
         </div>
     </div>
 </div>
